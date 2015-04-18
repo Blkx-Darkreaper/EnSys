@@ -27,7 +27,6 @@ public class Environment extends JComponent implements ActionListener {
 	protected Timer time;
 	protected Panel parentPanel;
 	protected World world;
-	protected Level level;
 	protected enum State {MainMenu, Game, GameOver};
 	protected State currentState;
 	protected Menu mainMenu;
@@ -60,8 +59,10 @@ public class Environment extends JComponent implements ActionListener {
 		
 		//debug
 		world = new World(this);
+		Level level = null;
 		try {
 			level = new Level(levelName, tilesetName, 16);
+			world.setCurrentLevel(level);
 		} catch (IOException e) {
 			System.out.println("Could not load level");
 			e.printStackTrace();
@@ -80,6 +81,7 @@ public class Environment extends JComponent implements ActionListener {
 		
 		Entity test = new Entity();
 		addEntityToWorld(test);
+		//test.setHasStroke(true);
 		
 		int centerX = 200;
 		int centerY = 150;
@@ -145,12 +147,12 @@ public class Environment extends JComponent implements ActionListener {
 	}
 	
 	public int getLevelWidth() {
-		int levelWidth = level.getWidth();
+		int levelWidth = world.getLevelWidth();
 		return levelWidth;
 	}
 	
 	public int getLevelHeight() {
-		int levelHeight = level.getHeight();
+		int levelHeight = world.getLevelHeight();
 		return levelHeight;
 	}
 	
@@ -171,7 +173,7 @@ public class Environment extends JComponent implements ActionListener {
 	}
 
 	public List<Sprite> getAllSpritesInBounds(Rectangle boundingBox) {
-		List<Sprite> allSprites = level.getAllSpritesWithinBounds(boundingBox);
+		List<Sprite> allSprites = world.getAllSpritesWithinBounds(boundingBox);
 		
 		return allSprites;
 	}
@@ -246,11 +248,11 @@ public class Environment extends JComponent implements ActionListener {
 	}
 	
 	public void updateViews(Graphics2D g2d) {
-/*		Component[] array = getComponents();*/
+		Component[] array = getComponents();
 		List<View> allViews = new ArrayList<>();
-/*		for(Component toAdd : Arrays.asList(array)) {
+		for(Component toAdd : Arrays.asList(array)) {
 			allViews.add((View) toAdd);
-		}*/
+		}
 		for(View view : allViews) {
 			view.updateView();
 			
@@ -315,7 +317,7 @@ public class Environment extends JComponent implements ActionListener {
 	
 	private boolean checkWithinLevel(int inCenterX, int inCenterY, int inWidth,
 			int inHeight) {
-		boolean withinLevel = level.isWithinBounds(inCenterX, inCenterY, inWidth, inHeight);
+		boolean withinLevel = world.checkWithinLevel(inCenterX, inCenterY, inWidth, inHeight);
 		
 		return withinLevel;
 	}

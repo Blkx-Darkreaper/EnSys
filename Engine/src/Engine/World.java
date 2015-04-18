@@ -1,6 +1,7 @@
 package Engine;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -50,6 +51,24 @@ public class World implements ActionListener {
 		allEntities.add(toAdd);
 	}
 	
+	public Level getCurrentLevel() {
+		return currentLevel;
+	}
+	
+	public void setCurrentLevel(Level inLevel) {
+		currentLevel = inLevel;
+	}
+
+	public int getLevelWidth() {
+		int levelWidth = currentLevel.getWidth();
+		return levelWidth;
+	}
+
+	public int getLevelHeight() {
+		int levelHeight = currentLevel.getHeight();
+		return levelHeight;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		update();
@@ -72,4 +91,15 @@ public class World implements ActionListener {
 	}
 	
 	public void detectCollisions() {}
+
+	public boolean checkWithinLevel(int inCenterX, int inCenterY, int inWidth,
+			int inHeight) {
+		boolean withinLevel = currentLevel.isWithinBounds(inCenterX, inCenterY, inWidth, inHeight);
+		return withinLevel;
+	}
+
+	public List<Sprite> getAllSpritesWithinBounds(Rectangle boundingBox) {
+		List<Sprite> allSprites = currentLevel.getAllSpritesWithinBounds(boundingBox);
+		return allSprites;
+	}
 }

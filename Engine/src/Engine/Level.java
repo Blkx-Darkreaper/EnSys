@@ -92,15 +92,19 @@ class Level extends JComponent {
 		List<Sprite> allSprites = new ArrayList<>();
 		
 		for(Sector aSector : allSectors) {
-			int worldHeight = getHeight();
+			//int worldHeight = getHeight();
 			
-			int x = aSector.getCornerX() * spritesWidePerSector * tileSize;
-			int y = worldHeight - ((aSector.getCornerY() + 1) * spritesHighPerSector * tileSize);
+			int sectorX = aSector.getX();
+			int sectorY = aSector.getY();
+			
+			int cornerFourX = sectorX * spritesWidePerSector * tileSize;
+			//int cornerFourY = worldHeight - ((sectorY + 1) * spritesHighPerSector * tileSize);
+			int cornerFourY = sectorY * spritesHighPerSector * tileSize;
 			
 			int sectorWidth = spritesWidePerSector * tileSize;
 			int sectorHeight = spritesHighPerSector * tileSize;
 			
-			Rectangle toCheck = new Rectangle(x, y, sectorWidth, sectorHeight);
+			Rectangle toCheck = new Rectangle(cornerFourX, cornerFourY, sectorWidth, sectorHeight);
 			boolean overlaps = boundingBox.intersects(toCheck);
 			if(overlaps == false) {
 				continue;
@@ -489,21 +493,21 @@ class Level extends JComponent {
 	
 	private class Sector {
 		
-		protected int cornerX, cornerY;
+		protected int x, y;
 		protected List<Sprite> allSprites;
 		
-		public Sector(int inCornerX, int inCornerY) {
-			cornerX = inCornerX;
-			cornerY = inCornerY;
+		public Sector(int inX, int inY) {
+			x = inX;
+			y = inY;
 			allSprites = new ArrayList<>();
 		}
 		
-		public int getCornerX() {
-			return cornerX;
+		public int getX() {
+			return x;
 		}
 		
-		public int getCornerY() {
-			return cornerY;
+		public int getY() {
+			return y;
 		}
 		
 		public void addSprite(Sprite toAdd) {
@@ -518,13 +522,13 @@ class Level extends JComponent {
 		public boolean equals(Object other) {
 			Sector otherSector = (Sector) other;
 			
-			int otherX = otherSector.getCornerX();
-			if(cornerX != otherX) {
+			int otherX = otherSector.getX();
+			if(x != otherX) {
 				return false;
 			}
 			
-			int otherY = otherSector.getCornerY();
-			if(cornerY != otherY) {
+			int otherY = otherSector.getY();
+			if(y != otherY) {
 				return false;
 			}
 			

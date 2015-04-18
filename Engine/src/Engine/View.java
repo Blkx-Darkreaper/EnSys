@@ -28,11 +28,11 @@ public class View extends JPanel {
 	private static final long serialVersionUID = 1L;
 	protected static int viewId = 1;
 	protected int centerX, centerY;
+	protected double viewScale = 1.0;
 	protected Rectangle viewBox;
 	protected BufferedImage currentImage;
 	protected boolean imageUpdated;
 	protected Environment parentEnvironment;
-	protected double viewScale = 1.0;
 	protected boolean visible = true;
 	protected Rectangle selectionBox;
 	protected Color selectionColour;
@@ -104,6 +104,10 @@ public class View extends JPanel {
 		return (int) (height / viewScale);
 	}
 	
+	public double getScale() {
+		return viewScale;
+	}
+	
 	public BufferedImage getCurrentImage() {
 		return currentImage;
 	}
@@ -134,8 +138,8 @@ public class View extends JPanel {
 			return;
 		}
 		
-		int absCornerX = inSelection.x;
-		int absCornerY = inSelection.y;
+		int absCornerFourX = inSelection.x;
+		int absCornerFourY = inSelection.y;
 		
 		int width = inSelection.width;
 		int height = inSelection.height;
@@ -143,33 +147,19 @@ public class View extends JPanel {
 		int viewCenterX = getCenterX();
 		int viewCenterY = getCenterY();
 		
-		int viewAbsWidth = getWidth();
-		int viewAbsHeight = getHeight();
-		
-		int viewScaledWidth = getScaledWidth();
-		int viewScaledHeight = getScaledHeight();
-		
 		int viewAbsCenterX = getAbsCenterX();
 		int viewAbsCenterY = getAbsCenterY();
 		
 		int offsetX = -8;
 		int offsetY = -33;
 		
-		int viewCornerX = viewCenterX - viewScaledWidth / 2;
-		int viewCornerY = viewCenterY + viewScaledHeight / 2;
-		
-		int viewAbsCornerX = viewAbsCenterX - viewAbsWidth / 2;
-		int viewAbsCornerY = viewAbsCenterY - viewAbsHeight / 2;
-		
-		//int levelHeight = parentEnvironment.getLevelHeight();
-		
-		int cornerX = (int) ((absCornerX + offsetX - viewAbsCornerX) / viewScale) + viewCornerX;
-		int cornerY = viewCornerY - (int) ((absCornerY + offsetY - viewAbsCornerY) / viewScale);	//invert y
+		int cornerFourX = (int) ((absCornerFourX + offsetX - viewAbsCenterX) / viewScale) + viewCenterX;
+		int cornerFourY = viewCenterY - (int) ((absCornerFourY + offsetY - viewAbsCenterY) / viewScale);	//invert y
 		
 		width = (int) (inSelection.width / viewScale);
 		height = (int) (inSelection.height / viewScale);
 		
-		selectionBox = new Rectangle(cornerX, cornerY, width, height);
+		selectionBox = new Rectangle(cornerFourX, cornerFourY, width, height);
 	}
 	
 	public Entity getMaster() {
@@ -233,13 +223,13 @@ public class View extends JPanel {
 	}
 	
 	public boolean checkWithinView(Sprite toCheck) {
-		int scaledWidth = toCheck.getScaledWidth();
-		int scaledHeight = toCheck.getScaledHeight();
-
-		int centerX = toCheck.getCenterX();
-		int centerY = toCheck.getCenterY();
-
 		if(debug == true) {
+			int scaledWidth = toCheck.getScaledWidth();
+			int scaledHeight = toCheck.getScaledHeight();
+
+			int centerX = toCheck.getCenterX();
+			int centerY = toCheck.getCenterY();
+			
 			Graphics2D g2d = (Graphics2D) currentImage.getGraphics();
 			
 			int viewCenterX = getCenterX();
@@ -274,16 +264,34 @@ public class View extends JPanel {
 		int centerX = toCheck.getCenterX();
 		int centerY = toCheck.getCenterY();
 		
-		int worldHeight = parentEnvironment.getLevelHeight();
+		//int worldHeight = parentEnvironment.getLevelHeight();
 		
-		int cornerX = centerX - scaledWidth / 2;
-		int cornerY = worldHeight - (centerY + scaledHeight / 2);	//invert y
+		int cornerFourX = centerX - scaledWidth / 2;
+		int cornerFourY = centerY - scaledHeight / 2;
+		//int corner4Y = worldHeight - (centerY + scaledHeight / 2);	//invert y
 		
-		Rectangle boxToCheck = new Rectangle(cornerX, cornerY, scaledWidth, scaledHeight);
+		Rectangle boxToCheck = new Rectangle(cornerFourX, cornerFourY, scaledWidth, scaledHeight);
 		
 		boolean inBounds = boxToCheck.intersects(bounds);
 		
 		return inBounds;
+	}
+	
+	private boolean checkIsAtPoint(Sprite toCheck, Point pointToCheck) {
+		int scaledWidth = toCheck.getScaledWidth();
+		int scaledHeight = toCheck.getScaledHeight();
+
+		int centerX = toCheck.getCenterX();
+		int centerY = toCheck.getCenterY();
+
+		int cornerFourX = centerX - scaledWidth / 2;
+		int cornerFourY = centerY - scaledHeight / 2;
+
+		Rectangle boxToCheck = new Rectangle(cornerFourX, cornerFourY, scaledWidth, scaledHeight);
+		
+		boolean isAtPoint = boxToCheck.contains(pointToCheck);
+		
+		return isAtPoint;
 	}
 	
 	public void drawSprite(Graphics2D g2d, Sprite toDraw) {
@@ -601,18 +609,19 @@ public class View extends JPanel {
 	}
 
 	private void updateViewBox() {
-		int centerX = getCenterX();
-		int centerY = getCenterY();
+		int viewCenterX = getCenterX();
+		int viewCenterY = getCenterY();
 		
 		int scaledWidth = getScaledWidth();
 		int scaledHeight = getScaledHeight();
 		
-		int levelHeight = parentEnvironment.getLevelHeight();
+		//int levelHeight = parentEnvironment.getLevelHeight();
 		
-		int positionX = centerX - scaledWidth / 2;
-		int positionY = levelHeight - (centerY + scaledHeight / 2);	//invert y
+		int viewCornerFourX = viewCenterX - scaledWidth / 2;
+		//int viewCorner4Y = levelHeight - (viewCenterY + scaledHeight / 2);	//invert y
+		int viewCornerFourY = viewCenterY - scaledHeight / 2;
 		
-		viewBox = new Rectangle(positionX, positionY, scaledWidth, scaledHeight);
+		viewBox = new Rectangle(viewCornerFourX, viewCornerFourY, scaledWidth, scaledHeight);
 		currentImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
 	}
 
@@ -666,8 +675,8 @@ public class View extends JPanel {
 			return;
 		}
 		
-		int cornerX = selectionBox.x;
-		int cornerY = selectionBox.y;
+		int cornerFourX = selectionBox.x;
+		int cornerFourY = selectionBox.y;
 
 		int width = selectionBox.width;
 		int height = selectionBox.height;
@@ -680,14 +689,24 @@ public class View extends JPanel {
 		
 		//int levelHeight = parentEnvironment.getLevelHeight();
 		
-		int cornerXRelativeToViewCorner = (int) viewScale * (cornerX - (viewCenterX - viewWidth / 2));
-		int cornerYRelativeToViewCorner = (int) viewScale * ((viewCenterY + viewHeight / 2) - cornerY);
+		//int cornerXRelativeToViewCorner = (int) viewScale * (cornerFourX - (viewCenterX - viewWidth / 2));
+		//int cornerYRelativeToViewCorner = (int) viewScale * ((viewCenterY + viewHeight / 2) - cornerFourY);
+		int cornerXRelativeToViewCorner = cornerFourX - (viewCenterX - viewWidth / 2);
+		int cornerYRelativeToViewCorner = (viewCenterY + viewHeight / 2) - (cornerFourY + height);
 		
 		g2d.setColor(selectionColour);
 		g2d.drawRect(cornerXRelativeToViewCorner, cornerYRelativeToViewCorner, width, height);
 	}
 	
-	public List<Entity> getSelectedEntities() {
+	public void selectEntity(Entity toSelect) {
+		if(toSelect == null) {
+			return;
+		}
+		
+		toSelect.setIsSelected(true);
+	}
+	
+	public List<Entity> getEntitiesInSelection() {
 		List<Entity> selectedEntities = new ArrayList<>();
 		
 		List<Entity> allEntities = parentEnvironment.getAllEntities();
@@ -703,19 +722,65 @@ public class View extends JPanel {
 			}
 			
 			selectedEntities.add(toCheck);
-			toCheck.setIsSelected(true);
+			selectEntity(toCheck);
 		}
 		
 		return selectedEntities;
 	}
-	
+
+	public Entity getEntityAtPoint(Point absPoint) {
+		int absX = absPoint.x;
+		int absY = absPoint.y;
+		
+		int viewAbsCenterX = getAbsCenterX();
+		int viewAbsCenterY = getAbsCenterY();
+		
+		int viewCenterX = getCenterX();
+		int viewCenterY = getCenterY();
+		
+		int viewScale = (int) getScale();
+		
+		int offsetX = -8;
+		int offsetY = -33;
+		
+		int x = (absX + offsetX - viewAbsCenterX) / viewScale + viewCenterX;
+		int y = viewCenterY - (absY + offsetY - viewAbsCenterY) / viewScale;	//invert y
+		
+		Point pointRelativeToViewCenter = new Point(x, y);
+		
+		List<Entity> allEntities = parentEnvironment.getAllEntities();
+		for(Entity toCheck : allEntities) {
+			boolean isSelectable = toCheck.getIsSelectable();
+			if(isSelectable == false) {
+				continue;
+			}
+			
+			boolean atPoint = checkIsAtPoint(toCheck, pointRelativeToViewCenter);
+			if(atPoint == false) {
+				continue;
+			}
+			
+			return toCheck;
+		}
+		return null;
+	}
+
 	public void deselect(List<Entity> selectedEntities) {
     	//setSelectionBox(null);
     	if(selectedEntities == null) {
     		return;
     	}
     	
+    	int totalEntities = selectedEntities.size();
+    	if(totalEntities < 1) {
+    		return;
+    	}
+    	
 		for(Entity selected : selectedEntities) {
+			if(selected == null) {
+				continue;
+			}
+			
 			selected.setIsSelected(false);
 		}
 	}

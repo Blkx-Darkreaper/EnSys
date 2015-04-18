@@ -1,9 +1,10 @@
 package Engine;
-
 import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
 
-public class Sprite {
-	
+public class Sprite extends JComponent {
+
+	private static final long serialVersionUID = 1L;
 	protected int centerX, centerY;
 	protected double scale = 1;
 	protected BufferedImage currentImage;
@@ -11,9 +12,19 @@ public class Sprite {
 	public Sprite() {}
 	
 	public Sprite(int inCenterX, int inCenterY, BufferedImage inImage) {
+		super();
 		centerX = inCenterX;
 		centerY = inCenterY;
+
 		currentImage = inImage;
+		
+		int width = getScaledWidth();
+		int height = getScaledHeight();
+		setSize(width, height);
+		
+		int cornerFourX = inCenterX - width / 2;
+		int cornerFourY = inCenterY - height / 2;
+		setLocation(cornerFourX, cornerFourY);
 	}
 	
 	public int getCenterX() {

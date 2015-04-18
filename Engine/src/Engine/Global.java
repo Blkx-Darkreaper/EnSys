@@ -526,7 +526,7 @@ public class Global {
     public static class MouseSelectionListener extends MouseAdapter {
     	protected Point startPoint;
     	protected Point endPoint;
-    	protected View parent;
+    	protected View parentView;
     	protected Rectangle absSelectionBox = null;
     	protected List<Entity> selectedEntities = null;
         protected boolean selectionActive = false;
@@ -537,17 +537,17 @@ public class Global {
         }
         
         public void setParent(View inParent) {
-        	parent = inParent;
+        	parentView = inParent;
         }
     	
     	public MouseSelectionListener(View inParent) {
     		super();
-    		parent = inParent;
+    		parentView = inParent;
 		}
     	
     	@Override
     	public void mousePressed(MouseEvent event) {
-        	if(parent == null) {
+        	if(parentView == null) {
         		return;
         	}
         	if(listenerDisabled == true) {
@@ -555,7 +555,7 @@ public class Global {
         	}
         	
         	Point click = event.getPoint();
-            boolean clickInBounds = parent.getBounds().contains(click);
+            boolean clickInBounds = parentView.getBounds().contains(click);
             if(clickInBounds == false) {
             	selectionActive = false;
             	return;
@@ -571,9 +571,9 @@ public class Global {
             
             boolean clickInCurrentSelection = absSelectionBox.contains(click);
             if(clickInCurrentSelection == false) {
-            	parent.deselect(selectedEntities);
+            	parentView.deselect(selectedEntities);
             	absSelectionBox = null;
-            	parent.setSelectionBox(absSelectionBox);
+            	parentView.setSelectionBox(absSelectionBox);
             }
     		//endPoint = event.getPoint();
     		//Rectangle selectionBox = getSelectionBox(startPoint, endPoint);
@@ -591,18 +591,26 @@ public class Global {
         	
     		Point currentPoint = event.getPoint();
 
-    		absSelectionBox = getSelectionBox(startPoint, currentPoint);
-    		parent.setSelectionBox(absSelectionBox);
-    		parent.deselect(selectedEntities);
-    		selectedEntities = parent.getSelectedEntities();
+    		absSelectionBox = getSelectionBox(startPoint, currentPoint);    		
+    		parentView.setSelectionBox(absSelectionBox);
+    		parentView.deselect(selectedEntities);
+    		selectedEntities = parentView.getEntitiesInSelection();
     		
+    		if(absSelectionBox == null) {
+    			Entity selectedEntity = parentView.getEntityAtPoint(currentPoint);
+    			parentView.selectEntity(selectedEntity);
+    			selectedEntities.add(selectedEntity);
+    		}
+
     		startPoint = null;
     		endPoint = null;
+    		
+    		parentView.setSelectionBox(null);
     	}
 
     	@Override
     	public void mouseDragged(MouseEvent event) {
-        	if(parent == null) {
+        	if(parentView == null) {
         		return;
         	}
         	if(listenerDisabled == true) {
@@ -618,9 +626,9 @@ public class Global {
     		endPoint = event.getPoint();
     		
     		absSelectionBox = getSelectionBox(startPoint, endPoint);
-    		parent.setSelectionBox(absSelectionBox);
-    		parent.deselect(selectedEntities);
-    		selectedEntities = parent.getSelectedEntities();
+    		parentView.setSelectionBox(absSelectionBox);
+    		parentView.deselect(selectedEntities);
+    		selectedEntities = parentView.getEntitiesInSelection();
     	}
     	
     	public Rectangle getSelectionBox(Point startPoint, Point endPoint) {
@@ -630,8 +638,8 @@ public class Global {
     		int endX = endPoint.x;
     		int endY = endPoint.y;
     		
-    		int width = endX - startX;
-    		int height = endY - startY;
+    		int width = Math.abs(endX - startX);
+    		int height = Math.abs(endY - startY);
     		
     		if(width == 0) {
     			return null;
@@ -640,20 +648,11 @@ public class Global {
     			return null;
     		}
     		
-    		int cornerX = startX;
-    		int cornerY = startY;
+    		// start at bottom left corner
+    		int cornerFourX = Math.min(startX, endX);
+    		int cornerFourY = Math.max(startY, endY);
     		
-    		if(width < 0) {
-    			cornerX = endX;
-    			width = Math.abs(width);
-    		}
-    		
-    		if(height < 0) {
-    			cornerY = endY;
-    			height = Math.abs(height);
-    		}
-    		
-    		Rectangle selectionBox = new Rectangle(cornerX, cornerY, width, height);
+    		Rectangle selectionBox = new Rectangle(cornerFourX, cornerFourY, width, height);
     		
     		return selectionBox;
     	}

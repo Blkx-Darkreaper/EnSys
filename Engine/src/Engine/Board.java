@@ -5,9 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Logger;
-
 import static Engine.Global.*;
-
 import javax.swing.Action;
 import javax.swing.JFrame;
 
@@ -82,7 +80,7 @@ public class Board extends JFrame {
 		
 		MediaClip music = new MediaClip("background", "", "", "wav", true);
 		MediaClip sound = new MediaClip("sound", "", "", "wav", false);
-		music.play();
+		//music.play();
 /*		sound.play();
 		try {
 			Thread.sleep(8000);
