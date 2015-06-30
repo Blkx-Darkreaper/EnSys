@@ -1,0 +1,122 @@
+.page-container {
+	background-color: #7cd4ff;
+	width: 900px;
+	margin: 20px auto;
+	margin-top: 0px;
+	margin-bottom: 20px;
+	border: solid 1px rgb(150,150,150);
+	font-size: 1.0em;
+	height: 1325px;
+}
+.page-container span {
+	font-size: 1.2em;
+}
+.page-container h1 {
+	margin: 15px 0 15px 0;
+	text-align: center;
+	color: rgb(180,60,60);
+	text-decoration:underline;
+}
+.page-container h2 {
+	margin: 0 0 5px 20px;
+	color: rgb(180,60,60);
+	text-decoration:underline;
+}
+.page-container p {
+	margin: 0 15px 5px 20px;
+
+}
+.left-col {
+	float: left;
+	width: 400px;
+	margin: 20px 0 0 20px;
+}
+.right-col {
+	float: right;
+	width: 400px;
+	margin: 20px 20px 0 0;
+}
+.log-in {
+	border: 1px solid black;
+	border-radius: 3px;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+}
+.feature-box {
+	padding: 15px 0;
+	width: 400px;
+	margin-top: 20px;
+	background-color: #fff; 
+	border: 3px solid #000000;
+	border-radius: 10px;
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+	text-align: center;
+}
+nav	{ 
+	width: 900px;
+	height: 60px;
+	padding: 10px 0 0 0;
+	margin: 0 0 0 25px;
+}
+span.tab { 
+	padding: 0 25px;
+}
+
+span.mini-tab { 
+	padding: 0 4px;
+}
+img.border { 
+	border: 3px black solid;
+}
+.inventory { 
+	float: left;
+	width: 198px;
+	height: 1025px;
+	border: 3px solid black;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+.stats-bar { 
+	border: 3px solid black;
+	height: 30px;
+}
+.center-page { 
+	margin-left: 198px;
+	width: 697px;
+	height: 1025px;
+	border: 3px solid black;
+	border-radius: 3px;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+}
+.map { 
+	position:absolute;
+	margin-top: -9px;
+}
+.building-report td {
+	width: 100px;
+}
+.inv { 
+	text-align: center;
+    font-weight: bold;
+	font-size: 150%;
+	text-decoration:underline;
+}
+input[type="number"] {
+	width:50px;
+}
+#submitbid {
+    width: 7em;  height: 2em;
+}
+#cell-spacing td {
+	padding-right: 10px;
+}
+.center-cell td {
+	text-align: center;
+}
+.log-out { 
+	width: 130px;
+	margin: auto;
+}
