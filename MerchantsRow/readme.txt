@@ -1,1 +1,1 @@
-Created for Comp199 by Thomas Protheroe, Michelle Stafford, and Nicolaj Bunting
+Created for Comp199 by Thomas Protheroe, Michelle Stafford, Nicolaj Bunting, and Jordan Haynes
