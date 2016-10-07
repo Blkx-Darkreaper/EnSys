@@ -11,3 +11,4 @@ C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.dll
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.xml
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.DisplayForm.resources
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.MapPropertiesForm.resources

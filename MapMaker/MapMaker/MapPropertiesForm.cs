@@ -10,27 +10,27 @@ using System.Windows.Forms;
 
 namespace MapMaker
 {
-    public partial class NewFileForm : Form
+    public partial class MapPropertiesForm : Form
     {
         public Size MapSize { get; protected set; }
         public string TilesetFilename { get; protected set; }
+        public string Author { get; protected set; }
         protected int tileLength { get; set; }
 
-        public NewFileForm(int tileLength)
+        public MapPropertiesForm(Size mapSize, string tilesetFilename, int tileLength, string dateCreated)
         {
             InitializeComponent();
-            this.TilesetNameLabel.Text = string.Empty;
-
-            int initWidth = (int)this.MapWidth.Value;
-            int initHeight = (int)this.MapWidth.Value;
-            this.MapSize = new Size(initWidth, initHeight);
-            this.TilesetFilename = null;
+            this.MapSize = mapSize;
+            this.TilesetFilename = tilesetFilename;
             this.tileLength = tileLength;
-            this.MapWidth.Minimum = tileLength;
-            this.MapHeight.Minimum = tileLength;
+
+            MapWidth.Value = mapSize.Width;
+            MapHeight.Value = mapSize.Height;
+            TilesetNameLabel.Text = tilesetFilename;
+            DateDisplay.Text = dateCreated;
         }
 
-        protected void NewFileDone_Click(object sender, EventArgs e)
+        protected void SaveButton_Click(object sender, EventArgs e)
         {
             if (TilesetFilename == null)
             {
@@ -43,10 +43,12 @@ namespace MapMaker
 
             this.MapSize = new Size(width, height);
 
+            this.Author = AuthorInput.Text;
+
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
         }
 
-        protected void NewFileCancelButton_Click(object sender, EventArgs e)
+        protected void CancelButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
         }
@@ -121,7 +123,7 @@ namespace MapMaker
             this.MapSize = new Size(width, height);
         }
 
-        private void LoadTilesetButton_Click(object sender, EventArgs e)
+        protected void LoadTilesetButton_Click(object sender, EventArgs e)
         {
             // Get the Filename of the selected file
             OpenFileDialog dialog = Program.GetImageOpenDialog();

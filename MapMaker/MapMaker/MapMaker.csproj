@@ -58,6 +58,12 @@
     <Compile Include="DrawState.cs" />
     <Compile Include="GridHistory.cs" />
     <Compile Include="Grid.cs" />
+    <Compile Include="MapPropertiesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapPropertiesForm.Designer.cs">
+      <DependentUpon>MapPropertiesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MiniMap.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -84,6 +90,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MapMakerForm.resx">
       <DependentUpon>MapMakerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapPropertiesForm.resx">
+      <DependentUpon>MapPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewFileForm.resx">
       <DependentUpon>NewFileForm.cs</DependentUpon>

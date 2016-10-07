@@ -17,12 +17,13 @@ namespace MapMaker
         public DisplayForm()
         {
             InitializeComponent();
+
+            ResolutionDdl.SelectedItem = ResolutionDdl.Items[0];
         }
 
         protected void SaveButton_Click(object sender, EventArgs e)
         {
-            string selectedRes = ResolutionDdl.Text;
-            //string selectedRes = ResolutionDdl.GetItemText(ResolutionDdl.SelectedValue);
+            string selectedRes = ResolutionDdl.GetItemText(ResolutionDdl.SelectedItem);
             string widthStr = selectedRes.Split('x')[0].Trim();
             int width = (int)Convert.ToInt32(widthStr);
 

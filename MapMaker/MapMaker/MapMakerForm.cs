@@ -431,6 +431,7 @@ namespace MapMaker
             MapDisplay.Size = mapSize;
             Program.BuildMap(mapSize);
 
+            EnableMapOptions();
             ResetView();
             UpdateDisplay();
             timer.Start();
@@ -451,6 +452,7 @@ namespace MapMaker
             Init();
 
             Program.LoadMapFile();
+            EnableMapOptions();
             ResetView();
             UpdateDisplay();
             timer.Start();
@@ -467,6 +469,21 @@ namespace MapMaker
         {
             MapDisplay.Image = null;
             Program.Init(tileLength, tilesetDisplayWidth);
+        }
+
+        protected void EnableMapOptions()
+        {
+            saveToolStripMenuItem.Enabled = true;
+            saveAsToolStripMenuItem.Enabled = true;
+
+            SaveFileButton.Enabled = true;
+
+            sectorsToolStripMenuItem.Enabled = true;
+            constructionToolStripMenuItem.Enabled = true;
+            drivableToolStripMenuItem.Enabled = true;
+            flyableToolStripMenuItem.Enabled = true;
+
+            mapToolStripMenuItem.Enabled = true;
         }
 
         protected void ResetView()
@@ -493,6 +510,25 @@ namespace MapMaker
         protected void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        protected void MapMakerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            bool unsavedChanges = Program.HasUnsavedChanges;
+            if (unsavedChanges == true)
+            {
+                DialogResult result = MessageBox.Show("You have unsaved changes. Do you still want to quit?",
+                       "Strikeforce Map Maker",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    return;
+                }
+
+                e.Cancel = true;
+            }
         }
 
         protected void displayToolStripMenuItem_Click(object sender, EventArgs e)
@@ -559,15 +595,25 @@ namespace MapMaker
 
         protected void mapToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Get the Filename of the selected file
-            OpenFileDialog dialog = Program.GetImageOpenDialog();
-            string filename = Program.GetFilenameToOpen(dialog);
-            if (filename == null)
+            MapPropertiesForm mapPropertiesForm = Program.GetMapProperties();
+            if (mapPropertiesForm == null)
             {
                 return;
             }
 
-            Program.LoadTilesetImageFromFile(filename);
+            Program.Author = mapPropertiesForm.Author;
+
+            string filename = mapPropertiesForm.TilesetFilename;
+            int tileLength = (int)TileLengthControl.Value;
+            int tilesetDisplayWidth = TilesetDisplay.Width;
+
+            Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
+
+            Size mapSize = mapPropertiesForm.MapSize;
+            MapDisplay.Size = mapSize;
+
+            Program.ResizeMap(mapSize.Width, mapSize.Height);
+            Program.InvalidateMap();
 
             UpdateDisplay();
         }

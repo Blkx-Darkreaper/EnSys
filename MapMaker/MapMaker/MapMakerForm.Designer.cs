@@ -104,35 +104,37 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
+            this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
+            this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -182,6 +184,7 @@
             // 
             // sectorsToolStripMenuItem
             // 
+            this.sectorsToolStripMenuItem.Enabled = false;
             this.sectorsToolStripMenuItem.Name = "sectorsToolStripMenuItem";
             this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.sectorsToolStripMenuItem.Text = "Sectors";
@@ -189,6 +192,7 @@
             // 
             // constructionToolStripMenuItem
             // 
+            this.constructionToolStripMenuItem.Enabled = false;
             this.constructionToolStripMenuItem.Name = "constructionToolStripMenuItem";
             this.constructionToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.constructionToolStripMenuItem.Text = "Constructable";
@@ -196,6 +200,7 @@
             // 
             // drivableToolStripMenuItem
             // 
+            this.drivableToolStripMenuItem.Enabled = false;
             this.drivableToolStripMenuItem.Name = "drivableToolStripMenuItem";
             this.drivableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.drivableToolStripMenuItem.Text = "Drivable";
@@ -203,6 +208,7 @@
             // 
             // flyableToolStripMenuItem
             // 
+            this.flyableToolStripMenuItem.Enabled = false;
             this.flyableToolStripMenuItem.Name = "flyableToolStripMenuItem";
             this.flyableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.flyableToolStripMenuItem.Text = "Flyable";
@@ -226,6 +232,7 @@
             // 
             // mapToolStripMenuItem
             // 
+            this.mapToolStripMenuItem.Enabled = false;
             this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
             this.mapToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.mapToolStripMenuItem.Text = "Map Properties";
@@ -317,6 +324,7 @@
             // 
             // SaveFileButton
             // 
+            this.SaveFileButton.Enabled = false;
             this.SaveFileButton.Location = new System.Drawing.Point(94, 6);
             this.SaveFileButton.Name = "SaveFileButton";
             this.SaveFileButton.Size = new System.Drawing.Size(44, 23);
@@ -467,7 +475,8 @@
             this.MainMenuStrip = this.MainMenu;
             this.Name = "MapMakerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MapMaker";
+            this.Text = "Strikeforce Map Maker";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MapMakerForm_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MapMakerForm_KeyDown);
             this.Resize += new System.EventHandler(this.MapMaker_Resize);
             this.MainMenu.ResumeLayout(false);

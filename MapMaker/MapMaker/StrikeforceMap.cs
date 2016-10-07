@@ -22,8 +22,8 @@ namespace MapMaker
         public List<Grid> AllMapGrids { get; set; }
         public List<Checkpoint> AllCheckpoints { get; set; }
 
-        //public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<GridHistory> allMapGridHistories) 
-        //    : this(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGridHistories.Cast<Grid>().ToList()) { }
+        //public StrikeforceMap(string Author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<GridHistory> allMapGridHistories) 
+        //    : this(Author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGridHistories.Cast<Grid>().ToList()) { }
 
         [JsonConstructor]
         public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<Grid> allMapGrids, List<Checkpoint> allCheckpoints)

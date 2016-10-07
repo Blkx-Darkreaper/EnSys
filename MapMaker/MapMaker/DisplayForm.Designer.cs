@@ -87,7 +87,6 @@
             this.AcceptButton = this.SaveButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CancelButton;
             this.ClientSize = new System.Drawing.Size(284, 154);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.SaveButton);
@@ -95,7 +94,7 @@
             this.Controls.Add(this.ResolutionDdl);
             this.Name = "DisplayForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "DisplayForm";
+            this.Text = "Display Options";
             this.ResumeLayout(false);
             this.PerformLayout();
 

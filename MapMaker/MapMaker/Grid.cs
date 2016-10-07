@@ -57,14 +57,33 @@ namespace MapMaker
             this.Zone = zone;
         }
 
+        //public bool Equals(Grid other)
+        //{
+        //    if (other == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    return Id.Equals(other.Id);
+        //}
+
         public bool Equals(Grid other)
         {
-            if (other == null)
+            int x = this.Corner.X;
+            int otherX = other.Corner.X;
+            if (x != otherX)
             {
                 return false;
             }
 
-            return Id.Equals(other.Id);
+            int y = this.Corner.Y;
+            int otherY = other.Corner.Y;
+            if (y != otherY)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public int CompareTo(Grid other)
@@ -72,7 +91,7 @@ namespace MapMaker
             int x = Corner.X;
             int otherX = other.Corner.X;
 
-            int comparison = x.CompareTo(otherX);
+            int comparison = x - otherX;
             if (comparison != 0)
             {
                 return comparison;
@@ -81,7 +100,7 @@ namespace MapMaker
             int y = Corner.Y;
             int otherY = other.Corner.Y;
 
-            comparison = y.CompareTo(otherY);
+            comparison = y - otherY;
             return comparison;
         }
 

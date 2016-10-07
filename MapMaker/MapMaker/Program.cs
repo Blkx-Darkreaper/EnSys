@@ -33,7 +33,7 @@ namespace MapMaker
         private static string currentSaveFilename { get; set; }
         private const string DEFAULT_FILENAME = "Map{0}.sfm";
         private const string MAP_FILTER = "Map Files(*.sfm)|*.sfm";
-        private static string author { get; set; }
+        public static string Author { get; set; }
         private static DateTime dateCreated { get; set; }
         private static List<Tile> tileset;
         private static Size tilesetDisplaySize { get; set; }
@@ -52,6 +52,7 @@ namespace MapMaker
         public static bool HasMapChanged { get; private set; }
         public static bool HasOverlayChanged { get; private set; }
         public static bool HasTerrainChanged { get; private set; }
+        public static bool HasUnsavedChanges { get; private set; }
         public static Dictionary<int, Checkpoint> AllCheckpoints { get; set; }
         public static Dictionary<int, Sector> AllSectors { get; set; }
         public static int MaxSectors { get { return AllSectors.Count + 1; } }
@@ -72,7 +73,7 @@ namespace MapMaker
             tilesetFilename = string.Empty;
             tilesetImage = null;
             currentSaveFilename = null;
-            author = string.Empty;
+            Author = string.Empty;
             dateCreated = DateTime.Now;
             tileset = new List<Tile>();
             SelectionColour = Color.Blue;
@@ -82,6 +83,7 @@ namespace MapMaker
             HasMapChanged = false;
             HasOverlayChanged = false;
             HasTerrainChanged = false;
+            HasUnsavedChanges = false;
             /* Non memento pattern
             allMapGridHistories = new List<GridHistory>();
             allUpdatedMapGridHistories = new Queue<GridHistory>();
@@ -359,6 +361,18 @@ namespace MapMaker
             return displayForm;
         }
 
+        public static MapPropertiesForm GetMapProperties()
+        {
+            MapPropertiesForm mapPropertiesForm = new MapPropertiesForm(mapSize, tilesetFilename, TileLength, dateCreated.ToString());
+            mapPropertiesForm.ShowDialog();
+            if (mapPropertiesForm.DialogResult != System.Windows.Forms.DialogResult.OK)
+            {
+                return null;
+            }
+
+            return mapPropertiesForm;
+        }
+
         public static void LoadTileset(string filename, int tileLength, int tilesetDisplayWidth)
         {
             Program.TileLength = tileLength;
@@ -451,7 +465,75 @@ namespace MapMaker
                 }
             }
 
-            Program.TerrainHasChanged();
+            AllMapGrids.Sort();
+
+            Program.MapHasChanged();
+        }
+
+        public static void ResizeMap(int width, int height)
+        {
+            Tile defaultTile = tileset[0];
+
+            int oldWidth = Program.mapSize.Width;
+            int oldHeight = Program.mapSize.Height;
+
+            int deltaWidth = width - oldWidth;
+            int deltaHeight = height - oldHeight;
+
+            Program.mapSize = new Size(width, height);
+
+            // Set the inital nextState
+            Program.InitDrawState();
+
+            int maxWidth = Math.Max(width, oldWidth);
+            int maxHeight = Math.Max(height, oldHeight);
+
+            for (int y = 0; y < maxHeight; y += TileLength)
+            {
+                for (int x = 0; x < maxWidth; x += TileLength)
+                {
+                    Point corner = new Point(x, y);
+                    Grid dummy = new Grid(corner, defaultTile);
+
+                    //int tilesWide = width / TileLength;
+                    //int index = (x / TileLength) + (y / TileLength) * tilesWide;
+
+                    bool gridAlreadyAdded = AllMapGrids.Contains(dummy);
+
+                    Grid grid;
+                    if (gridAlreadyAdded == true)
+                    {
+                        grid = AllMapGrids.Find(g => g.Equals(dummy));
+                    }
+                    else
+                    {
+                        grid = dummy;
+                    }
+
+                    if (x >= width)
+                    {
+                        AllMapGrids.Remove(grid);
+                        continue;
+                    }
+
+                    if (y >= height)
+                    {
+                        AllMapGrids.Remove(grid);
+                        continue;
+                    }
+
+                    if (gridAlreadyAdded == true)
+                    {
+                        continue;
+                    }
+
+                    AllMapGrids.Add(grid);
+                }
+            }
+
+            AllMapGrids.Sort();
+
+            Program.MapHasChanged();
         }
 
         private static void InitDrawState()
@@ -543,7 +625,7 @@ namespace MapMaker
 
             StrikeforceMap map = Program.DeserializeMap(json);
 
-            Program.author = map.Author;
+            Program.Author = map.Author;
             Program.dateCreated = map.DateCreated;
             Program.tilesetFilename = map.TilesetFilename;
             Program.TileLength = map.TileLength;
@@ -577,6 +659,7 @@ namespace MapMaker
             Program.BuildTileset(TileLength, TilesetDisplayWidth);
 
             Program.currentSaveFilename = filename;
+            Program.HasUnsavedChanges = false;
         }
 
         public static string ReadTextFile(string filename)
@@ -676,14 +759,16 @@ namespace MapMaker
             Program.SaveMapFile(filename);
 
             currentSaveFilename = filename;
+
+            HasUnsavedChanges = false;
         }
 
         private static void SaveMapFile(string filename)
         {
             // Non memento pattern
-            //StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, TileLength, mapSize, allMapGridHistories);
+            //StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, mapSize, allMapGridHistories);
             // Memento pattern
-            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, mapSize, AllMapGrids, AllCheckpoints.Values.ToList());
+            StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, mapSize, AllMapGrids, AllCheckpoints.Values.ToList());
             string json = Program.SerializeMap(map);
 
             WriteTextFile(filename, json);
@@ -740,6 +825,7 @@ namespace MapMaker
         {
             Program.HasOverlayChanged = true;
             Program.HasMapChanged = true;
+            Program.HasUnsavedChanges = true;
         }
 
         public static void OverlayIsUpToDate()
@@ -751,6 +837,7 @@ namespace MapMaker
         {
             Program.HasTerrainChanged = true;
             Program.HasMapChanged = true;
+            Program.HasUnsavedChanges = true;
         }
 
         public static void TerrainIsUpToDate()
@@ -763,6 +850,7 @@ namespace MapMaker
             TerrainHasChanged();
             OverlayHasChanged();
             Program.HasMapChanged = true;
+            Program.HasUnsavedChanges = true;
         }
 
         public static void MapIsUpToDate()
