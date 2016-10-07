@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using MapMaker;
 
@@ -11,11 +12,11 @@ namespace Test
     public class UnitTest
     {
         [TestMethod]
-        public void LoadTileset()
+        public void LoadTileset(int width = 96, int height = 96)
         {
             MapMakerForm app = new MapMakerForm();
 
-            Size mapSize = new Size(96, 96);
+            Size mapSize = new Size(width, height);
             app.MapDisplay.Size = mapSize;
 
             string filename = @"C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\tilea2.png";
@@ -38,6 +39,7 @@ namespace Test
             int tileLength = 32;
             Size mapSize = new Size(96, 96);
             List<Grid> allMapGrids = new List<Grid>();
+            List<Checkpoint> allCheckpoints = new List<Checkpoint>();
 
             Tile grass = new Tile(0, new Point(0, 0));
             Tile cobblestones = new Tile(2, new Point(128, 0));
@@ -62,7 +64,7 @@ namespace Test
 
             int nextSector = Grid.NextSector;
 
-            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGrids);
+            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGrids, allCheckpoints);
 
             string json = Program.SerializeMap(map);
 
@@ -243,6 +245,88 @@ namespace Test
             Assert.IsTrue(honeyDewCopy.R == red);
             Assert.IsTrue(honeyDewCopy.G == green);
             Assert.IsTrue(honeyDewCopy.B == blue);
+        }
+
+        [TestMethod]
+        public void GetNumberFromChar()
+        {
+            char a = 'a';
+            char capA = 'A';
+
+            int numberA = Program.CharToNumber(a);
+
+            int numberCapA = Program.CharToNumber(capA);
+
+            char copyA = Program.NumberToChar(numberA);
+            Assert.IsTrue(Char.ToUpper(a).Equals(copyA));
+
+            char copyCapA = Program.NumberToChar(numberCapA);
+            Assert.IsTrue(capA.Equals(copyCapA));
+        }
+
+        [TestMethod]
+        public void ColourRoulette()
+        {
+            int totalColours = 5;
+            Program.InitColourRoulette(totalColours);
+
+            for (int i = 0; i < totalColours; i++)
+            {
+                int colourIndex = i % Program.ColourRoulette.Count;
+                Color colour = Program.ColourRoulette[colourIndex];
+            }
+        }
+
+        [TestMethod]
+        public void GetSectorShape()
+        {
+            Sector sector = new Sector(0);
+
+            Grid grid;
+            int length = 32;
+
+            grid = new Grid(new Point(0, 0));
+            sector.AddGrid(grid, length);
+
+            grid = new Grid(new Point(32, 0));
+            sector.AddGrid(grid, length);
+
+            grid = new Grid(new Point(0, 32));
+            sector.AddGrid(grid, length);
+
+            grid = new Grid(new Point(64, 32));
+            sector.AddGrid(grid, length);
+
+            grid = new Grid(new Point(64, 0));
+            sector.AddGrid(grid, length);
+
+            GraphicsPath shape = sector.GetShape(1);
+            for (int i = 0; i < shape.PathPoints.Length; i++)
+            {
+                PointF point = shape.PathPoints[i];
+                int type = (int)shape.PathTypes[i];
+            }
+        }
+
+        [TestMethod]
+        public void GetGridsInArea()
+        {
+            LoadTileset(640, 800);
+
+            // 4 x 2
+            Point start = new Point(40, 40);
+            Point end = new Point(136, 80);
+
+            List<Grid> selectedGrids = Program.GetGridsInArea(start, end);
+            Assert.IsTrue(selectedGrids.Count == 8);
+
+            Grid first = selectedGrids[0];
+            Assert.IsTrue(first.Corner.X == 32);
+            Assert.IsTrue(first.Corner.Y == 32);
+
+            Grid last = selectedGrids[selectedGrids.Count - 1];
+            Assert.IsTrue(last.Corner.X == 160);
+            Assert.IsTrue(last.Corner.Y == 64);
         }
     }
 }

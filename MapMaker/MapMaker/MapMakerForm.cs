@@ -55,6 +55,8 @@ namespace MapMaker
 
         protected void MapDisplay_Paint(object sender, PaintEventArgs e)
         {
+            base.OnPaint(e);
+
             bool mapChanged = Program.HasMapChanged;
             if (mapChanged == false)
             {
@@ -94,7 +96,7 @@ namespace MapMaker
             MapDisplay.Size = image.Size;
             MapDisplay.Image = image;
 
-            Program.SetMapIsUpToDate();
+            Program.MapIsUpToDate();
         }
 
         protected void UpdateOverlay(ref Bitmap image)
@@ -126,7 +128,7 @@ namespace MapMaker
                     break;
             }
 
-            Program.SetOverlayIsUpToDate();
+            Program.OverlayIsUpToDate();
         }
 
         private Bitmap GetImageCopy(ref Bitmap original)
@@ -195,7 +197,7 @@ namespace MapMaker
             SetRedoEnabled();
 
             Grid grid = GetGridAtCursor();
-            
+
             switch (selectedOverlay)
             {
                 case (int)Program.Overlays.Sectors:
@@ -279,6 +281,7 @@ namespace MapMaker
         {
             if (e.Modifiers != Keys.Control)
             {
+                SetSector(e.KeyCode);
                 return;
             }
 
@@ -291,6 +294,37 @@ namespace MapMaker
             {
                 Redo();
             }
+        }
+
+        public void SetSector(Keys keyCode)
+        {
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
+            {
+                return;
+            }
+
+            int sectorId = GetLetterKeyNumber(keyCode);
+            if (sectorId == -1)
+            {
+                return;
+            }
+
+            sectorId %= 25;
+
+            Program.SetSelectedGridSector(sectorId);
+        }
+
+        private static int GetLetterKeyNumber(Keys keyCode)
+        {
+            bool isLetter = char.IsLetter((char)keyCode);
+            if (isLetter == false)
+            {
+                return -1;
+            }
+
+            char letter = (char)keyCode;
+            int number = Program.CharToNumber(letter);
+            return number;
         }
 
         protected void Undo()
@@ -461,18 +495,6 @@ namespace MapMaker
             SetWindowSize(code);
         }
 
-        protected void x600ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int code = (int)Resolutions.EightHundredBySixHundred;
-            SetWindowSize(code);
-        }
-
-        protected void x768ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int code = (int)Resolutions.TenTwentyFourBySevenSixtyEight;
-            SetWindowSize(code);
-        }
-
         protected void mapToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Get the Filename of the selected file
@@ -497,14 +519,14 @@ namespace MapMaker
 
         protected void ScaleHalf_Click(object sender, EventArgs e)
         {
-            this.MapScale = 1/2.0;
+            this.MapScale = 1 / 2.0;
             Program.InvalidateMap();
             UpdateMap();
         }
 
         protected void ScaleQuarter_Click(object sender, EventArgs e)
         {
-            this.MapScale = 1/4.0;
+            this.MapScale = 1 / 4.0;
             Program.InvalidateMap();
             UpdateMap();
         }
@@ -593,7 +615,18 @@ namespace MapMaker
 
         protected void AddCheckpointButton_Click(object sender, EventArgs e)
         {
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
 
+            Checkpoint checkpoint = Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+            if (checkpoint == null)
+            {
+                return;
+            }
+
+            MapDisplay.Controls.Add(checkpoint);
+            checkpoint.Invalidate();
         }
     }
 }

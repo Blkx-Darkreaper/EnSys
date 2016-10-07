@@ -20,12 +20,13 @@ namespace MapMaker
         public int NextSector { get; set; }
         public Size MapSize { get; set; }
         public List<Grid> AllMapGrids { get; set; }
+        public List<Checkpoint> AllCheckpoints { get; set; }
 
-        public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<GridHistory> allMapGridHistories) 
-            : this(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGridHistories.Cast<Grid>().ToList()) { }
+        //public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<GridHistory> allMapGridHistories) 
+        //    : this(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGridHistories.Cast<Grid>().ToList()) { }
 
         [JsonConstructor]
-        public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<Grid> allMapGrids)
+        public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, Size mapSize, List<Grid> allMapGrids, List<Checkpoint> allCheckpoints)
         {
             this.Author = author;
             this.DateCreated = dateCreated;
@@ -34,6 +35,7 @@ namespace MapMaker
             Grid.NextSector = nextSector;
             this.MapSize = mapSize;
             this.AllMapGrids = allMapGrids;
+            this.AllCheckpoints = allCheckpoints;
         }
     }
 }

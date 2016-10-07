@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.ComponentModel;
 
 namespace MapMaker
@@ -23,8 +24,9 @@ namespace MapMaker
         public MiniMap()
             : base()
         {
-            miniMap = null;
-            isDragging = false;
+            this.miniMap = null;
+            this.isDragging = false;
+            //this.Cursor = Cursors.Hand;
         }
 
         public virtual void SetImage(ref Bitmap image, Panel mapPanel)
@@ -104,8 +106,7 @@ namespace MapMaker
             Graphics graphics = e.Graphics;
 
             // Minimap border
-            Pen pen = new Pen(new SolidBrush(Color.DarkGray));
-            graphics.DrawRectangle(pen, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
+            graphics.DrawRectangle(Pens.DarkGray, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
 
             if (this.miniMap == null)
             {
@@ -113,12 +114,9 @@ namespace MapMaker
             }
 
             // ViewBox box
-            pen = new Pen(new SolidBrush(Color.Blue));
-            Rectangle bounds = ViewBox;
-            bounds.Width -= 1;
-            bounds.Height -= 1;
-
-            graphics.DrawRectangle(pen, bounds);
+            Pen pen = new Pen(Program.SelectionColour);
+            pen.Alignment = PenAlignment.Inset;
+            graphics.DrawRectangle(pen, ViewBox);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -154,11 +152,13 @@ namespace MapMaker
             bool cursorInsideViewBox = ViewBox.Contains(cursor);
             if (cursorInsideViewBox == true)
             {
-                Cursor.Current = Cursors.NoMove2D;
+                //Cursor.Current = Cursors.NoMove2D;
+                this.Cursor = Cursors.Hand;
             }
             else
             {
-                Cursor.Current = Cursors.Default;
+                //Cursor.Current = Cursors.Default;
+                this.Cursor = Cursors.Default;
             }
         }
 
@@ -174,6 +174,7 @@ namespace MapMaker
             }
 
             Point cursor = this.PointToClient(Cursor.Position);
+            this.Cursor = Cursors.NoMove2D;
 
             int deltaX = cursor.X - previousCursor.X;
             int signX = Program.GetSign(deltaX);

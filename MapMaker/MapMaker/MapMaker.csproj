@@ -57,6 +57,7 @@
     <Compile Include="MiniMap.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Sector.cs" />
     <Compile Include="StrikeforceMap.cs" />
     <Compile Include="MapMakerForm.cs">
       <SubType>Form</SubType>

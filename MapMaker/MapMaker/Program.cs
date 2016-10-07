@@ -25,6 +25,7 @@ namespace MapMaker
         }
 
         public static int TileLength { get; set; }
+        //public static double MapScale { get; set; }
         public static int TilesetDisplayWidth { get; set; }
         private static string tilesetFilename { get; set; }
         private static Bitmap tilesetImage { get; set; }
@@ -36,6 +37,7 @@ namespace MapMaker
         private static DateTime dateCreated { get; set; }
         private static List<Tile> tileset;
         private static Size tilesetDisplaySize { get; set; }
+        public static Color SelectionColour { get; set; }
         private static Tile selectedTile { get; set; }
         private static bool selectedValue { get; set; }
         private static int selectedNumber { get; set; }
@@ -50,11 +52,13 @@ namespace MapMaker
         public static bool HasMapChanged { get; private set; }
         public static bool HasOverlayChanged { get; private set; }
         public static bool HasTerrainChanged { get; private set; }
+        private static Dictionary<int, Checkpoint> allCheckpoints { get; set; }
         private static List<DrawState> allDrawStates { get; set; }
         private static int currentDrawState { get; set; }
+        private static Dictionary<int, Sector> sectors { get; set; }
         public static int MaxSectors { get; set; }
-        private static Grid selectedGrid { get; set; }
-        private static List<Color> colourRoulette { get; set; }
+        public static Grid SelectedGrid { get; private set; }
+        public static List<Color> ColourRoulette { get; private set; }
         public enum Overlays
         {
             None, Construction, Drivable, Flyable, Sectors
@@ -63,6 +67,7 @@ namespace MapMaker
         public static void Init(int tileLength, int tilesetDisplayWidth)
         {
             TileLength = tileLength;
+            //MapScale = 1;
             TilesetDisplayWidth = tilesetDisplayWidth;
             tilesetFilename = string.Empty;
             tilesetImage = null;
@@ -70,7 +75,10 @@ namespace MapMaker
             author = string.Empty;
             dateCreated = DateTime.Now;
             tileset = new List<Tile>();
+            SelectionColour = Color.Blue;
             selectedTile = null;
+            allMapGrids = new List<Grid>();
+            allUpdatedMapGrids = new Queue<Grid>();
             HasMapChanged = false;
             HasOverlayChanged = false;
             HasTerrainChanged = false;
@@ -79,27 +87,27 @@ namespace MapMaker
             allUpdatedMapGridHistories = new Queue<GridHistory>();
             */
             // Memento pattern
-            allMapGrids = new List<Grid>();
-            allUpdatedMapGrids = new Queue<Grid>();
+            allCheckpoints = new Dictionary<int, Checkpoint>();
             allDrawStates = new List<DrawState>();
             currentDrawState = -1;
+            sectors = new Dictionary<int, Sector>();
             MaxSectors = 1;
-            selectedGrid = null;
+            SelectedGrid = null;
 
             InitColourRoulette(5);
         }
 
-        private static void InitColourRoulette(int totalColours)
+        public static void InitColourRoulette(int totalColours)
         {
             InitColourRoulette(totalColours, 0);
         }
 
-        private static void InitColourRoulette(int totalColours, int seed)
+        public static void InitColourRoulette(int totalColours, int seed)
         {
-            colourRoulette = new List<Color>(totalColours);
+            ColourRoulette = new List<Color>(totalColours);
 
             float saturation = 1f; // 0 - 1
-            float brightness = 1f; // 0 - 1
+            float brightness = 0.5f; // 0 - 1
 
             int alpha = 255;
 
@@ -109,8 +117,35 @@ namespace MapMaker
                 hue = Program.Clamp(hue, 0f, 360f);
 
                 Color colour = GetColourFromHsl(alpha, hue, saturation, brightness);
-                colourRoulette.Add(colour);
+                ColourRoulette.Add(colour);
             }
+        }
+
+        public static void InitSectors()
+        {
+            foreach (Grid grid in allMapGrids)
+            {
+                int sectorId = grid.SectorId;
+
+                Sector sector;
+                bool sectorExists = sectors.ContainsKey(sectorId);
+                if (sectorExists == false)
+                {
+                    sectors.Add(sectorId, new Sector(sectorId));
+                }
+
+                sector = sectors[sectorId];
+                sector.AddGrid(grid, TileLength);
+
+                SetMaxSectors(sectorId);
+            }
+
+            if (ColourRoulette.Count >= MaxSectors)
+            {
+                return;
+            }
+
+            InitColourRoulette(MaxSectors);
         }
 
         public static float GetBrightness(Color colour)
@@ -282,9 +317,9 @@ namespace MapMaker
         //    return colour;
         //}
 
-        //public static void SetTilesetDisplaySize(Size size)
+        //public static void SetTilesetDisplaySize(Size nodeSize)
         //{
-        //    tilesetDisplaySize = size;
+        //    tilesetDisplaySize = nodeSize;
         //}
 
         public static NewFileForm CreateNewFile()
@@ -342,7 +377,7 @@ namespace MapMaker
             // Select first tile
             selectedTile = tileset[0];
 
-            // Set display size
+            // Set display nodeSize
             int columns = tilesetDisplayWidth / tileLength;
             int displayWidth = columns * tileLength;
 
@@ -504,6 +539,9 @@ namespace MapMaker
             // Set the initial draw state
             Program.InitDrawState();
 
+            // Create Sectors
+            Program.InitSectors();
+
             Program.LoadTilesetImageFromFile(tilesetFilename);
             Program.BuildTileset(TileLength, TilesetDisplayWidth);
 
@@ -614,7 +652,7 @@ namespace MapMaker
             // Non memento pattern
             //StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, TileLength, mapSize, allMapGridHistories);
             // Memento pattern
-            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, mapSize, allMapGrids);
+            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, mapSize, allMapGrids, allCheckpoints.Values.ToList());
             string json = Program.SerializeMap(map);
 
             WriteTextFile(filename, json);
@@ -642,15 +680,15 @@ namespace MapMaker
 
         //public static Size GetTilesetSize()
         //{
-        //    Size size = new Size(0, 0);
+        //    Size nodeSize = new Size(0, 0);
 
         //    if (tilesetImage == null)
         //    {
-        //        return size;
+        //        return nodeSize;
         //    }
 
-        //    size = tilesetImage.Size;
-        //    return size;
+        //    nodeSize = tilesetImage.Size;
+        //    return nodeSize;
         //}
 
         public static int GetTilesetCount()
@@ -667,46 +705,46 @@ namespace MapMaker
             return tileset.Count;
         }
 
-        public static void SetOverlayHasChanged()
+        public static void OverlayHasChanged()
         {
             Program.HasOverlayChanged = true;
             Program.HasMapChanged = true;
         }
 
-        public static void SetOverlayIsUpToDate()
+        public static void OverlayIsUpToDate()
         {
             Program.HasOverlayChanged = false;
         }
 
-        public static void SetTerrainHasChanged()
+        public static void TerrainHasChanged()
         {
             Program.HasTerrainChanged = true;
             Program.HasMapChanged = true;
         }
 
-        public static void SetTerrainIsUpToDate()
+        public static void TerrainIsUpToDate()
         {
             Program.HasTerrainChanged = false;
         }
 
-        public static void SetMapHasChanged()
+        public static void MapHasChanged()
         {
-            SetTerrainHasChanged();
-            SetOverlayHasChanged();
+            TerrainHasChanged();
+            OverlayHasChanged();
             Program.HasMapChanged = true;
         }
 
-        public static void SetMapIsUpToDate()
+        public static void MapIsUpToDate()
         {
-            SetOverlayIsUpToDate();
-            SetTerrainIsUpToDate();
+            OverlayIsUpToDate();
+            TerrainIsUpToDate();
             Program.HasMapChanged = false;
         }
 
-        public static void SelectTile(Point click)
+        public static void SelectTile(Point cursor)
         {
-            int x = click.X;
-            int y = click.Y;
+            int x = cursor.X;
+            int y = cursor.Y;
 
             Tile tile = GetTilesetTile(x, y);
 
@@ -716,10 +754,10 @@ namespace MapMaker
         /* Non memento pattern
         public static void PenTool(Point location)
         {
-            int x = location.X;
-            int y = location.Y;
+            int scaledX = location.X;
+            int Y = location.Y;
 
-            GridHistory grid = GetMapGrid(x, y);
+            GridHistory grid = GetMapGrid(scaledX, Y);
 
             PenTool(grid);
         }
@@ -745,23 +783,23 @@ namespace MapMaker
             switch (selectedOverlay)
             {
                 case (int)Overlays.Sectors:
-
-                    Program.SetOverlayHasChanged();
-                    break;
+                    Program.SelectGrid(grid);
+                    Program.OverlayHasChanged();
+                    return; // Don't add undo state
 
                 case (int)Overlays.Construction:
                     grid.SetConstructable(selectedValue);
-                    Program.SetOverlayHasChanged();
+                    Program.OverlayHasChanged();
                     break;
 
                 case (int)Overlays.Drivable:
                     grid.SetDrivable(selectedValue);
-                    Program.SetOverlayHasChanged();
+                    Program.OverlayHasChanged();
                     break;
 
                 case (int)Overlays.Flyable:
                     grid.SetFlyable(selectedValue);
-                    Program.SetOverlayHasChanged();
+                    Program.OverlayHasChanged();
                     break;
 
                 case (int)Overlays.None:
@@ -770,7 +808,7 @@ namespace MapMaker
                     grid.Tile = selectedTile;
 
                     allUpdatedMapGrids.Enqueue(grid);
-                    Program.SetTerrainHasChanged();
+                    Program.TerrainHasChanged();
                     break;
             }
 
@@ -779,23 +817,64 @@ namespace MapMaker
         }
         // End memento pattern
 
-        public static void LineTool(Point start, Point end)
+        public static void LineTool(Point start, Point end, int selectedOverlay)
         {
 
         }
 
-        public static void BoxTool(Point start, Point end)
+        public static void BoxTool(Point start, Point end, int selectedOverlay)
         {
+            List<Grid> selectedGrids = GetGridsInArea(start, end);
 
+            foreach (Grid grid in selectedGrids)
+            {
+                // Save the initial state
+                Program.AddToInitialDrawState(grid);
+
+                switch (selectedOverlay)
+                {
+                    case (int)Overlays.Sectors:
+                        Program.SelectGrid(grid);
+                        Program.OverlayHasChanged();
+                        return; // Don't add undo state
+
+                    case (int)Overlays.Construction:
+                        grid.SetConstructable(selectedValue);
+                        Program.OverlayHasChanged();
+                        break;
+
+                    case (int)Overlays.Drivable:
+                        grid.SetDrivable(selectedValue);
+                        Program.OverlayHasChanged();
+                        break;
+
+                    case (int)Overlays.Flyable:
+                        grid.SetFlyable(selectedValue);
+                        Program.OverlayHasChanged();
+                        break;
+
+                    case (int)Overlays.None:
+                    default:
+                        // Update the grid's tile
+                        grid.Tile = selectedTile;
+
+                        allUpdatedMapGrids.Enqueue(grid);
+                        Program.TerrainHasChanged();
+                        break;
+                }
+
+                // Save the final state
+                Program.AddToFinalDrawState(grid);
+            }
         }
 
         /* Non memento pattern
         public static void FillTool(Point location)
         {
-            int x = location.X;
-            int y = location.Y;
+            int scaledX = location.X;
+            int Y = location.Y;
 
-            GridHistory grid = GetMapGrid(x, y);
+            GridHistory grid = GetMapGrid(scaledX, Y);
             Tile tiletoChange = grid.Tile;
 
             if (tiletoChange.Equals(selectedTile))
@@ -836,6 +915,10 @@ namespace MapMaker
             bool valueToChange;
             switch (selectedOverlay)
             {
+                case (int)Overlays.Sectors:
+
+                    break;
+
                 case (int)Overlays.Construction:
                     valueToChange = grid.AllowsConstruction;
                     FillConstructionRecursive(grid, valueToChange, grid);
@@ -1051,10 +1134,29 @@ namespace MapMaker
             int y = (index / tilesWide) * TileLength;
 
             Rectangle bounds = new Rectangle(x, y, TileLength, TileLength);
-            Pen pen = new Pen(new SolidBrush(Color.Blue));
 
             using (Graphics g = Graphics.FromImage(displayImage))
             {
+                Pen pen = new Pen(Program.SelectionColour);
+                g.DrawRectangle(pen, bounds);
+            }
+        }
+
+        public static void DrawSelectedGrid(ref Bitmap displayImage, double scale)
+        {
+            if (SelectedGrid == null)
+            {
+                return;
+            }
+
+            Point corner = SelectedGrid.Corner;
+            int scaledLength = (int)(TileLength * scale);
+
+            Rectangle bounds = new Rectangle(corner, new Size(scaledLength, scaledLength));
+
+            using (Graphics g = Graphics.FromImage(displayImage))
+            {
+                Pen pen = new Pen(Program.SelectionColour);
                 g.DrawRectangle(pen, bounds);
             }
         }
@@ -1065,7 +1167,7 @@ namespace MapMaker
             //allUpdatedMapGridHistories = new Queue<GridHistory>(allMapGridHistories);
             // Memento pattern
             allUpdatedMapGrids = new Queue<Grid>(allMapGrids);
-            Program.SetTerrainHasChanged();
+            Program.TerrainHasChanged();
         }
 
         public static Bitmap GetMap(double scale)
@@ -1086,7 +1188,7 @@ namespace MapMaker
             // Memento pattern
             Program.DrawAllGridsOntoImage(ref displayImage, allMapGrids, tilesWide, TileLength, scale);
 
-            Program.SetTerrainIsUpToDate();
+            Program.TerrainIsUpToDate();
 
             return displayImage;
         }
@@ -1105,7 +1207,7 @@ namespace MapMaker
 
             Program.DrawUpdatedGridsOntoImage(ref displayImage, tilesWide, TileLength, scale);
 
-            Program.SetTerrainIsUpToDate();
+            Program.TerrainIsUpToDate();
 
             return displayImage;
         }
@@ -1175,38 +1277,46 @@ namespace MapMaker
         {
             using (Graphics graphics = Graphics.FromImage(displayImage))
             {
-                Dictionary<int, GraphicsPath> sectors = new Dictionary<int, GraphicsPath>();
+                //Dictionary<int, GraphicsPath> sectors = new Dictionary<int, GraphicsPath>();
 
+                // Draw SectorId Ids
                 foreach (Grid grid in allMapGrids)
                 {
-                    int sectorId = grid.Sector;
-                    Program.DrawLabel(graphics, scale, grid, sectorId.ToString());
-
-                    GraphicsPath shape;
-                    bool sectorStarted = sectors.ContainsKey(sectorId);
-                    if (sectorStarted == false)
-                    {
-                        shape = new GraphicsPath();
-                        sectors.Add(sectorId, shape);
-                    }
-
-                    shape = sectors[sectorId];
-                    int length = (int)(TileLength * scale);
-                    Rectangle bounds = new Rectangle(grid.Corner, new Size(length, length));
-
-                    shape.AddRectangle(bounds);
+                    int sectorId = grid.SectorId;
+                    string sectorLetter = Program.NumberToChar(sectorId).ToString();
+                    Program.DrawLabel(graphics, scale, grid, sectorLetter);
                 }
 
-                for (int i = 0; i < sectors.Values.Count; i++)
+                // Draw oldSector outlines
+                if (MaxSectors > ColourRoulette.Count)
                 {
-                    int colourIndex = i % colourRoulette.Count;
-                    Color colour = colourRoulette[colourIndex];
-                    Pen pen = new Pen(new SolidBrush(colour));
+                    InitColourRoulette(MaxSectors * 2);
+                }
 
-                    GraphicsPath shape = sectors.Values.ElementAt(i);
+                for (int i = 0; i < MaxSectors; i++)
+                {
+                    int colourIndex = i % ColourRoulette.Count;
+                    Color colour = ColourRoulette[colourIndex];
+                    Pen pen = new Pen(colour, 3);
+                    pen.Alignment = PenAlignment.Inset;
+
+                    //GraphicsPath shape = sectors.Values.ElementAt(i);
+
+                    Sector currentSector = sectors.Values.ElementAt(i);
+                    GraphicsPath shape = currentSector.GetShape(scale);
 
                     graphics.DrawPath(pen, shape);
                 }
+
+                // Draw checkpoints
+                foreach (Checkpoint checkpoint in allCheckpoints.Values)
+                {
+                    //checkpoint.Draw(graphics);
+                    checkpoint.Invalidate();
+                }
+
+                // Draw selected Grid
+                Program.DrawSelectedGrid(ref displayImage, scale);
             }
         }
 
@@ -1310,22 +1420,22 @@ namespace MapMaker
                     continue;
                 }
 
-                int x, y;
+                int scaledX, Y;
 
                 if (addPadding == true)
                 {
-                    x = i % tilesWide * (int)(tileLength * scale + 1);
-                    y = i / tilesWide * (int)(tileLength * scale + 1);
+                    scaledX = i % tilesWide * (int)(tileLength * scale + 1);
+                    Y = i / tilesWide * (int)(tileLength * scale + 1);
                 }
                 else
                 {
-                    x = i % tilesWide * (int)(tileLength * scale);
-                    y = i / tilesWide * (int)(tileLength * scale);
+                    scaledX = i % tilesWide * (int)(tileLength * scale);
+                    Y = i / tilesWide * (int)(tileLength * scale);
                 }
 
                 Tile tile = grid.Tile;
 
-                Program.DrawTileOntoImage(ref image, tile, tileLength, x, y, scale);
+                Program.DrawTileOntoImage(ref image, tile, tileLength, scaledX, Y, scale);
                 grid.hasChanged = false;
             }
         }
@@ -1336,12 +1446,12 @@ namespace MapMaker
             {
                 GridHistory grid = allUpdatedMapGridHistories.Dequeue();
                 Point gridCorner = grid.Corner;
-                int x = (int)(gridCorner.X * scale);
-                int y = (int)(gridCorner.Y * scale);
+                int scaledX = (int)(gridCorner.X * scale);
+                int Y = (int)(gridCorner.Y * scale);
 
                 Tile tile = grid.Tile;
 
-                Program.DrawTileOntoImage(ref image, tile, tileLength, x, y, scale);
+                Program.DrawTileOntoImage(ref image, tile, tileLength, scaledX, Y, scale);
             }
         }
         */
@@ -1438,20 +1548,20 @@ namespace MapMaker
         }
 
         /* Non memento pattern
-        public static GridHistory GetMapGrid(int x, int y)
+        public static GridHistory GetMapGrid(int scaledX, int Y)
         {
-            return GetGrid(x, y, mapSize, allMapGridHistories);
+            return GetGrid(scaledX, Y, mapSize, allMapGridHistories);
         }
          
-        public static GridHistory GetGrid(int x, int y, Size size, List<GridHistory> collection)
+        public static GridHistory GetGrid(int scaledX, int Y, Size nodeSize, List<GridHistory> collection)
         {
-            int width = size.Width;
-            int height = size.Height;
+            int width = nodeSize.Width;
+            int height = nodeSize.Height;
 
             int tilesWide = width / TileLength;
 
-            int column = x / TileLength;
-            int row = y / TileLength;
+            int column = scaledX / TileLength;
+            int row = Y / TileLength;
 
             int index = row * tilesWide + column;
             GridHistory grid = collection[index];
@@ -1482,6 +1592,53 @@ namespace MapMaker
             return grid;
         }
         // End memento pattern
+
+        public static List<Grid> GetGridsInArea(Point start, Point end)
+        {
+            // Get the rectangular area
+            int cornerX = Math.Min(start.X, end.X);
+            int cornerY = Math.Min(start.Y, end.Y);
+
+            int width = Math.Abs(end.X - start.X);
+            int height = Math.Abs(end.Y - start.Y);
+
+            // Snap to grid
+            int remainder = cornerX % TileLength;
+            cornerX -= remainder;
+            width += remainder;
+
+            remainder = cornerY % TileLength;
+            cornerY -= remainder;
+            height += remainder;
+
+            remainder = width % TileLength;
+            int difference = TileLength - remainder;
+            width += difference;
+
+            remainder = height % TileLength;
+            difference = TileLength - remainder;
+            height += difference;
+
+            // Get all affected Grids
+            int offsettX = cornerX / TileLength;
+            int offsetY = cornerY / TileLength;
+            int gridsWide = width / TileLength;
+            int rows = height / TileLength;
+
+            int totalGridsWide = mapSize.Width / TileLength;
+
+            List<Grid> selectedGrids = new List<Grid>();
+            for (int y = 0; y < rows; y++)
+            {
+                for (int x = 0; x < gridsWide; x++)
+                {
+                    int index = (offsetY + y) * totalGridsWide + (offsettX + x);
+                    Grid grid = allMapGrids[index];
+                    selectedGrids.Add(grid);
+                }
+            }
+            return selectedGrids;
+        }
 
         public static Tile GetTile(int x, int y, Size size, List<Tile> collection)
         {
@@ -1661,7 +1818,7 @@ namespace MapMaker
                 allUpdatedMapGrids.Enqueue(grid);
             }
 
-            Program.SetMapHasChanged();
+            Program.MapHasChanged();
 
             currentDrawState--;
             if (currentDrawState < -1)
@@ -1739,7 +1896,7 @@ namespace MapMaker
                 allUpdatedMapGrids.Enqueue(grid);
             }
 
-            Program.SetMapHasChanged();
+            Program.MapHasChanged();
         }
 
         public static double GetDistance(Point start, Point end)
@@ -1824,13 +1981,51 @@ namespace MapMaker
 
         public static void SelectGrid(Grid grid)
         {
-            if (selectedGrid.Equals(grid))
+            if (grid.Equals(SelectedGrid))
             {
-                selectedGrid.CycleSector();
+                SelectedGrid.CycleSector();
                 return;
             }
 
-            selectedGrid = grid;
+            SelectedGrid = grid;
+        }
+
+        public static void SetSelectedGridSector(int sectorId)
+        {
+            if (SelectedGrid == null)
+            {
+                return;
+            }
+
+            int oldSectorId = SelectedGrid.SectorId;
+            Sector oldSector = sectors[oldSectorId];
+            oldSector.RemoveGrid(SelectedGrid, TileLength);
+
+            SelectedGrid.SectorId = sectorId;
+            Sector sector;
+            bool sectorExists = sectors.ContainsKey(sectorId);
+            if (sectorExists == false)
+            {
+                sectors.Add(sectorId, new Sector(sectorId));
+            }
+
+            sector = sectors[sectorId];
+            sector.AddGrid(SelectedGrid, TileLength);
+
+            Program.OverlayHasChanged();
+
+            SetMaxSectors(sectorId);
+        }
+
+        private static void SetMaxSectors(int sectorId)
+        {
+            int sectorCount = sectorId + 1;
+            if (sectorCount <= MaxSectors)
+            {
+                return;
+            }
+
+            MaxSectors = sectorCount;
         }
 
         public static void SetSelectedValue(bool value)
@@ -1841,6 +2036,64 @@ namespace MapMaker
         public static void SetSelectedNumber(int number)
         {
             Program.selectedNumber = number;
+        }
+
+        public static int CharToNumber(char letter)
+        {
+            int number = Char.ToUpper(letter) - 'A';
+            return number;
+        }
+
+        public static char NumberToChar(int number)
+        {
+            char letter = (char)(number + 65);
+            return letter;
+        }
+
+        public static Checkpoint AddCheckPoint(double vScrollPercent, Size displaySize)
+        {
+            int mapWidth = mapSize.Width;
+            int mapHeight = mapSize.Height;
+
+            int scrollBarHeight = 25;
+            int displayHeight = displaySize.Height;
+            int viewHeight = displayHeight - scrollBarHeight;
+            int maxY = mapHeight - viewHeight;
+
+            int y = (int)Math.Round(vScrollPercent * maxY + viewHeight / 2, 0);
+
+            // Snap to grid
+            int remainder = y % TileLength;
+            if (remainder >= (TileLength / 2))
+            {
+                y += TileLength - remainder;
+            }
+            if (remainder < (TileLength / 2))
+            {
+                y -= remainder;
+            }
+
+            bool alreadyExists = allCheckpoints.ContainsKey(y);
+            if (alreadyExists == true)
+            {
+                return null;
+            }
+
+            Checkpoint checkpoint = new Checkpoint(y, mapWidth, TileLength);
+            allCheckpoints.Add(y, checkpoint);
+
+            Program.OverlayHasChanged();
+
+            return checkpoint;
+        }
+
+        public static void MoveCheckpoint(Checkpoint checkpointToMove)
+        {
+            int oldY = checkpointToMove.Key;
+            allCheckpoints.Remove(oldY);
+
+            int updatedY = checkpointToMove.Location.Y;
+            allCheckpoints.Add(updatedY, checkpointToMove);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace MapMaker
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
-        public int Sector { get; protected set; }
+        public int SectorId { get; set; }
         public static int NextSector = 0;
         public int Zone { get; protected set; }
         public Tile Tile { get; set; }
@@ -42,7 +42,7 @@ namespace MapMaker
             this.AllowsDriving = true;
             this.AllowsFlying = true;
             this.AllowsConstruction = true;
-            this.Sector = NextSector;
+            this.SectorId = NextSector;
             this.Zone = zone;
             this.isCopy = false;
         }
@@ -53,12 +53,17 @@ namespace MapMaker
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
             this.AllowsConstruction = allowsConstruction;
-            this.Sector = sector;
+            this.SectorId = sector;
             this.Zone = zone;
         }
 
         public bool Equals(Grid other)
         {
+            if (other == null)
+            {
+                return false;
+            }
+
             return Id.Equals(other.Id);
         }
 
@@ -112,8 +117,8 @@ namespace MapMaker
 
         public virtual void CycleSector()
         {
-            this.Sector++;
-            this.Sector %= Program.MaxSectors;
+            this.SectorId++;
+            this.SectorId %= Program.MaxSectors;
         }
 
         public Grid GetCopy()
@@ -123,7 +128,7 @@ namespace MapMaker
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
-            copy.Sector = this.Sector;
+            copy.SectorId = this.SectorId;
             copy.Tile = this.Tile;
             copy.Zone = this.Zone;
             copy.isCopy = true;
@@ -138,7 +143,7 @@ namespace MapMaker
             this.AllowsConstruction = copy.AllowsConstruction;
             this.AllowsDriving = copy.AllowsDriving;
             this.AllowsFlying = copy.AllowsFlying;
-            this.Sector = copy.Sector;
+            this.SectorId = copy.SectorId;
             this.Tile = copy.Tile;
             this.Zone = copy.Zone;
         }
