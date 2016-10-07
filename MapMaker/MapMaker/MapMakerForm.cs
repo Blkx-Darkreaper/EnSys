@@ -19,11 +19,6 @@ namespace MapMaker
         protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
 
-        public enum Resolutions
-        {
-            SixFortyByFourEighty, EightHundredBySixHundred, TenTwentyFourBySevenSixtyEight
-        }
-
         public enum Tools
         {
             Pen, Line, Rectangle, Fill
@@ -201,7 +196,8 @@ namespace MapMaker
             switch (selectedOverlay)
             {
                 case (int)Program.Overlays.Sectors:
-
+                    bool editSectors = SectorChkptToggle.Checked;
+                    Program.HandleSectorOverlayMouseDown(e, editSectors);
                     break;
 
                 case (int)Program.Overlays.Construction:
@@ -225,6 +221,11 @@ namespace MapMaker
         protected void MapDisplay_MouseUp(object sender, MouseEventArgs e)
         {
             this.isDrawingOnMap = false;
+            if (selectedOverlay == (int)Program.Overlays.Sectors)
+            {
+                bool editSectors = SectorChkptToggle.Checked;
+                Program.HandleSectorOverlayMouseUp(e, editSectors);
+            }
 
             if (Program.HasMapChanged == false)
             {
@@ -240,6 +241,13 @@ namespace MapMaker
 
         protected void MapDisplay_MouseMove(object sender, MouseEventArgs e)
         {
+            if (selectedOverlay == (int)Program.Overlays.Sectors)
+            {
+                bool editSectors = SectorChkptToggle.Checked;
+                Program.HandleSectorOverlayMouseMove(e, editSectors);
+                return;
+            }
+
             if (isDrawingOnMap == false)
             {
                 return;
@@ -249,7 +257,43 @@ namespace MapMaker
             Program.PenTool(grid, selectedOverlay);
         }
 
-        private Grid GetGridAtCursor()
+        protected void MapDisplay_MouseEnter(object sender, EventArgs e)
+        {
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
+            {
+                return;
+            }
+
+            int clicks = 0;
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            int x = cursor.X;
+            int y = cursor.Y;
+            int delta = 0;
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+
+            bool editSectors = SectorChkptToggle.Checked;
+            Program.HandleSectorOverlayMouseEnter(mouseEvent, editSectors);
+        }
+
+        protected void MapDisplay_MouseLeave(object sender, EventArgs e)
+        {
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
+            {
+                return;
+            }
+
+            int clicks = 0;
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            int x = cursor.X;
+            int y = cursor.Y;
+            int delta = 0;
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+
+            bool editSectors = SectorChkptToggle.Checked;
+            Program.HandleSectorOverlayMouseLeave(mouseEvent, editSectors);
+        }
+
+        protected Grid GetGridAtCursor()
         {
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
             int x = cursor.X;
@@ -281,7 +325,6 @@ namespace MapMaker
         {
             if (e.Modifiers != Keys.Control)
             {
-                SetSector(e.KeyCode);
                 return;
             }
 
@@ -296,23 +339,23 @@ namespace MapMaker
             }
         }
 
-        public void SetSector(Keys keyCode)
-        {
-            if (selectedOverlay != (int)Program.Overlays.Sectors)
-            {
-                return;
-            }
+        //public void SetSector(Keys keyCode)
+        //{
+        //    if (selectedOverlay != (int)Program.Overlays.Sectors)
+        //    {
+        //        return;
+        //    }
 
-            int sectorId = GetLetterKeyNumber(keyCode);
-            if (sectorId == -1)
-            {
-                return;
-            }
+        //    int sectorId = GetLetterKeyNumber(keyCode);
+        //    if (sectorId == -1)
+        //    {
+        //        return;
+        //    }
 
-            sectorId %= 25;
+        //    sectorId %= 25;
 
-            Program.SetSelectedGridSector(sectorId);
-        }
+        //    Program.SetSelectedGridSector(sectorId);
+        //}
 
         private static int GetLetterKeyNumber(Keys keyCode)
         {
@@ -378,14 +421,17 @@ namespace MapMaker
             }
 
             string filename = newFileForm.TilesetFilename;
-            int tileWidth = (int)TileLengthControl.Value;
+            int tileLength = (int)TileLengthControl.Value;
             int tilesetDisplayWidth = TilesetDisplay.Width;
-            Program.LoadTileset(filename, tileWidth, tilesetDisplayWidth);
+            Init(tileLength, tilesetDisplayWidth);
+
+            Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
             Size mapSize = newFileForm.MapSize;
             MapDisplay.Size = mapSize;
             Program.BuildMap(mapSize);
 
+            ResetView();
             UpdateDisplay();
             timer.Start();
         }
@@ -402,9 +448,31 @@ namespace MapMaker
 
         protected void LoadFile()
         {
+            Init();
+
             Program.LoadMapFile();
+            ResetView();
             UpdateDisplay();
             timer.Start();
+        }
+
+        protected void Init()
+        {
+            int tileLength = (int)TileLengthControl.Value;
+            int tilesetDisplayWidth = TilesetDisplay.Width;
+            Init(tileLength, tilesetDisplayWidth);
+        }
+
+        protected void Init(int tileLength, int tilesetDisplayWidth)
+        {
+            MapDisplay.Image = null;
+            Program.Init(tileLength, tilesetDisplayWidth);
+        }
+
+        protected void ResetView()
+        {
+            MapPanel.HorizontalScroll.Value = 0;
+            MapPanel.VerticalScroll.Value = 0;
         }
 
         protected void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -429,19 +497,19 @@ namespace MapMaker
 
         protected void displayToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            DisplayForm displayForm = Program.GetDisplayOptions();
+            if (displayForm == null)
+            {
+                return;
+            }
 
-        }
+            Size resolution = displayForm.Resolution;
+            int width = resolution.Width;
+            int height = resolution.Height;
 
-        public void SetWindowSize(int resolutionCode)
-        {
-            int[] windowWidths = { 640, 800, 1024 };
-            int[] windowHeights = { 480, 600, 768 };
-
-            int windowWidth = windowWidths[resolutionCode];
-            int windowHeight = windowHeights[resolutionCode];
-            MapMakerForm.ActiveForm.Size = new Size(windowWidth, windowHeight);
-
-            ResizeComponents(windowWidth, windowHeight);
+            this.Size = new Size(width, height);
+            this.CenterToScreen();
+            ResizeComponents(width, height);
         }
 
         protected void ResizeComponents(int windowWidth, int windowHeight)
@@ -487,12 +555,6 @@ namespace MapMaker
             int height = MapMakerForm.ActiveForm.Height;
 
             ResizeComponents(width, height);
-        }
-
-        protected void x480ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int code = (int)Resolutions.SixFortyByFourEighty;
-            SetWindowSize(code);
         }
 
         protected void mapToolStripMenuItem_Click(object sender, EventArgs e)
@@ -587,46 +649,67 @@ namespace MapMaker
         {
             this.selectedOverlay = (int)Program.Overlays.None;
             UpdateMap();
+
+            SetSectorControlsEnabled(false);
         }
 
         protected void sectorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.selectedOverlay = (int)Program.Overlays.Sectors;
             UpdateMap();
+
+            SetSectorControlsEnabled(true);
         }
 
         protected void constructionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.selectedOverlay = (int)Program.Overlays.Construction;
             UpdateMap();
+
+            SetSectorControlsEnabled(false);
         }
 
         protected void drivableToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.selectedOverlay = (int)Program.Overlays.Drivable;
             UpdateMap();
+
+            SetSectorControlsEnabled(false);
         }
 
         protected void flyableToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.selectedOverlay = (int)Program.Overlays.Flyable;
             UpdateMap();
+
+            SetSectorControlsEnabled(false);
         }
 
-        protected void AddCheckpointButton_Click(object sender, EventArgs e)
+        protected void SetSectorControlsEnabled(bool enabled)
+        {
+            SectorChkptToggle.Enabled = enabled;
+            AddToSectorButton.Enabled = enabled;
+        }
+
+        protected void AddToSectorsButton_Click(object sender, EventArgs e)
         {
             int vScroll = MapPanel.VerticalScroll.Value;
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
             double vScrollPercent = vScroll / (double)vScrollMax;
 
-            Checkpoint checkpoint = Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
-            if (checkpoint == null)
+            bool addSector = SectorChkptToggle.Checked;
+            if (addSector == true)
             {
-                return;
-            }
+                int hScroll = MapPanel.HorizontalScroll.Value;
+                int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+                double hScrollPercent = hScroll / (double)hScrollMax;
 
-            MapDisplay.Controls.Add(checkpoint);
-            checkpoint.Invalidate();
+                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
+            }
+            else
+            {
+                Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+            }
         }
     }
 }

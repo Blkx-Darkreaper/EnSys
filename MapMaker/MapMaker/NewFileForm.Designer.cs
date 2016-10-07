@@ -116,6 +116,7 @@
             // 
             // NewFileCancelButton
             // 
+            this.NewFileCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.NewFileCancelButton.Location = new System.Drawing.Point(183, 108);
             this.NewFileCancelButton.Name = "NewFileCancelButton";
             this.NewFileCancelButton.Size = new System.Drawing.Size(75, 23);
@@ -145,8 +146,10 @@
             // 
             // NewFileForm
             // 
+            this.AcceptButton = this.NewFileDoneButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.NewFileCancelButton;
             this.ClientSize = new System.Drawing.Size(273, 143);
             this.Controls.Add(this.TilesetNameLabel);
             this.Controls.Add(this.LoadTilesetButton);
@@ -157,6 +160,7 @@
             this.Controls.Add(this.NewFileDoneButton);
             this.Controls.Add(this.label1);
             this.Name = "NewFileForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "New File";
             ((System.ComponentModel.ISupportInitialize)(this.MapWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapHeight)).EndInit();

@@ -48,6 +48,8 @@
             this.displayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuPanel = new System.Windows.Forms.Panel();
+            this.SectorChkptToggle = new System.Windows.Forms.CheckBox();
+            this.AddToSectorButton = new System.Windows.Forms.Button();
             this.FillTool = new System.Windows.Forms.Button();
             this.RectangleTool = new System.Windows.Forms.Button();
             this.LineTool = new System.Windows.Forms.Button();
@@ -64,7 +66,6 @@
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
             this.MiniMapDisplay = new MapMaker.MiniMap();
-            this.AddCheckpointButton = new System.Windows.Forms.Button();
             this.MainMenu.SuspendLayout();
             this.MenuPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).BeginInit();
@@ -232,7 +233,8 @@
             // 
             // MenuPanel
             // 
-            this.MenuPanel.Controls.Add(this.AddCheckpointButton);
+            this.MenuPanel.Controls.Add(this.SectorChkptToggle);
+            this.MenuPanel.Controls.Add(this.AddToSectorButton);
             this.MenuPanel.Controls.Add(this.FillTool);
             this.MenuPanel.Controls.Add(this.RectangleTool);
             this.MenuPanel.Controls.Add(this.LineTool);
@@ -248,6 +250,30 @@
             this.MenuPanel.Name = "MenuPanel";
             this.MenuPanel.Size = new System.Drawing.Size(600, 35);
             this.MenuPanel.TabIndex = 4;
+            // 
+            // SectorChkptToggle
+            // 
+            this.SectorChkptToggle.AutoSize = true;
+            this.SectorChkptToggle.Checked = true;
+            this.SectorChkptToggle.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SectorChkptToggle.Enabled = false;
+            this.SectorChkptToggle.Location = new System.Drawing.Point(492, 10);
+            this.SectorChkptToggle.Name = "SectorChkptToggle";
+            this.SectorChkptToggle.Size = new System.Drawing.Size(62, 17);
+            this.SectorChkptToggle.TabIndex = 12;
+            this.SectorChkptToggle.Text = "Sectors";
+            this.SectorChkptToggle.UseVisualStyleBackColor = true;
+            // 
+            // AddToSectorButton
+            // 
+            this.AddToSectorButton.Enabled = false;
+            this.AddToSectorButton.Location = new System.Drawing.Point(560, 6);
+            this.AddToSectorButton.Name = "AddToSectorButton";
+            this.AddToSectorButton.Size = new System.Drawing.Size(37, 23);
+            this.AddToSectorButton.TabIndex = 11;
+            this.AddToSectorButton.Text = "Add";
+            this.AddToSectorButton.UseVisualStyleBackColor = true;
+            this.AddToSectorButton.Click += new System.EventHandler(this.AddToSectorsButton_Click);
             // 
             // FillTool
             // 
@@ -393,6 +419,8 @@
             this.MapDisplay.Click += new System.EventHandler(this.MapDisplay_Click);
             this.MapDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.MapDisplay_Paint);
             this.MapDisplay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapDisplay_MouseDown);
+            this.MapDisplay.MouseEnter += new System.EventHandler(this.MapDisplay_MouseEnter);
+            this.MapDisplay.MouseLeave += new System.EventHandler(this.MapDisplay_MouseLeave);
             this.MapDisplay.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MapDisplay_MouseMove);
             this.MapDisplay.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MapDisplay_MouseUp);
             // 
@@ -424,16 +452,6 @@
             this.MiniMapDisplay.TabStop = false;
             this.MiniMapDisplay.ViewBox = new System.Drawing.Rectangle(0, 0, 0, 0);
             // 
-            // AddCheckpointButton
-            // 
-            this.AddCheckpointButton.Location = new System.Drawing.Point(462, 6);
-            this.AddCheckpointButton.Name = "AddCheckpointButton";
-            this.AddCheckpointButton.Size = new System.Drawing.Size(66, 23);
-            this.AddCheckpointButton.TabIndex = 11;
-            this.AddCheckpointButton.Text = "Add Chkpt";
-            this.AddCheckpointButton.UseVisualStyleBackColor = true;
-            this.AddCheckpointButton.Click += new System.EventHandler(this.AddCheckpointButton_Click);
-            // 
             // MapMakerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -455,6 +473,7 @@
             this.MainMenu.ResumeLayout(false);
             this.MainMenu.PerformLayout();
             this.MenuPanel.ResumeLayout(false);
+            this.MenuPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).EndInit();
             this.MapPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MapDisplay)).EndInit();
@@ -504,7 +523,8 @@
         private System.Windows.Forms.ToolStripMenuItem sectorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem drivableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flyableToolStripMenuItem;
-        private System.Windows.Forms.Button AddCheckpointButton;
+        private System.Windows.Forms.Button AddToSectorButton;
+        private System.Windows.Forms.CheckBox SectorChkptToggle;
     }
 }
 

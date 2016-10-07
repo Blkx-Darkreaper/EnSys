@@ -11,37 +11,29 @@ using Newtonsoft.Json;
 
 namespace MapMaker
 {
-    public class Checkpoint : Control, IComparable<Checkpoint>, IEquatable<Checkpoint>
+    public class Checkpoint : Region, IComparable<Checkpoint>, IEquatable<Checkpoint>
     {
         public int Key { get; protected set; }
-        protected bool isDragging { get; set; }
-        protected Point previousCursor { get; set; }
 
-        [JsonConstructor]
-        public Checkpoint(int y, int width, int height)
-            : base()
+        public Checkpoint(int key, int width, int height) : base(height)
         {
+            this.Key = key;
+            this.Location = new Point(0, key);
             this.Size = new Size(width, height);
-            this.Location = new Point(0, y);
-            this.Key = y;
-            this.isDragging = false;
-            this.Cursor = Cursors.HSplit;
-            //this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            //this.SetStyle(ControlStyles.Opaque, true);
-            //this.SetStyle(ControlStyles.ResizeRedraw, true);
-            //this.BackColor = Color.Transparent;
+            this.IsMouseOver = false;
+            this.HasMouseFocus = false;
         }
 
-        //protected override CreateParams CreateParams
-        //{
-        //    get
-        //    {
-        //        const int WS_EX_TRANSPARENT = 0x20;
-        //        CreateParams cp = base.CreateParams;
-        //        cp.ExStyle |= WS_EX_TRANSPARENT;
-        //        return cp;
-        //    }
-        //}
+        [JsonConstructor]
+        public Checkpoint(int key, Rectangle area, Point location, Size size, int width, int height, string cursor, bool isMouseOver, bool hasMouseFocus)
+            : base(height)
+        {
+            this.Key = location.Y;
+            this.Location = location;
+            this.Size = size;
+            this.IsMouseOver = false;
+            this.HasMouseFocus = false;
+        }
 
         public int CompareTo(Checkpoint other)
         {
@@ -57,36 +49,11 @@ namespace MapMaker
             return y.Equals(otherY);
         }
 
-        protected virtual Rectangle GetBounds()
-        {
-            int width = this.Width;
-            int height = this.Height;
-            int y = this.Location.Y;
-
-            Rectangle bounds = new Rectangle(0, y, width, height);
-            return bounds;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            Graphics graphics = e.Graphics;
-            //Rectangle bounds = GetBounds();
-            //graphics.DrawRectangle(Pens.Red, bounds);
-
-            Draw(graphics);
-        }
-
-        //protected override void OnPaintBackground(PaintEventArgs pevent)
-        //{
-        //    // Don't call the base subroutine
-        //    //base.OnPaintBackground(pevent);
-        //}
-
-        public void Draw(Graphics graphics)
+        public void Draw(Graphics graphics, double scale)
         {
             Brush brush = new SolidBrush(Program.SelectionColour);
 
-            int y = this.Location.Y + this.Height / 2;
+            int y = (int)Math.Round((this.Location.Y + this.Height / 2) * scale, 0);
             Point start = new Point(2, y);
             int width = this.Width - 2;
             Point end = new Point(width - 2, y);
@@ -108,83 +75,61 @@ namespace MapMaker
             graphics.FillEllipse(brush, endBounds);
         }
 
-        //protected override void OnMouseEnter(EventArgs e)
-        //{
-        //    base.OnMouseEnter(e);
-
-        //    Point cursor = this.PointToClient(Cursor.Position);
-        //    //Rectangle bounds = this.GetBounds();
-
-        //    //bool cursorInsideBounds = bounds.Contains(cursor);
-        //    //if (cursorInsideBounds == false)
-        //    //{
-        //    //    return;
-        //    //}
-
-        //    Cursor.Current = Cursors.NoMove2D;
-        //}
-
-        //protected override void OnMouseLeave(EventArgs e)
-        //{
-        //    base.OnMouseLeave(e);
-
-        //    Point cursor = this.PointToClient(Cursor.Position);
-        //    //Rectangle bounds = this.GetBounds();
-
-        //    //bool cursorInsideBounds = bounds.Contains(cursor);
-        //    //if (cursorInsideBounds == true)
-        //    //{
-        //    //    return;
-        //    //}
-
-        //    Cursor.Current = Cursors.Default;
-        //}
-
-        protected override void OnMouseDown(MouseEventArgs e)
+        protected override void SetBorders()
         {
-            base.OnMouseDown(e);
-
-            Point cursor = this.PointToClient(Cursor.Position);
-
-            this.isDragging = true;
-            this.previousCursor = cursor;
+            base.SetBordersRelative(this.Area);
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
+        public override void OnMouseEnter(MouseEventArgs e)
         {
-            base.OnMouseMove(e);
+            this.Cursor = Cursors.HSplit;
+        }
 
-            if (isDragging == false)
+        public override void OnMouseLeave(MouseEventArgs e)
+        {
+            this.Cursor = Cursors.Default;
+        }
+
+        public override void OnMouseDown(MouseEventArgs e)
+        {
+            Point cursor = e.Location;
+
+            this.currentMouseBorder = 0;
+            this.HasMouseFocus = true;
+            this.previousCursor = cursor;
+
+            SetPreviousArea();
+        }
+
+        public override void OnMouseMove(MouseEventArgs e)
+        {
+            if (currentMouseBorder != 0)
             {
                 return;
             }
 
-            Point cursor = this.PointToClient(Cursor.Position);
+            Point cursor = e.Location;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            int sign = Program.GetSign(deltaY);
+            //int sign = Program.GetSign(deltaY);
 
-            int y = this.Location.Y;
-            y += sign;
+            int y = this.Location.Y + deltaY;
+            //y += sign;
 
             this.Location = new Point(0, y);
-            this.Invalidate();
+
+            this.previousCursor = cursor;
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
+        public override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
 
-            this.isDragging = false;
-
-            SnapToGrid();
             Program.MoveCheckpoint(this);
             this.Key = this.Location.Y;
-
-            this.Invalidate();
         }
 
-        protected virtual void SnapToGrid()
+        protected override void SnapToGrid()
         {
             int x = this.Location.X;
             int y = this.Location.Y;

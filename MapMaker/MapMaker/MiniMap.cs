@@ -105,7 +105,7 @@ namespace MapMaker
 
             Graphics graphics = e.Graphics;
 
-            // Minimap border
+            // Minimap location
             graphics.DrawRectangle(Pens.DarkGray, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
 
             if (this.miniMap == null)
@@ -177,25 +177,27 @@ namespace MapMaker
             this.Cursor = Cursors.NoMove2D;
 
             int deltaX = cursor.X - previousCursor.X;
-            int signX = Program.GetSign(deltaX);
-            //deltaX = (int)Math.Log10(Math.Abs(deltaX));
-            deltaX = Program.ClampToMin(Math.Abs(deltaX), 1);
-            deltaX = signX * deltaX;
+            //int signX = Program.GetSign(deltaX);
+            ////deltaX = (int)Math.Log10(Math.Abs(deltaX));
+            //deltaX = Program.ClampToMin(Math.Abs(deltaX), 1);
+            //deltaX = signX * deltaX;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            int signY = Program.GetSign(deltaY);
-            //deltaY = (int)Math.Log10(Math.Abs(deltaY));
-            deltaY = Program.ClampToMin(Math.Abs(deltaY), 1);
-            deltaY = signY * deltaY;
+            //int signY = Program.GetSign(deltaY);
+            ////deltaY = (int)Math.Log10(Math.Abs(deltaY));
+            //deltaY = Program.ClampToMin(Math.Abs(deltaY), 1);
+            //deltaY = signY * deltaY;
 
+            int hScrollChange = mapPanel.HorizontalScroll.SmallChange;
             int hScroll = mapPanel.HorizontalScroll.Value;
             int hScrollMax = mapPanel.HorizontalScroll.Maximum;
 
+            int vScrollChange = mapPanel.VerticalScroll.SmallChange;
             int vScroll = mapPanel.VerticalScroll.Value;
             int vScrollMax = mapPanel.VerticalScroll.Maximum;
 
-            int x = hScroll + deltaX;
-            int y = vScroll + deltaY;
+            int x = hScroll + deltaX * hScrollChange * 2;
+            int y = vScroll + deltaY * vScrollChange * 2;
 
             x = Program.Clamp(x, 0, hScrollMax);
             y = Program.Clamp(y, 0, vScrollMax);
@@ -204,6 +206,8 @@ namespace MapMaker
             mapPanel.VerticalScroll.Value = y;
 
             MoveViewBox();
+
+            this.previousCursor = cursor;
         }
 
         protected override void OnMouseUp(MouseEventArgs e)

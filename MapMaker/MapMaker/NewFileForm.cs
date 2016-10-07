@@ -99,7 +99,7 @@ namespace MapMaker
                 height -= remainder;
             }
 
-            // Height can't be less than width
+            // Height can't be less than scaledWidth
             int heightMin = (int)MapWidth.Value;
             height = Program.ClampToMin(height, heightMin);
 

@@ -46,8 +46,8 @@ namespace Test
 
             for (int i = 0; i < 9; i++)
             {
-                int x = (i % 3)* tileLength;
-                int y = (i / 3)* tileLength;
+                int x = (i % 3) * tileLength;
+                int y = (i / 3) * tileLength;
 
                 Grid gridToAdd;
                 if (i != 4)
@@ -190,7 +190,7 @@ namespace Test
 
             Program.BuildMap(mapSize);
 
-            Grid twelve = Program.allMapGrids[12];
+            Grid twelve = Program.AllMapGrids[12];
             int x = twelve.Corner.X;
             int y = twelve.Corner.Y;
 
@@ -208,7 +208,7 @@ namespace Test
             int left = adjacentIndexes[3];
             Assert.IsTrue(left == 11);
         }
-        
+
         [TestMethod]
         public void GetColourFromHsv()
         {
@@ -277,36 +277,36 @@ namespace Test
             }
         }
 
-        [TestMethod]
-        public void GetSectorShape()
-        {
-            Sector sector = new Sector(0);
+        //[TestMethod]
+        //public void GetSectorShape()
+        //{
+        //    Sector sector = new Sector(0);
 
-            Grid grid;
-            int length = 32;
+        //    Grid grid;
+        //    int length = 32;
 
-            grid = new Grid(new Point(0, 0));
-            sector.AddGrid(grid, length);
+        //    grid = new Grid(new Point(0, 0));
+        //    sector.AddGrid(grid, length);
 
-            grid = new Grid(new Point(32, 0));
-            sector.AddGrid(grid, length);
+        //    grid = new Grid(new Point(32, 0));
+        //    sector.AddGrid(grid, length);
 
-            grid = new Grid(new Point(0, 32));
-            sector.AddGrid(grid, length);
+        //    grid = new Grid(new Point(0, 32));
+        //    sector.AddGrid(grid, length);
 
-            grid = new Grid(new Point(64, 32));
-            sector.AddGrid(grid, length);
+        //    grid = new Grid(new Point(64, 32));
+        //    sector.AddGrid(grid, length);
 
-            grid = new Grid(new Point(64, 0));
-            sector.AddGrid(grid, length);
+        //    grid = new Grid(new Point(64, 0));
+        //    sector.AddGrid(grid, length);
 
-            GraphicsPath shape = sector.GetShape(1);
-            for (int i = 0; i < shape.PathPoints.Length; i++)
-            {
-                PointF point = shape.PathPoints[i];
-                int type = (int)shape.PathTypes[i];
-            }
-        }
+        //    GraphicsPath bounds = sector.GetShape(1);
+        //    for (int i = 0; i < bounds.PathPoints.Length; i++)
+        //    {
+        //        PointF point = bounds.PathPoints[i];
+        //        int type = (int)bounds.PathTypes[i];
+        //    }
+        //}
 
         [TestMethod]
         public void GetGridsInArea()
@@ -327,6 +327,97 @@ namespace Test
             Grid last = selectedGrids[selectedGrids.Count - 1];
             Assert.IsTrue(last.Corner.X == 160);
             Assert.IsTrue(last.Corner.Y == 64);
+        }
+
+        [TestMethod]
+        public void InitSectors()
+        {
+            LoadTileset(128, 128);
+
+            Point start, end;
+
+            start = new Point(0, 0);
+            end = new Point(64, 64);
+            List<Grid> quadrant1 = Program.GetGridsInArea(start, end);
+            foreach (Grid grid in quadrant1)
+            {
+                grid.SectorId = 1;
+            }
+
+            start = new Point(64, 0);
+            end = new Point(128, 64);
+            List<Grid> quadrant2 = Program.GetGridsInArea(start, end);
+            foreach (Grid grid in quadrant2)
+            {
+                grid.SectorId = 2;
+            }
+
+            start = new Point(0, 64);
+            end = new Point(128, 128);
+            List<Grid> quadrant0 = Program.GetGridsInArea(start, end);
+            foreach (Grid grid in quadrant0)
+            {
+                grid.SectorId = 0;
+            }
+
+            Program.InitSectors();
+
+            Rectangle bounds;
+            int x, y, width, height;
+
+            Sector sector0 = Program.AllSectors[0];
+            bounds = sector0.Area;
+            x = bounds.Location.X;
+            Assert.IsTrue(x == 0);
+
+            y = bounds.Location.Y;
+            Assert.IsTrue(y == 64);
+
+            width = bounds.Width;
+            Assert.IsTrue(width == (4 * 32));
+
+            height = bounds.Height;
+            Assert.IsTrue(height == (2 * 32));
+
+            Sector sector1 = Program.AllSectors[1];
+            bounds = sector1.Area;
+            x = bounds.Location.X;
+            Assert.IsTrue(x == 0);
+
+            y = bounds.Location.Y;
+            Assert.IsTrue(y == 0);
+
+            width = bounds.Width;
+            Assert.IsTrue(width == (2 * 32));
+
+            height = bounds.Height;
+            Assert.IsTrue(height == (2 * 32));
+
+            Sector sector2 = Program.AllSectors[2];
+            bounds = sector2.Area;
+            x = bounds.Location.X;
+            Assert.IsTrue(x == 64);
+
+            y = bounds.Location.Y;
+            Assert.IsTrue(y == 0);
+
+            width = bounds.Width;
+            Assert.IsTrue(width == (2 * 32));
+
+            height = bounds.Height;
+            Assert.IsTrue(height == (2 * 32));
+        }
+
+        [TestMethod]
+        public void GetDifference()
+        {
+            Rectangle rect1 = new Rectangle(10, 10, 25, 20);
+            Rectangle rect2;
+            Rectangle[] diff;
+
+            // Move North
+            rect2 = new Rectangle(10, 8, 25, 20);
+            diff = Program.Difference(rect1, rect2);
         }
     }
 }
