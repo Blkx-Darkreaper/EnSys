@@ -36,14 +36,19 @@
             this.NewFileCancelButton = new System.Windows.Forms.Button();
             this.LoadTilesetButton = new System.Windows.Forms.Button();
             this.TilesetNameLabel = new System.Windows.Forms.Label();
+            this.TileLengthControl = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.MapWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 21);
+            this.label1.Location = new System.Drawing.Point(6, 16);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 1;
@@ -51,7 +56,7 @@
             // 
             // NewFileDoneButton
             // 
-            this.NewFileDoneButton.Location = new System.Drawing.Point(12, 108);
+            this.NewFileDoneButton.Location = new System.Drawing.Point(12, 149);
             this.NewFileDoneButton.Name = "NewFileDoneButton";
             this.NewFileDoneButton.Size = new System.Drawing.Size(75, 23);
             this.NewFileDoneButton.TabIndex = 2;
@@ -61,7 +66,7 @@
             // 
             // MapWidth
             // 
-            this.MapWidth.Location = new System.Drawing.Point(12, 37);
+            this.MapWidth.Location = new System.Drawing.Point(6, 32);
             this.MapWidth.Maximum = new decimal(new int[] {
             3200,
             0,
@@ -84,7 +89,7 @@
             // 
             // MapHeight
             // 
-            this.MapHeight.Location = new System.Drawing.Point(138, 37);
+            this.MapHeight.Location = new System.Drawing.Point(132, 32);
             this.MapHeight.Maximum = new decimal(new int[] {
             32000,
             0,
@@ -108,7 +113,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(138, 21);
+            this.label2.Location = new System.Drawing.Point(132, 16);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 4;
@@ -117,7 +122,7 @@
             // NewFileCancelButton
             // 
             this.NewFileCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.NewFileCancelButton.Location = new System.Drawing.Point(183, 108);
+            this.NewFileCancelButton.Location = new System.Drawing.Point(197, 149);
             this.NewFileCancelButton.Name = "NewFileCancelButton";
             this.NewFileCancelButton.Size = new System.Drawing.Size(75, 23);
             this.NewFileCancelButton.TabIndex = 6;
@@ -127,7 +132,7 @@
             // 
             // LoadTilesetButton
             // 
-            this.LoadTilesetButton.Location = new System.Drawing.Point(12, 63);
+            this.LoadTilesetButton.Location = new System.Drawing.Point(6, 58);
             this.LoadTilesetButton.Name = "LoadTilesetButton";
             this.LoadTilesetButton.Size = new System.Drawing.Size(86, 23);
             this.LoadTilesetButton.TabIndex = 7;
@@ -138,11 +143,60 @@
             // TilesetNameLabel
             // 
             this.TilesetNameLabel.AutoSize = true;
-            this.TilesetNameLabel.Location = new System.Drawing.Point(104, 68);
+            this.TilesetNameLabel.Location = new System.Drawing.Point(98, 63);
             this.TilesetNameLabel.Name = "TilesetNameLabel";
             this.TilesetNameLabel.Size = new System.Drawing.Size(35, 13);
             this.TilesetNameLabel.TabIndex = 8;
             this.TilesetNameLabel.Text = "label3";
+            // 
+            // TileLengthControl
+            // 
+            this.TileLengthControl.Location = new System.Drawing.Point(6, 100);
+            this.TileLengthControl.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.TileLengthControl.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.TileLengthControl.Name = "TileLengthControl";
+            this.TileLengthControl.Size = new System.Drawing.Size(35, 20);
+            this.TileLengthControl.TabIndex = 9;
+            this.TileLengthControl.Value = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.TileLengthControl.ValueChanged += new System.EventHandler(this.TileLengthControl_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 84);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(67, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "Tile Size (px)";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.MapWidth);
+            this.groupBox1.Controls.Add(this.TileLengthControl);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.TilesetNameLabel);
+            this.groupBox1.Controls.Add(this.MapHeight);
+            this.groupBox1.Controls.Add(this.LoadTilesetButton);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(260, 131);
+            this.groupBox1.TabIndex = 11;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Map";
             // 
             // NewFileForm
             // 
@@ -150,22 +204,19 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.NewFileCancelButton;
-            this.ClientSize = new System.Drawing.Size(273, 143);
-            this.Controls.Add(this.TilesetNameLabel);
-            this.Controls.Add(this.LoadTilesetButton);
+            this.ClientSize = new System.Drawing.Size(287, 183);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.NewFileCancelButton);
-            this.Controls.Add(this.MapHeight);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.MapWidth);
             this.Controls.Add(this.NewFileDoneButton);
-            this.Controls.Add(this.label1);
             this.Name = "NewFileForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "New File";
             ((System.ComponentModel.ISupportInitialize)(this.MapWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -179,5 +230,8 @@
         private System.Windows.Forms.Button NewFileCancelButton;
         private System.Windows.Forms.Button LoadTilesetButton;
         private System.Windows.Forms.Label TilesetNameLabel;
+        private System.Windows.Forms.NumericUpDown TileLengthControl;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }

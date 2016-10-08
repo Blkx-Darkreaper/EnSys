@@ -14,9 +14,9 @@ namespace MapMaker
     {
         public Size MapSize { get; protected set; }
         public string TilesetFilename { get; protected set; }
-        protected int tileLength { get; set; }
+        public int TileLength { get; protected set; }
 
-        public NewFileForm(int tileLength)
+        public NewFileForm()
         {
             InitializeComponent();
             this.TilesetNameLabel.Text = string.Empty;
@@ -25,9 +25,9 @@ namespace MapMaker
             int initHeight = (int)this.MapWidth.Value;
             this.MapSize = new Size(initWidth, initHeight);
             this.TilesetFilename = null;
-            this.tileLength = tileLength;
-            this.MapWidth.Minimum = tileLength;
-            this.MapHeight.Minimum = tileLength;
+            this.TileLength = (int)this.TileLengthControl.Value;
+            this.MapWidth.Minimum = TileLength;
+            this.MapHeight.Minimum = TileLength;
         }
 
         protected void NewFileDone_Click(object sender, EventArgs e)
@@ -42,6 +42,8 @@ namespace MapMaker
             int height = (int)MapHeight.Value;
 
             this.MapSize = new Size(width, height);
+
+            this.TileLength = (int)TileLengthControl.Value;
 
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
         }
@@ -63,7 +65,7 @@ namespace MapMaker
                 width = height;
             }
 
-            int remainder = width % tileLength;
+            int remainder = width % TileLength;
             if (remainder == 0)
             {
                 MapWidth.Value = width;
@@ -73,7 +75,7 @@ namespace MapMaker
 
             if (width > oldWidth)
             {
-                width += (tileLength - remainder);
+                width += (TileLength - remainder);
             }
             else
             {
@@ -100,7 +102,7 @@ namespace MapMaker
             int heightMin = (int)MapWidth.Value;
             height = Program.ClampToMin(height, heightMin);
 
-            int remainder = height % tileLength;
+            int remainder = height % TileLength;
             if (remainder == 0)
             {
                 MapHeight.Value = height;
@@ -110,7 +112,7 @@ namespace MapMaker
 
             if (height > oldHeight)
             {
-                height += (tileLength - remainder);
+                height += (TileLength - remainder);
             }
             else
             {
@@ -133,6 +135,33 @@ namespace MapMaker
 
             this.TilesetFilename = filename;
             this.TilesetNameLabel.Text = filename;
+        }
+
+        private void TileLengthControl_ValueChanged(object sender, EventArgs e)
+        {
+            int value = (int)TileLengthControl.Value;
+            int tileLength = Program.TileLength;
+
+            int remainder = value % 8;
+            if (remainder == 0)
+            {
+                TileLengthControl.Value = value;
+                tileLength = (int)TileLengthControl.Value;
+                Program.TileLength = tileLength;
+                return;
+            }
+
+            if (value > tileLength)
+            {
+                TileLengthControl.Value = tileLength * 2;
+            }
+            else
+            {
+                TileLengthControl.Value = tileLength / 2;
+            }
+
+            tileLength = (int)TileLengthControl.Value;
+            Program.TileLength = tileLength;
         }
     }
 }

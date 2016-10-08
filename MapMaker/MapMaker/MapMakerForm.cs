@@ -34,9 +34,9 @@ namespace MapMaker
             this.selectedTool = (int)Tools.Pen;
             this.selectedOverlay = (int)Program.Overlays.None;
 
-            int tileLength = (int)TileLengthControl.Value;
             int tilesetDisplayWidth = TilesetDisplay.Width;
 
+            int tileLength = Program.TileLength;
             Program.Init(tileLength, tilesetDisplayWidth);
 
             timer = new Timer();
@@ -115,7 +115,6 @@ namespace MapMaker
 
             Point start = previousCursor;
             Point end = MapDisplay.PointToClient(Cursor.Position);
-            int tileLength = (int)TileLengthControl.Value;
 
             List<Grid> selectedGrids = Program.GetGridsInArea(start, end, MapScale);
 
@@ -130,7 +129,7 @@ namespace MapMaker
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
                     //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
-                    //    int scaledLength = (int)Math.Round(tileLength * MapScale, 0);
+                    //    int scaledLength = (int)Math.Round(TileLength * MapScale, 0);
 
                     //    Rectangle bounds = new Rectangle(scaledX, scaledY, scaledLength, scaledLength);
                     //    bool intersects = Program.LineIntersectsRect(start, end, bounds);
@@ -139,7 +138,7 @@ namespace MapMaker
                     //        continue;
                     //    }
 
-                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, tileLength, scaledX, scaledY, MapScale);
+                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
                     using (Graphics g = Graphics.FromImage(image))
@@ -153,7 +152,7 @@ namespace MapMaker
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
                     //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
-                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, tileLength, scaledX, scaledY, MapScale);
+                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
                     using (Graphics g = Graphics.FromImage(image))
@@ -292,7 +291,7 @@ namespace MapMaker
                     {
                         case (int)Program.Overlays.Sectors:
                             bool editSectors = SectorChkptToggle.Checked;
-                            Program.HandleSectorOverlayMouseDown(e, editSectors);
+                            Program.HandleSectorOverlayMouseDown(e, editSectors, MapScale);
                             break;
 
                         case (int)Program.Overlays.Construction:
@@ -393,8 +392,10 @@ namespace MapMaker
 
             int clicks = 0;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = (int)Math.Round(cursor.X / MapScale, 0);
-            int y = (int)Math.Round(cursor.Y / MapScale, 0);
+            //int x = (int)Math.Round(cursor.X / MapScale, 0);
+            //int y = (int)Math.Round(cursor.Y / MapScale, 0);
+            int x = cursor.X;
+            int y = cursor.Y;
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
@@ -417,7 +418,7 @@ namespace MapMaker
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
             bool editSectors = SectorChkptToggle.Checked;
-            Program.HandleSectorOverlayMouseLeave(mouseEvent, editSectors);
+            Program.HandleSectorOverlayMouseLeave(mouseEvent, editSectors, MapScale);
         }
 
         protected Grid GetGridAtCursor()
@@ -555,7 +556,7 @@ namespace MapMaker
             }
 
             string filename = newFileForm.TilesetFilename;
-            int tileLength = (int)TileLengthControl.Value;
+            int tileLength = newFileForm.TileLength;
             int tilesetDisplayWidth = TilesetDisplay.Width;
             Init(tileLength, tilesetDisplayWidth);
 
@@ -604,7 +605,7 @@ namespace MapMaker
 
         protected void Init()
         {
-            int tileLength = (int)TileLengthControl.Value;
+            int tileLength = Program.TileLength;
             int tilesetDisplayWidth = TilesetDisplay.Width;
             Init(tileLength, tilesetDisplayWidth);
         }
@@ -646,27 +647,33 @@ namespace MapMaker
             bool unsavedChanges = Program.HasUnsavedChanges;
             if (unsavedChanges == true)
             {
-                DialogResult result = MessageBox.Show("You have unsaved changes. Do you still want to quit?",
+                DialogResult result = MessageBox.Show("You have unsaved changes. Do you wish to save?",
                        "Strikeforce Map Maker",
-                        MessageBoxButtons.YesNo,
+                        MessageBoxButtons.YesNoCancel,
                         MessageBoxIcon.Information);
 
-                if (result == DialogResult.Yes)
+                if (result == DialogResult.Cancel)
                 {
+                    e.Cancel = true;
                     return;
                 }
 
-                e.Cancel = true;
+                if (result == DialogResult.Yes)
+                {
+                    Program.UpdateMapFile();
+                }
             }
         }
 
         protected void displayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DisplayForm displayForm = Program.GetDisplayOptions();
+            DisplayForm displayForm = Program.GetDisplayOptions(this.Size);
             if (displayForm == null)
             {
                 return;
             }
+
+            this.WindowState = FormWindowState.Normal;
 
             Size resolution = displayForm.Resolution;
             int width = resolution.Width;
@@ -722,7 +729,7 @@ namespace MapMaker
             ResizeComponents(width, height);
         }
 
-        protected void mapToolStripMenuItem_Click(object sender, EventArgs e)
+        protected void mapPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MapPropertiesForm mapPropertiesForm = Program.GetMapProperties();
             if (mapPropertiesForm == null)
@@ -733,13 +740,14 @@ namespace MapMaker
             Program.Author = mapPropertiesForm.Author;
 
             string filename = mapPropertiesForm.TilesetFilename;
-            int tileLength = (int)TileLengthControl.Value;
+            int tileLength = mapPropertiesForm.TileLength;
             int tilesetDisplayWidth = TilesetDisplay.Width;
 
             Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
             Size mapSize = mapPropertiesForm.MapSize;
             MapDisplay.Size = mapSize;
+            MapDisplay.Image = new Bitmap(MapDisplay.Image, mapSize);
 
             Program.ResizeMap(mapSize.Width, mapSize.Height);
             Program.InvalidateMap();
@@ -766,33 +774,6 @@ namespace MapMaker
             this.MapScale = 1 / 4.0;
             Program.InvalidateMap();
             UpdateMap();
-        }
-
-        protected void TileWidth_ValueChanged(object sender, EventArgs e)
-        {
-            int value = (int)TileLengthControl.Value;
-            int tileLength = Program.TileLength;
-
-            int remainder = value % 8;
-            if (remainder == 0)
-            {
-                TileLengthControl.Value = value;
-                tileLength = (int)TileLengthControl.Value;
-                Program.TileLength = tileLength;
-                return;
-            }
-
-            if (value > tileLength)
-            {
-                TileLengthControl.Value = tileLength * 2;
-            }
-            else
-            {
-                TileLengthControl.Value = tileLength / 2;
-            }
-
-            tileLength = (int)TileLengthControl.Value;
-            Program.TileLength = tileLength;
         }
 
         protected void PenTool_Click(object sender, EventArgs e)
@@ -911,7 +892,7 @@ namespace MapMaker
                 int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
                 double hScrollPercent = hScroll / (double)hScrollMax;
 
-                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size, MapScale);
+                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
             }
             else
             {

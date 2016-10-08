@@ -622,19 +622,7 @@ namespace MapMaker
 
         public virtual void OnMouseEnter(MouseEventArgs e)
         {
-            OnMouseEnter(e, 1.0);
-        }
-
-        public virtual void OnMouseEnter(MouseEventArgs e, double scale)
-        {
             Point cursor = e.Location;
-            if (scale != 1.0)
-            {
-                int scaledX = (int)Math.Round(cursor.X / scale, 0);
-                int scaledY = (int)Math.Round(cursor.Y / scale, 0);
-                Point scaledCursor = new Point(scaledX, scaledY);
-                cursor = scaledCursor;
-            }
 
             this.IsMouseOver = true;
 
@@ -784,6 +772,7 @@ namespace MapMaker
             }
 
             Point cursor = e.Location;
+
             int deltaY = cursor.Y - previousCursor.Y;
             int deltaX = cursor.X - previousCursor.X;
 

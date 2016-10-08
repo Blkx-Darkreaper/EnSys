@@ -14,20 +14,42 @@ namespace MapMaker
     {
         public Size Resolution { get; protected set; }
 
-        public DisplayForm()
+        public DisplayForm(Size windowSize)
         {
             InitializeComponent();
 
-            ResolutionDdl.SelectedItem = ResolutionDdl.Items[0];
+            SetDefaultRes(windowSize);
+        }
+
+        protected void SetDefaultRes(Size windowSize)
+        {
+            string res = String.Format("{0} x {1}", windowSize.Width, windowSize.Height);
+
+            int index = ResolutionDdl.Items.IndexOf(res);
+            if (index == -1)
+            {
+                if (windowSize.Width == 640)
+                {
+                    index = 0;
+                }
+                else
+                {
+                    index = ResolutionDdl.Items.Count - 1;
+                }
+            }
+
+            ResolutionDdl.SelectedIndex = index;
         }
 
         protected void SaveButton_Click(object sender, EventArgs e)
         {
             string selectedRes = ResolutionDdl.GetItemText(ResolutionDdl.SelectedItem);
-            string widthStr = selectedRes.Split('x')[0].Trim();
+            string[] dimensions = selectedRes.Split('x');
+
+            string widthStr = dimensions[0].Trim();
             int width = (int)Convert.ToInt32(widthStr);
 
-            string heightStr = selectedRes.Split('x')[1].Trim();
+            string heightStr = dimensions[1].Trim();
             int height = (int)Convert.ToInt32(heightStr);
 
             this.Resolution = new Size(width, height);

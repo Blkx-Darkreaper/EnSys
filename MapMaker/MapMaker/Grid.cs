@@ -21,30 +21,38 @@ namespace MapMaker
         public int Zone { get; protected set; }
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
+        public bool IsComplete { get; protected set; }
+
+        protected Grid() { }
 
         protected Grid(Grid copy)
         {
             MatchCopy(copy);
         }
 
-        public Grid(Point corner) : this(corner, 0) { }
-
-        public Grid(Point corner, Tile tile)
+        public Grid(Point corner)
         {
             this.Corner = corner;
-            this.Tile = tile;
+            this.IsComplete = false;
         }
 
-        public Grid(Point corner, int zone)
+        public Grid(Point corner, Tile tile) : this(corner, NextSector, tile) { }
+
+        public Grid(Point corner, int sectorId, Tile tile) : this(corner)
         {
-            this.Id = nextId++;
-            this.Corner = corner;
             this.AllowsDriving = true;
             this.AllowsFlying = true;
             this.AllowsConstruction = true;
-            this.SectorId = NextSector;
+            this.SectorId = sectorId;
+            this.Tile = tile;
+        }
+
+        public Grid(Point corner, int sectorId, int zone, Tile tile) : this(corner, sectorId, tile)
+        {
+            this.Id = nextId++;
             this.Zone = zone;
             this.isCopy = false;
+            this.IsComplete = true;
         }
 
         [JsonConstructor]
@@ -109,7 +117,7 @@ namespace MapMaker
 
         public virtual void ToggleDriveable()
         {
-            this.AllowsDriving = !this.AllowsDriving;
+            this.SetDrivable(!this.AllowsDriving);
         }
 
         public virtual void SetDrivable(bool value)
@@ -119,7 +127,7 @@ namespace MapMaker
 
         public virtual void ToggleFlyable()
         {
-            this.AllowsFlying = !this.AllowsFlying;
+            this.SetDrivable(!this.AllowsFlying);
         }
 
         public virtual void SetFlyable(bool value)
@@ -129,7 +137,7 @@ namespace MapMaker
 
         public virtual void ToggleConstructable()
         {
-            this.AllowsConstruction = !this.AllowsConstruction;
+            this.SetDrivable(!this.AllowsConstruction);
         }
 
         public virtual void SetConstructable(bool value)
@@ -145,8 +153,9 @@ namespace MapMaker
 
         public Grid GetCopy()
         {
-            Grid copy = new Grid(this.Corner);
+            Grid copy = new Grid();
             copy.Id = this.Id;
+            copy.Corner = new Point(this.Corner.X, this.Corner.Y);
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
@@ -154,6 +163,7 @@ namespace MapMaker
             copy.Tile = this.Tile;
             copy.Zone = this.Zone;
             copy.isCopy = true;
+            copy.IsComplete = true;
 
             return copy;
         }

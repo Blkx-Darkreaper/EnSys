@@ -57,7 +57,6 @@
             this.SaveFileButton = new System.Windows.Forms.Button();
             this.LoadFileButton = new System.Windows.Forms.Button();
             this.NewFileButton = new System.Windows.Forms.Button();
-            this.TileLengthControl = new System.Windows.Forms.NumericUpDown();
             this.ZoomX4 = new System.Windows.Forms.Button();
             this.ZoomX2 = new System.Windows.Forms.Button();
             this.ZoomX1 = new System.Windows.Forms.Button();
@@ -65,10 +64,10 @@
             this.MapDisplay = new System.Windows.Forms.PictureBox();
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
+            this.GridToggle = new System.Windows.Forms.CheckBox();
             this.MiniMapDisplay = new MapMaker.MiniMap();
             this.MainMenu.SuspendLayout();
             this.MenuPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).BeginInit();
             this.MapPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MapDisplay)).BeginInit();
             this.TilesetPanel.SuspendLayout();
@@ -179,7 +178,7 @@
             // 
             this.noOverlayToolStripMenuItem.Enabled = false;
             this.noOverlayToolStripMenuItem.Name = "noOverlayToolStripMenuItem";
-            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.noOverlayToolStripMenuItem.Text = "Map";
             this.noOverlayToolStripMenuItem.Click += new System.EventHandler(this.noOverlayToolStripMenuItem_Click);
             // 
@@ -187,7 +186,7 @@
             // 
             this.sectorsToolStripMenuItem.Enabled = false;
             this.sectorsToolStripMenuItem.Name = "sectorsToolStripMenuItem";
-            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.sectorsToolStripMenuItem.Text = "Sectors";
             this.sectorsToolStripMenuItem.Click += new System.EventHandler(this.sectorsToolStripMenuItem_Click);
             // 
@@ -195,7 +194,7 @@
             // 
             this.constructionToolStripMenuItem.Enabled = false;
             this.constructionToolStripMenuItem.Name = "constructionToolStripMenuItem";
-            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.constructionToolStripMenuItem.Text = "Constructable";
             this.constructionToolStripMenuItem.Click += new System.EventHandler(this.constructionToolStripMenuItem_Click);
             // 
@@ -203,7 +202,7 @@
             // 
             this.drivableToolStripMenuItem.Enabled = false;
             this.drivableToolStripMenuItem.Name = "drivableToolStripMenuItem";
-            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.drivableToolStripMenuItem.Text = "Drivable";
             this.drivableToolStripMenuItem.Click += new System.EventHandler(this.drivableToolStripMenuItem_Click);
             // 
@@ -211,7 +210,7 @@
             // 
             this.flyableToolStripMenuItem.Enabled = false;
             this.flyableToolStripMenuItem.Name = "flyableToolStripMenuItem";
-            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.flyableToolStripMenuItem.Text = "Flyable";
             this.flyableToolStripMenuItem.Click += new System.EventHandler(this.flyableToolStripMenuItem_Click);
             // 
@@ -237,10 +236,11 @@
             this.mapPropertiesToolStripMenuItem.Name = "mapPropertiesToolStripMenuItem";
             this.mapPropertiesToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.mapPropertiesToolStripMenuItem.Text = "Map Properties";
-            this.mapPropertiesToolStripMenuItem.Click += new System.EventHandler(this.mapToolStripMenuItem_Click);
+            this.mapPropertiesToolStripMenuItem.Click += new System.EventHandler(this.mapPropertiesToolStripMenuItem_Click);
             // 
             // MenuPanel
             // 
+            this.MenuPanel.Controls.Add(this.GridToggle);
             this.MenuPanel.Controls.Add(this.SectorChkptToggle);
             this.MenuPanel.Controls.Add(this.AddToSectorButton);
             this.MenuPanel.Controls.Add(this.FillTool);
@@ -250,7 +250,6 @@
             this.MenuPanel.Controls.Add(this.SaveFileButton);
             this.MenuPanel.Controls.Add(this.LoadFileButton);
             this.MenuPanel.Controls.Add(this.NewFileButton);
-            this.MenuPanel.Controls.Add(this.TileLengthControl);
             this.MenuPanel.Controls.Add(this.ZoomX4);
             this.MenuPanel.Controls.Add(this.ZoomX2);
             this.MenuPanel.Controls.Add(this.ZoomX1);
@@ -286,7 +285,7 @@
             // FillTool
             // 
             this.FillTool.Enabled = false;
-            this.FillTool.Location = new System.Drawing.Point(429, 6);
+            this.FillTool.Location = new System.Drawing.Point(388, 6);
             this.FillTool.Name = "FillTool";
             this.FillTool.Size = new System.Drawing.Size(27, 23);
             this.FillTool.TabIndex = 10;
@@ -297,7 +296,7 @@
             // RectangleTool
             // 
             this.RectangleTool.Enabled = false;
-            this.RectangleTool.Location = new System.Drawing.Point(384, 6);
+            this.RectangleTool.Location = new System.Drawing.Point(343, 6);
             this.RectangleTool.Name = "RectangleTool";
             this.RectangleTool.Size = new System.Drawing.Size(39, 23);
             this.RectangleTool.TabIndex = 9;
@@ -308,7 +307,7 @@
             // LineTool
             // 
             this.LineTool.Enabled = false;
-            this.LineTool.Location = new System.Drawing.Point(341, 6);
+            this.LineTool.Location = new System.Drawing.Point(300, 6);
             this.LineTool.Name = "LineTool";
             this.LineTool.Size = new System.Drawing.Size(37, 23);
             this.LineTool.TabIndex = 8;
@@ -319,7 +318,7 @@
             // PenTool
             // 
             this.PenTool.Enabled = false;
-            this.PenTool.Location = new System.Drawing.Point(301, 6);
+            this.PenTool.Location = new System.Drawing.Point(260, 6);
             this.PenTool.Name = "PenTool";
             this.PenTool.Size = new System.Drawing.Size(34, 23);
             this.PenTool.TabIndex = 7;
@@ -357,29 +356,6 @@
             this.NewFileButton.Text = "New";
             this.NewFileButton.UseVisualStyleBackColor = true;
             this.NewFileButton.Click += new System.EventHandler(this.NewFile_Click);
-            // 
-            // TileLengthControl
-            // 
-            this.TileLengthControl.Location = new System.Drawing.Point(260, 9);
-            this.TileLengthControl.Maximum = new decimal(new int[] {
-            64,
-            0,
-            0,
-            0});
-            this.TileLengthControl.Minimum = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            this.TileLengthControl.Name = "TileLengthControl";
-            this.TileLengthControl.Size = new System.Drawing.Size(35, 20);
-            this.TileLengthControl.TabIndex = 3;
-            this.TileLengthControl.Value = new decimal(new int[] {
-            32,
-            0,
-            0,
-            0});
-            this.TileLengthControl.ValueChanged += new System.EventHandler(this.TileWidth_ValueChanged);
             // 
             // ZoomX4
             // 
@@ -458,6 +434,16 @@
             this.TilesetDisplay.TabStop = false;
             this.TilesetDisplay.Click += new System.EventHandler(this.TilesetDisplay_Click);
             // 
+            // GridToggle
+            // 
+            this.GridToggle.AutoSize = true;
+            this.GridToggle.Location = new System.Drawing.Point(421, 10);
+            this.GridToggle.Name = "GridToggle";
+            this.GridToggle.Size = new System.Drawing.Size(45, 17);
+            this.GridToggle.TabIndex = 13;
+            this.GridToggle.Text = "Grid";
+            this.GridToggle.UseVisualStyleBackColor = true;
+            // 
             // MiniMapDisplay
             // 
             this.MiniMapDisplay.Location = new System.Drawing.Point(12, 68);
@@ -491,7 +477,6 @@
             this.MainMenu.PerformLayout();
             this.MenuPanel.ResumeLayout(false);
             this.MenuPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).EndInit();
             this.MapPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MapDisplay)).EndInit();
             this.TilesetPanel.ResumeLayout(false);
@@ -526,7 +511,6 @@
         private System.Windows.Forms.Button ZoomX4;
         private System.Windows.Forms.Button ZoomX2;
         private System.Windows.Forms.Button ZoomX1;
-        private System.Windows.Forms.NumericUpDown TileLengthControl;
         private System.Windows.Forms.Button SaveFileButton;
         private System.Windows.Forms.Button LoadFileButton;
         private System.Windows.Forms.Button NewFileButton;
@@ -542,6 +526,7 @@
         private System.Windows.Forms.ToolStripMenuItem flyableToolStripMenuItem;
         private System.Windows.Forms.Button AddToSectorButton;
         private System.Windows.Forms.CheckBox SectorChkptToggle;
+        private System.Windows.Forms.CheckBox GridToggle;
     }
 }
 
