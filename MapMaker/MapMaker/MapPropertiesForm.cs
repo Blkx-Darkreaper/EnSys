@@ -17,16 +17,18 @@ namespace MapMaker
         public string Author { get; protected set; }
         protected int tileLength { get; set; }
 
-        public MapPropertiesForm(Size mapSize, string tilesetFilename, int tileLength, string dateCreated)
+        public MapPropertiesForm(Size mapSize, string tilesetFilename, int tileLength, string author, string dateCreated)
         {
             InitializeComponent();
             this.MapSize = mapSize;
             this.TilesetFilename = tilesetFilename;
+            this.Author = author;
             this.tileLength = tileLength;
 
             MapWidth.Value = mapSize.Width;
             MapHeight.Value = mapSize.Height;
             TilesetNameLabel.Text = tilesetFilename;
+            AuthorInput.Text = author;
             DateDisplay.Text = dateCreated;
         }
 

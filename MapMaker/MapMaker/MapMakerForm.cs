@@ -15,6 +15,7 @@ namespace MapMaker
         public double MapScale { get; protected set; }
         protected Bitmap mapImage = null;
         protected bool isDrawingOnMap { get; set; }
+        protected Point previousCursor { get; set; }
         protected int selectedTool { get; set; }
         protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
@@ -52,8 +53,8 @@ namespace MapMaker
         {
             base.OnPaint(e);
 
-            bool mapChanged = Program.HasMapChanged;
-            if (mapChanged == false)
+            bool displayChanged = Program.HasDisplayChanged;
+            if (displayChanged == false)
             {
                 return;
             }
@@ -73,7 +74,7 @@ namespace MapMaker
             Bitmap image = (Bitmap)MapDisplay.Image;
             if (image == null)
             {
-                image = Program.GetMap(MapScale);
+                image = Program.GetMapImage(MapScale);
                 mapImage = GetImageCopy(ref image);
             }
             else
@@ -84,6 +85,9 @@ namespace MapMaker
             // Mini map
             MiniMapDisplay.SetImage(ref image, MapPanel);
 
+            // Line and Rectangle tools
+            DrawToolPreview(ref image);
+
             // Overlay
             UpdateOverlay(ref image);
 
@@ -91,7 +95,82 @@ namespace MapMaker
             MapDisplay.Size = image.Size;
             MapDisplay.Image = image;
 
-            Program.MapIsUpToDate();
+            Program.DisplayIsUpToDate();
+        }
+
+        private void DrawToolPreview(ref Bitmap image)
+        {
+            if (isDrawingOnMap == false)
+            {
+                return;
+            }
+
+            if (selectedTool != (int)Tools.Line)
+            {
+                if (selectedTool != (int)Tools.Rectangle)
+                {
+                    return;
+                }
+            }
+
+            Point start = previousCursor;
+            Point end = MapDisplay.PointToClient(Cursor.Position);
+            int tileLength = (int)TileLengthControl.Value;
+
+            List<Grid> selectedGrids = Program.GetGridsInArea(start, end, MapScale);
+
+            Pen pen = new Pen(Brushes.Red);
+            pen.Width = 2;
+            pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
+
+            switch (selectedTool)
+            {
+                case (int)Tools.Line:
+                    //foreach (Grid grid in selectedGrids)
+                    //{
+                    //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
+                    //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
+                    //    int scaledLength = (int)Math.Round(tileLength * MapScale, 0);
+
+                    //    Rectangle bounds = new Rectangle(scaledX, scaledY, scaledLength, scaledLength);
+                    //    bool intersects = Program.LineIntersectsRect(start, end, bounds);
+                    //    if (intersects == false)
+                    //    {
+                    //        continue;
+                    //    }
+
+                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, tileLength, scaledX, scaledY, MapScale);
+                    //}
+
+                    using (Graphics g = Graphics.FromImage(image))
+                    {
+                        g.DrawLine(pen, start, end);
+                    }
+                    break;
+
+                case (int)Tools.Rectangle:
+                    //foreach (Grid grid in selectedGrids)
+                    //{
+                    //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
+                    //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
+                    //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, tileLength, scaledX, scaledY, MapScale);
+                    //}
+
+                    using (Graphics g = Graphics.FromImage(image))
+                    {
+                        int x = Math.Min(start.X, end.X);
+                        int y = Math.Min(start.Y, end.Y);
+                        int width = Math.Abs(start.X - end.X);
+                        int height = Math.Abs(start.Y - end.Y);
+
+                        Rectangle bounds = new Rectangle(x, y, width, height);
+                        g.DrawRectangle(pen, bounds);
+                    }
+                    break;
+
+                default:
+                    return;
+            }
         }
 
         protected void UpdateOverlay(ref Bitmap image)
@@ -187,33 +266,51 @@ namespace MapMaker
 
         protected void MapDisplay_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
             this.isDrawingOnMap = true;
             Program.AddDrawState();
             SetRedoEnabled();
 
-            Grid grid = GetGridAtCursor();
-
-            switch (selectedOverlay)
+            switch (selectedTool)
             {
-                case (int)Program.Overlays.Sectors:
-                    bool editSectors = SectorChkptToggle.Checked;
-                    Program.HandleSectorOverlayMouseDown(e, editSectors);
+                case (int)Tools.Line:
+                case (int)Tools.Rectangle:
+                    Program.DisplayHasChanged();
+                    previousCursor = MapDisplay.PointToClient(Cursor.Position);
                     break;
 
-                case (int)Program.Overlays.Construction:
-                    Program.SetSelectedValue(!grid.AllowsConstruction);
-                    break;
-
-                case (int)Program.Overlays.Drivable:
-                    Program.SetSelectedValue(!grid.AllowsDriving);
-                    break;
-
-                case (int)Program.Overlays.Flyable:
-                    Program.SetSelectedValue(!grid.AllowsFlying);
-                    break;
-
-                case (int)Program.Overlays.None:
+                case (int)Tools.Pen:
+                case (int)Tools.Fill:
                 default:
+                    Grid grid = GetGridAtCursor();
+
+                    switch (selectedOverlay)
+                    {
+                        case (int)Program.Overlays.Sectors:
+                            bool editSectors = SectorChkptToggle.Checked;
+                            Program.HandleSectorOverlayMouseDown(e, editSectors);
+                            break;
+
+                        case (int)Program.Overlays.Construction:
+                            Program.SetSelectedValue(!grid.AllowsConstruction);
+                            break;
+
+                        case (int)Program.Overlays.Drivable:
+                            Program.SetSelectedValue(!grid.AllowsDriving);
+                            break;
+
+                        case (int)Program.Overlays.Flyable:
+                            Program.SetSelectedValue(!grid.AllowsFlying);
+                            break;
+
+                        case (int)Program.Overlays.None:
+                        default:
+                            break;
+                    }
                     break;
             }
         }
@@ -221,13 +318,33 @@ namespace MapMaker
         protected void MapDisplay_MouseUp(object sender, MouseEventArgs e)
         {
             this.isDrawingOnMap = false;
+
             if (selectedOverlay == (int)Program.Overlays.Sectors)
             {
                 bool editSectors = SectorChkptToggle.Checked;
-                Program.HandleSectorOverlayMouseUp(e, editSectors);
+                Program.HandleSectorOverlayMouseUp(e, editSectors, MapScale);
             }
 
-            if (Program.HasMapChanged == false)
+            if (e.Button == MouseButtons.Right)
+            {
+                CancelDrawing();
+                return;
+            }
+
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+
+            switch (selectedTool)
+            {
+                case (int)Tools.Line:
+                    Program.LineTool(previousCursor, cursor, selectedOverlay, MapScale);
+                    break;
+
+                case (int)Tools.Rectangle:
+                    Program.RectangleTool(previousCursor, cursor, selectedOverlay, MapScale);
+                    break;
+            }
+
+            if (Program.HasDisplayChanged == false)
             {
                 return;
             }
@@ -244,7 +361,7 @@ namespace MapMaker
             if (selectedOverlay == (int)Program.Overlays.Sectors)
             {
                 bool editSectors = SectorChkptToggle.Checked;
-                Program.HandleSectorOverlayMouseMove(e, editSectors);
+                Program.HandleSectorOverlayMouseMove(e, editSectors, MapScale);
                 return;
             }
 
@@ -253,8 +370,18 @@ namespace MapMaker
                 return;
             }
 
-            Grid grid = GetGridAtCursor();
-            Program.PenTool(grid, selectedOverlay);
+            switch (selectedTool)
+            {
+                case (int)Tools.Line:
+                case (int)Tools.Rectangle:
+                    Program.MapHasChanged();
+                    break;
+
+                case (int)Tools.Pen:
+                    Grid grid = GetGridAtCursor();
+                    Program.PenTool(grid, selectedOverlay);
+                    break;
+            }
         }
 
         protected void MapDisplay_MouseEnter(object sender, EventArgs e)
@@ -266,13 +393,13 @@ namespace MapMaker
 
             int clicks = 0;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            int x = (int)Math.Round(cursor.X / MapScale, 0);
+            int y = (int)Math.Round(cursor.Y / MapScale, 0);
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
             bool editSectors = SectorChkptToggle.Checked;
-            Program.HandleSectorOverlayMouseEnter(mouseEvent, editSectors);
+            Program.HandleSectorOverlayMouseEnter(mouseEvent, editSectors, MapScale);
         }
 
         protected void MapDisplay_MouseLeave(object sender, EventArgs e)
@@ -370,6 +497,13 @@ namespace MapMaker
             return number;
         }
 
+        protected void CancelDrawing()
+        {
+            Program.CancelDrawing();
+
+            SetUndoEnabled();
+        }
+
         protected void Undo()
         {
             Program.Undo();
@@ -431,7 +565,7 @@ namespace MapMaker
             MapDisplay.Size = mapSize;
             Program.BuildMap(mapSize);
 
-            EnableMapOptions();
+            SetMapOptionsEnabled(true);
             ResetView();
             UpdateDisplay();
             timer.Start();
@@ -449,10 +583,20 @@ namespace MapMaker
 
         protected void LoadFile()
         {
-            Init();
+            // Get the Filename of the selected file
+            OpenFileDialog dialog = Program.GetMapOpenDialog();
+            string filename = Program.GetFilenameToOpen(dialog);
+            if (filename == null)
+            {
+                return;
+            }
 
-            Program.LoadMapFile();
-            EnableMapOptions();
+            Init();
+            Program.LoadMapFile(filename);
+
+            SetScalingEnabled(true);
+            SetToolsEnabled(true);
+            SetMapOptionsEnabled(true);
             ResetView();
             UpdateDisplay();
             timer.Start();
@@ -469,21 +613,6 @@ namespace MapMaker
         {
             MapDisplay.Image = null;
             Program.Init(tileLength, tilesetDisplayWidth);
-        }
-
-        protected void EnableMapOptions()
-        {
-            saveToolStripMenuItem.Enabled = true;
-            saveAsToolStripMenuItem.Enabled = true;
-
-            SaveFileButton.Enabled = true;
-
-            sectorsToolStripMenuItem.Enabled = true;
-            constructionToolStripMenuItem.Enabled = true;
-            drivableToolStripMenuItem.Enabled = true;
-            flyableToolStripMenuItem.Enabled = true;
-
-            mapToolStripMenuItem.Enabled = true;
         }
 
         protected void ResetView()
@@ -733,8 +862,40 @@ namespace MapMaker
 
         protected void SetSectorControlsEnabled(bool enabled)
         {
+            SetToolsEnabled(!enabled);
+
             SectorChkptToggle.Enabled = enabled;
             AddToSectorButton.Enabled = enabled;
+        }
+
+        protected void SetToolsEnabled(bool enabled)
+        {
+            PenTool.Enabled = enabled;
+            LineTool.Enabled = enabled;
+            RectangleTool.Enabled = enabled;
+            FillTool.Enabled = enabled;
+        }
+
+        protected void SetScalingEnabled(bool enabled)
+        {
+            ZoomX1.Enabled = enabled;
+            ZoomX2.Enabled = enabled;
+            ZoomX4.Enabled = enabled;
+        }
+
+        protected void SetMapOptionsEnabled(bool enabled)
+        {
+            saveToolStripMenuItem.Enabled = enabled;
+            saveAsToolStripMenuItem.Enabled = enabled;
+            SaveFileButton.Enabled = enabled;
+
+            noOverlayToolStripMenuItem.Enabled = enabled;
+            sectorsToolStripMenuItem.Enabled = enabled;
+            constructionToolStripMenuItem.Enabled = enabled;
+            drivableToolStripMenuItem.Enabled = enabled;
+            flyableToolStripMenuItem.Enabled = enabled;
+
+            mapPropertiesToolStripMenuItem.Enabled = enabled;
         }
 
         protected void AddToSectorsButton_Click(object sender, EventArgs e)
@@ -750,7 +911,7 @@ namespace MapMaker
                 int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
                 double hScrollPercent = hScroll / (double)hScrollMax;
 
-                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
+                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size, MapScale);
             }
             else
             {

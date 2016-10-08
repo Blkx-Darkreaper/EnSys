@@ -40,18 +40,6 @@ namespace MapMaker
             }
         }
 
-        public Rectangle GetScaledBounds(double scale)
-        {
-            int scaledX = (int)Math.Round(Area.Location.X * scale,0);
-            int scaledY = (int)Math.Round(Area.Location.Y * scale, 0);
-
-            int scaledWidth = (int)Math.Round(Area.Width * scale, 0);
-            int scaledHeight = (int)Math.Round(Area.Height * scale, 0);
-
-            Rectangle scaledBounds = new Rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
-            return scaledBounds;
-        }
-
         public void AddGrid(Grid grid, int tileLength)
         {
             int gridNwX = grid.Corner.X;

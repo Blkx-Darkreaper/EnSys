@@ -88,19 +88,22 @@ namespace MapMaker
 
         public int CompareTo(Grid other)
         {
-            int x = Corner.X;
-            int otherX = other.Corner.X;
-
-            int comparison = x - otherX;
-            if (comparison != 0)
-            {
-                return comparison;
-            }
+            int comparison;
 
             int y = Corner.Y;
             int otherY = other.Corner.Y;
 
             comparison = y - otherY;
+            if (comparison != 0)
+            {
+                return comparison;
+            }
+
+            int x = Corner.X;
+            int otherX = other.Corner.X;
+
+            comparison = x - otherX;
+
             return comparison;
         }
 

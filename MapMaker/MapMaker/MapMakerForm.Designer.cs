@@ -46,7 +46,7 @@
             this.flyableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mapPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuPanel = new System.Windows.Forms.Panel();
             this.SectorChkptToggle = new System.Windows.Forms.CheckBox();
             this.AddToSectorButton = new System.Windows.Forms.Button();
@@ -104,14 +104,14 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -119,7 +119,7 @@
             // 
             this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -127,14 +127,14 @@
             // 
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -177,8 +177,9 @@
             // 
             // noOverlayToolStripMenuItem
             // 
+            this.noOverlayToolStripMenuItem.Enabled = false;
             this.noOverlayToolStripMenuItem.Name = "noOverlayToolStripMenuItem";
-            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.noOverlayToolStripMenuItem.Text = "Map";
             this.noOverlayToolStripMenuItem.Click += new System.EventHandler(this.noOverlayToolStripMenuItem_Click);
             // 
@@ -186,7 +187,7 @@
             // 
             this.sectorsToolStripMenuItem.Enabled = false;
             this.sectorsToolStripMenuItem.Name = "sectorsToolStripMenuItem";
-            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sectorsToolStripMenuItem.Text = "Sectors";
             this.sectorsToolStripMenuItem.Click += new System.EventHandler(this.sectorsToolStripMenuItem_Click);
             // 
@@ -194,7 +195,7 @@
             // 
             this.constructionToolStripMenuItem.Enabled = false;
             this.constructionToolStripMenuItem.Name = "constructionToolStripMenuItem";
-            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.constructionToolStripMenuItem.Text = "Constructable";
             this.constructionToolStripMenuItem.Click += new System.EventHandler(this.constructionToolStripMenuItem_Click);
             // 
@@ -202,7 +203,7 @@
             // 
             this.drivableToolStripMenuItem.Enabled = false;
             this.drivableToolStripMenuItem.Name = "drivableToolStripMenuItem";
-            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.drivableToolStripMenuItem.Text = "Drivable";
             this.drivableToolStripMenuItem.Click += new System.EventHandler(this.drivableToolStripMenuItem_Click);
             // 
@@ -210,7 +211,7 @@
             // 
             this.flyableToolStripMenuItem.Enabled = false;
             this.flyableToolStripMenuItem.Name = "flyableToolStripMenuItem";
-            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.flyableToolStripMenuItem.Text = "Flyable";
             this.flyableToolStripMenuItem.Click += new System.EventHandler(this.flyableToolStripMenuItem_Click);
             // 
@@ -218,7 +219,7 @@
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.displayToolStripMenuItem,
-            this.mapToolStripMenuItem});
+            this.mapPropertiesToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
@@ -230,13 +231,13 @@
             this.displayToolStripMenuItem.Text = "Display";
             this.displayToolStripMenuItem.Click += new System.EventHandler(this.displayToolStripMenuItem_Click);
             // 
-            // mapToolStripMenuItem
+            // mapPropertiesToolStripMenuItem
             // 
-            this.mapToolStripMenuItem.Enabled = false;
-            this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
-            this.mapToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.mapToolStripMenuItem.Text = "Map Properties";
-            this.mapToolStripMenuItem.Click += new System.EventHandler(this.mapToolStripMenuItem_Click);
+            this.mapPropertiesToolStripMenuItem.Enabled = false;
+            this.mapPropertiesToolStripMenuItem.Name = "mapPropertiesToolStripMenuItem";
+            this.mapPropertiesToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.mapPropertiesToolStripMenuItem.Text = "Map Properties";
+            this.mapPropertiesToolStripMenuItem.Click += new System.EventHandler(this.mapToolStripMenuItem_Click);
             // 
             // MenuPanel
             // 
@@ -284,6 +285,7 @@
             // 
             // FillTool
             // 
+            this.FillTool.Enabled = false;
             this.FillTool.Location = new System.Drawing.Point(429, 6);
             this.FillTool.Name = "FillTool";
             this.FillTool.Size = new System.Drawing.Size(27, 23);
@@ -294,6 +296,7 @@
             // 
             // RectangleTool
             // 
+            this.RectangleTool.Enabled = false;
             this.RectangleTool.Location = new System.Drawing.Point(384, 6);
             this.RectangleTool.Name = "RectangleTool";
             this.RectangleTool.Size = new System.Drawing.Size(39, 23);
@@ -304,6 +307,7 @@
             // 
             // LineTool
             // 
+            this.LineTool.Enabled = false;
             this.LineTool.Location = new System.Drawing.Point(341, 6);
             this.LineTool.Name = "LineTool";
             this.LineTool.Size = new System.Drawing.Size(37, 23);
@@ -314,6 +318,7 @@
             // 
             // PenTool
             // 
+            this.PenTool.Enabled = false;
             this.PenTool.Location = new System.Drawing.Point(301, 6);
             this.PenTool.Name = "PenTool";
             this.PenTool.Size = new System.Drawing.Size(34, 23);
@@ -378,6 +383,7 @@
             // 
             // ZoomX4
             // 
+            this.ZoomX4.Enabled = false;
             this.ZoomX4.Location = new System.Drawing.Point(221, 6);
             this.ZoomX4.Name = "ZoomX4";
             this.ZoomX4.Size = new System.Drawing.Size(33, 23);
@@ -388,6 +394,7 @@
             // 
             // ZoomX2
             // 
+            this.ZoomX2.Enabled = false;
             this.ZoomX2.Location = new System.Drawing.Point(182, 6);
             this.ZoomX2.Name = "ZoomX2";
             this.ZoomX2.Size = new System.Drawing.Size(33, 23);
@@ -398,6 +405,7 @@
             // 
             // ZoomX1
             // 
+            this.ZoomX1.Enabled = false;
             this.ZoomX1.Location = new System.Drawing.Point(144, 6);
             this.ZoomX1.Name = "ZoomX1";
             this.ZoomX1.Size = new System.Drawing.Size(32, 23);
@@ -514,7 +522,7 @@
         private System.Windows.Forms.Panel TilesetPanel;
         public System.Windows.Forms.PictureBox TilesetDisplay;
         private System.Windows.Forms.ToolStripMenuItem displayToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mapPropertiesToolStripMenuItem;
         private System.Windows.Forms.Button ZoomX4;
         private System.Windows.Forms.Button ZoomX2;
         private System.Windows.Forms.Button ZoomX1;

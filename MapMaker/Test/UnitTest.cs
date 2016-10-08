@@ -317,7 +317,9 @@ namespace Test
             Point start = new Point(40, 40);
             Point end = new Point(136, 80);
 
-            List<Grid> selectedGrids = Program.GetGridsInArea(start, end);
+            double scale = 1.0;
+
+            List<Grid> selectedGrids = Program.GetGridsInArea(start, end, scale);
             Assert.IsTrue(selectedGrids.Count == 8);
 
             Grid first = selectedGrids[0];
@@ -334,11 +336,12 @@ namespace Test
         {
             LoadTileset(128, 128);
 
+            double scale = 1.0;
             Point start, end;
 
             start = new Point(0, 0);
             end = new Point(64, 64);
-            List<Grid> quadrant1 = Program.GetGridsInArea(start, end);
+            List<Grid> quadrant1 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant1)
             {
                 grid.SectorId = 1;
@@ -346,7 +349,7 @@ namespace Test
 
             start = new Point(64, 0);
             end = new Point(128, 64);
-            List<Grid> quadrant2 = Program.GetGridsInArea(start, end);
+            List<Grid> quadrant2 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant2)
             {
                 grid.SectorId = 2;
@@ -354,7 +357,7 @@ namespace Test
 
             start = new Point(0, 64);
             end = new Point(128, 128);
-            List<Grid> quadrant0 = Program.GetGridsInArea(start, end);
+            List<Grid> quadrant0 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant0)
             {
                 grid.SectorId = 0;

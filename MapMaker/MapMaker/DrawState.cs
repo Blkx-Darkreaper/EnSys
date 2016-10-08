@@ -11,8 +11,9 @@ namespace MapMaker
         // Non memento pattern
         //public LinkedList<GridHistory> allUpdatedGrids { get; protected set; }
         // Memento pattern
-        public LinkedList<Grid> allMementos { get; protected set; } // previous states
-        public LinkedList<Grid> allOmens { get; protected set; }    // future states
+        public List<Grid> AllMementos { get; protected set; } // previous states
+        public List<Grid> AllOmens { get; protected set; }    // future states
+        public bool IsEmpty { get; protected set; }
 
         /* Non memento pattern
         public DrawEvent(List<GridHistory> omens)
@@ -44,8 +45,9 @@ namespace MapMaker
 
         public DrawState()
         {
-            allMementos = new LinkedList<Grid>();
-            allOmens = new LinkedList<Grid>();
+            AllMementos = new List<Grid>();
+            AllOmens = new List<Grid>();
+            IsEmpty = true;
         }
 
         public void AddMemento(Grid grid)
@@ -56,7 +58,16 @@ namespace MapMaker
             }
 
             Grid memento = grid.GetCopy();
-            allMementos.AddLast(memento);
+
+            int index = AllMementos.FindIndex(g => g.Equals(grid));
+            if (index != -1)
+            {
+                //AllMementos[index] = memento;
+                return;
+            }
+
+            AllMementos.Add(memento);
+            IsEmpty = false;
         }
 
         public void AddOmen(Grid grid)
@@ -67,7 +78,15 @@ namespace MapMaker
             }
 
             Grid omen = grid.GetCopy();
-            allOmens.AddLast(omen);
+
+            int index = AllOmens.FindIndex(g => g.Equals(grid));
+            if (index != -1)
+            {
+                return;
+            }
+
+            AllOmens.Add(omen);
+            IsEmpty = false;
         }
 
         //public void Undo()

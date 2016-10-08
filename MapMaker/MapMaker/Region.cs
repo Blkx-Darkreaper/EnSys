@@ -94,6 +94,18 @@ namespace MapMaker
             eastMargin = new Rectangle(rightX, y, quarterWidth, height);
         }
 
+        public Rectangle GetScaledBounds(double scale)
+        {
+            int scaledX = (int)Math.Round(Area.Location.X * scale, 0);
+            int scaledY = (int)Math.Round(Area.Location.Y * scale, 0);
+
+            int scaledWidth = (int)Math.Round(Area.Width * scale, 0);
+            int scaledHeight = (int)Math.Round(Area.Height * scale, 0);
+
+            Rectangle scaledBounds = new Rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
+            return scaledBounds;
+        }
+
         public int CompareTo(Region other)
         {
             int area = this.Width * this.Height;
@@ -610,7 +622,20 @@ namespace MapMaker
 
         public virtual void OnMouseEnter(MouseEventArgs e)
         {
+            OnMouseEnter(e, 1.0);
+        }
+
+        public virtual void OnMouseEnter(MouseEventArgs e, double scale)
+        {
             Point cursor = e.Location;
+            if (scale != 1.0)
+            {
+                int scaledX = (int)Math.Round(cursor.X / scale, 0);
+                int scaledY = (int)Math.Round(cursor.Y / scale, 0);
+                Point scaledCursor = new Point(scaledX, scaledY);
+                cursor = scaledCursor;
+            }
+
             this.IsMouseOver = true;
 
             int state = GetCursorLocation(cursor);
