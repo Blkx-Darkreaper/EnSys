@@ -29,6 +29,28 @@ namespace MapMaker
             //this.Cursor = Cursors.Hand;
         }
 
+        public virtual void UpdateImage(ref Bitmap image)
+        {
+            double width = image.Width;
+            int miniMapWidth = (int)(width * scale);
+
+            // Center mini map
+            int x = this.Width / 2;
+            x -= miniMapWidth / 2;
+
+            UpdateImage(ref image, x, miniMapWidth, this.Height);
+        }
+
+        public virtual void UpdateImage(ref Bitmap image, int x, int miniMapWidth, int miniMapHeight)
+        {
+            Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
+            Graphics graphics = Graphics.FromImage(miniMapImage);
+            graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
+
+            this.Image = miniMapImage;
+            this.miniMap = miniMapImage;
+        }
+
         public virtual void SetImage(ref Bitmap image, Panel mapPanel)
         {
             this.mapPanel = mapPanel;
@@ -51,12 +73,13 @@ namespace MapMaker
             this.ViewBox = new Rectangle(x, 0, viewWidth, viewHeight);
             this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, miniMapHeight);
 
-            Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
-            Graphics graphics = Graphics.FromImage(miniMapImage);
-            graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
+            UpdateImage(ref image, x, miniMapWidth, miniMapHeight);
+            //Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
+            //Graphics graphics = Graphics.FromImage(miniMapImage);
+            //graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
 
-            this.Image = miniMapImage;
-            this.miniMap = miniMapImage;
+            //this.Image = miniMapImage;
+            //this.miniMap = miniMapImage;
         }
 
         public virtual void Scroll(object sender, ScrollEventArgs e)

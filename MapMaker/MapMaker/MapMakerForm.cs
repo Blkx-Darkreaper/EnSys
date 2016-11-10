@@ -83,7 +83,14 @@ namespace MapMaker
             }
 
             // Mini map
-            MiniMapDisplay.SetImage(ref image, MapPanel);
+            if (MiniMapDisplay.Image == null)
+            {
+                MiniMapDisplay.SetImage(ref image, MapPanel);
+            }
+            else
+            {
+                MiniMapDisplay.UpdateImage(ref image);
+            }
 
             // Line and Rectangle tools
             DrawToolPreview(ref image);
