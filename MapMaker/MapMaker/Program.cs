@@ -31,8 +31,8 @@ namespace MapMaker
         private static Bitmap tilesetImage { get; set; }
         private const string IMAGE_FILTER = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif)|*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif";
         private static string currentSaveFilename { get; set; }
-        private const string DEFAULT_FILENAME = "Map{0}.sfm";
-        private const string MAP_FILTER = "Map Files(*.sfm)|*.sfm";
+        private const string DEFAULT_FILENAME = "Map{0}.json";
+        private const string MAP_FILTER = "Map Files(*.json)|*.json";
         public static string Author { get; set; }
         private static DateTime dateCreated { get; set; }
         private static List<Tile> tileset;
@@ -101,7 +101,7 @@ namespace MapMaker
 
             for (int i = 0; i < totalColours; i++)
             {
-                float hue = i * (360 / (float)totalColours);    // 0 - 360
+                float hue = (i * (360 / (float)totalColours) + seed) % 360;    // 0 - 360
                 hue = Program.Clamp(hue, 0f, 360f);
 
                 Color colour = GetColourFromHsl(alpha, hue, saturation, brightness);

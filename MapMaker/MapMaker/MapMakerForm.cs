@@ -18,7 +18,7 @@ namespace MapMaker
         protected int selectedTool { get; set; }
         protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.5.4";
+        protected string version = "1.5.8";
 
         public enum Tools
         {
@@ -731,6 +731,8 @@ namespace MapMaker
             int height = MapMakerForm.ActiveForm.Height;
 
             ResizeComponents(width, height);
+            Program.InvalidateMap();
+            UpdateMap();
         }
 
         protected void mapPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
