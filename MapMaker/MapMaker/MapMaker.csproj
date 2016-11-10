@@ -56,7 +56,6 @@
       <DependentUpon>DisplayForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DrawState.cs" />
-    <Compile Include="GridHistory.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="MapPropertiesForm.cs">
       <SubType>Form</SubType>

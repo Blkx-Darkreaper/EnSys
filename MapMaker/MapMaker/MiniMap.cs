@@ -74,12 +74,6 @@ namespace MapMaker
             this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, miniMapHeight);
 
             UpdateImage(ref image, x, miniMapWidth, miniMapHeight);
-            //Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
-            //Graphics graphics = Graphics.FromImage(miniMapImage);
-            //graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
-
-            //this.Image = miniMapImage;
-            //this.miniMap = miniMapImage;
         }
 
         public virtual void Scroll(object sender, ScrollEventArgs e)
@@ -175,12 +169,10 @@ namespace MapMaker
             bool cursorInsideViewBox = ViewBox.Contains(cursor);
             if (cursorInsideViewBox == true)
             {
-                //Cursor.Current = Cursors.NoMove2D;
                 this.Cursor = Cursors.Hand;
             }
             else
             {
-                //Cursor.Current = Cursors.Default;
                 this.Cursor = Cursors.Default;
             }
         }
@@ -200,16 +192,7 @@ namespace MapMaker
             this.Cursor = Cursors.NoMove2D;
 
             int deltaX = cursor.X - previousCursor.X;
-            //int signX = Program.GetSign(deltaX);
-            ////deltaX = (int)Math.Log10(Math.Abs(deltaX));
-            //deltaX = Program.ClampToMin(Math.Abs(deltaX), 1);
-            //deltaX = signX * deltaX;
-
             int deltaY = cursor.Y - previousCursor.Y;
-            //int signY = Program.GetSign(deltaY);
-            ////deltaY = (int)Math.Log10(Math.Abs(deltaY));
-            //deltaY = Program.ClampToMin(Math.Abs(deltaY), 1);
-            //deltaY = signY * deltaY;
 
             int hScrollChange = mapPanel.HorizontalScroll.SmallChange;
             int hScroll = mapPanel.HorizontalScroll.Value;

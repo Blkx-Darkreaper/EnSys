@@ -65,16 +65,6 @@ namespace MapMaker
             this.Zone = zone;
         }
 
-        //public bool Equals(Grid other)
-        //{
-        //    if (other == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    return Id.Equals(other.Id);
-        //}
-
         public bool Equals(Grid other)
         {
             int x = this.Corner.X;

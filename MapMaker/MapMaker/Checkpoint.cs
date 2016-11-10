@@ -111,11 +111,7 @@ namespace MapMaker
             Point cursor = e.Location;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            //int sign = Program.GetSign(deltaY);
-
             int y = this.Location.Y + deltaY;
-            //y += sign;
-
             this.Location = new Point(0, y);
 
             this.previousCursor = cursor;

@@ -399,8 +399,6 @@ namespace MapMaker
 
             int clicks = 0;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            //int x = (int)Math.Round(cursor.X / MapScale, 0);
-            //int y = (int)Math.Round(cursor.Y / MapScale, 0);
             int x = cursor.X;
             int y = cursor.Y;
             int delta = 0;
@@ -473,24 +471,6 @@ namespace MapMaker
                 Redo();
             }
         }
-
-        //public void SetSector(Keys keyCode)
-        //{
-        //    if (selectedOverlay != (int)Program.Overlays.Sectors)
-        //    {
-        //        return;
-        //    }
-
-        //    int sectorId = GetLetterKeyNumber(keyCode);
-        //    if (sectorId == -1)
-        //    {
-        //        return;
-        //    }
-
-        //    sectorId %= 25;
-
-        //    Program.SetSelectedGridSector(sectorId);
-        //}
 
         private static int GetLetterKeyNumber(Keys keyCode)
         {
