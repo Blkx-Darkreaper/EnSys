@@ -761,6 +761,11 @@ namespace MapMaker
 
         protected void ScaleNone_Click(object sender, EventArgs e)
         {
+            if (Program.MapScale == 1)
+            {
+                return;
+            }
+
             Program.MapScale = 1;
             Program.InvalidateMap();
             UpdateMap();
@@ -768,6 +773,11 @@ namespace MapMaker
 
         protected void ScaleHalf_Click(object sender, EventArgs e)
         {
+            if (Program.MapScale == 0.5)
+            {
+                return;
+            }
+
             Program.MapScale = 0.5;
             Program.InvalidateMap();
             UpdateMap();
@@ -775,6 +785,11 @@ namespace MapMaker
 
         protected void ScaleQuarter_Click(object sender, EventArgs e)
         {
+            if (Program.MapScale == 0.25)
+            {
+                return;
+            }
+
             Program.MapScale = 0.25;
             Program.InvalidateMap();
             UpdateMap();
