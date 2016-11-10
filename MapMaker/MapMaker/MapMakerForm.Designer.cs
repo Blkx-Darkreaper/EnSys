@@ -48,6 +48,7 @@
             this.displayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuPanel = new System.Windows.Forms.Panel();
+            this.GridToggle = new System.Windows.Forms.CheckBox();
             this.SectorChkptToggle = new System.Windows.Forms.CheckBox();
             this.AddToSectorButton = new System.Windows.Forms.Button();
             this.FillTool = new System.Windows.Forms.Button();
@@ -64,8 +65,9 @@
             this.MapDisplay = new System.Windows.Forms.PictureBox();
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
-            this.GridToggle = new System.Windows.Forms.CheckBox();
             this.MiniMapDisplay = new MapMaker.MiniMap();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenu.SuspendLayout();
             this.MenuPanel.SuspendLayout();
             this.MapPanel.SuspendLayout();
@@ -81,7 +83,8 @@
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.MainMenu.Location = new System.Drawing.Point(0, 0);
             this.MainMenu.Name = "MainMenu";
             this.MainMenu.Size = new System.Drawing.Size(624, 24);
@@ -257,6 +260,16 @@
             this.MenuPanel.Name = "MenuPanel";
             this.MenuPanel.Size = new System.Drawing.Size(600, 35);
             this.MenuPanel.TabIndex = 4;
+            // 
+            // GridToggle
+            // 
+            this.GridToggle.AutoSize = true;
+            this.GridToggle.Location = new System.Drawing.Point(421, 10);
+            this.GridToggle.Name = "GridToggle";
+            this.GridToggle.Size = new System.Drawing.Size(45, 17);
+            this.GridToggle.TabIndex = 13;
+            this.GridToggle.Text = "Grid";
+            this.GridToggle.UseVisualStyleBackColor = true;
             // 
             // SectorChkptToggle
             // 
@@ -434,16 +447,6 @@
             this.TilesetDisplay.TabStop = false;
             this.TilesetDisplay.Click += new System.EventHandler(this.TilesetDisplay_Click);
             // 
-            // GridToggle
-            // 
-            this.GridToggle.AutoSize = true;
-            this.GridToggle.Location = new System.Drawing.Point(421, 10);
-            this.GridToggle.Name = "GridToggle";
-            this.GridToggle.Size = new System.Drawing.Size(45, 17);
-            this.GridToggle.TabIndex = 13;
-            this.GridToggle.Text = "Grid";
-            this.GridToggle.UseVisualStyleBackColor = true;
-            // 
             // MiniMapDisplay
             // 
             this.MiniMapDisplay.Location = new System.Drawing.Point(12, 68);
@@ -453,6 +456,21 @@
             this.MiniMapDisplay.TabIndex = 3;
             this.MiniMapDisplay.TabStop = false;
             this.MiniMapDisplay.ViewBox = new System.Drawing.Rectangle(0, 0, 0, 0);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // MapMakerForm
             // 
@@ -527,6 +545,8 @@
         private System.Windows.Forms.Button AddToSectorButton;
         private System.Windows.Forms.CheckBox SectorChkptToggle;
         private System.Windows.Forms.CheckBox GridToggle;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 

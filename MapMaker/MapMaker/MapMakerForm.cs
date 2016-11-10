@@ -19,6 +19,7 @@ namespace MapMaker
         protected int selectedTool { get; set; }
         protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
+        protected string version = "1.5.4";
 
         public enum Tools
         {
@@ -132,6 +133,7 @@ namespace MapMaker
             switch (selectedTool)
             {
                 case (int)Tools.Line:
+                    // Draw tile preview
                     //foreach (Grid grid in selectedGrids)
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
@@ -148,6 +150,7 @@ namespace MapMaker
                     //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
+                    // Draw line
                     using (Graphics g = Graphics.FromImage(image))
                     {
                         g.DrawLine(pen, start, end);
@@ -155,6 +158,7 @@ namespace MapMaker
                     break;
 
                 case (int)Tools.Rectangle:
+                    // Draw tile preview
                     //foreach (Grid grid in selectedGrids)
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
@@ -162,6 +166,7 @@ namespace MapMaker
                     //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
+                    // Draw rectangle
                     using (Graphics g = Graphics.FromImage(image))
                     {
                         int x = Math.Min(start.X, end.X);
@@ -885,6 +890,11 @@ namespace MapMaker
             {
                 Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
             }
+        }
+
+        protected void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(String.Format("Strikeforce MapMaker\nVersion {0}\n2016", version), "About Strikeforce MapMaker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
