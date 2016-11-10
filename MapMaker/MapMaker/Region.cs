@@ -5,19 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MapMaker
 {
     public class Region : IComparable<Region>, IEquatable<Region>
     {
+        [JsonIgnore]
         public Rectangle Area { get; protected set; }
         protected Rectangle previousArea { get; set; }
         public Point Location { get { return Area.Location; } protected set { Area = UpdateAreaLocation(value); } }
         public Size Size { get { return Area.Size; } protected set { Area = UpdateAreaSize(value); } }
+        [JsonIgnore]
         public int Width { get { return Area.Width; } protected set { Area = UpdateAreaWidth(value); } }
+        [JsonIgnore]
         public int Height { get { return Area.Height; } protected set { Area = UpdateAreaHeight(value); } }
+        [JsonIgnore]
         public Cursor Cursor { get; protected set; }
+        [JsonIgnore]
         public bool IsMouseOver { get; protected set; }
+        [JsonIgnore]
         public bool HasMouseFocus { get; protected set; }
         protected int tileLength { get; set; }
         protected Rectangle northMargin { get; set; }

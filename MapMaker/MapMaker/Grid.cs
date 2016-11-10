@@ -21,6 +21,7 @@ namespace MapMaker
         public int Zone { get; protected set; }
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
+        [JsonIgnore]
         public bool IsComplete { get; protected set; }
 
         protected Grid() { }

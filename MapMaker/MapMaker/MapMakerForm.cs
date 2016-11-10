@@ -72,6 +72,8 @@ namespace MapMaker
 
         public void UpdateMap()
         {
+            bool addPadding = (bool)GridToggle.Checked;
+
             Bitmap image = (Bitmap)MapDisplay.Image;
             if (image == null)
             {
@@ -244,7 +246,7 @@ namespace MapMaker
 
         public void UpdateTileset()
         {
-            //bool addPadding = (bool)Padding.Checked;
+            //bool addPadding = (bool)GridToggle.Checked;
             bool addPadding = false;
 
             Bitmap image = Program.DrawTileset(addPadding);
@@ -895,6 +897,11 @@ namespace MapMaker
         protected void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(String.Format("Strikeforce MapMaker\nVersion {0}\n2016", version), "About Strikeforce MapMaker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void GridToggle_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.MapHasChanged();
         }
     }
 }
