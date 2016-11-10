@@ -14,7 +14,6 @@ namespace MapMaker
     public class MiniMap : PictureBox
     {
         public Rectangle ViewBox { get; set; }
-        public double scale { get; set; }
         protected Bitmap miniMap { get; set; }
         protected Rectangle miniMapBounds { get; set; }
         protected bool isDragging { get; set; }
@@ -31,21 +30,40 @@ namespace MapMaker
 
         public virtual void UpdateImage(ref Bitmap image)
         {
-            double width = image.Width;
-            int miniMapWidth = (int)(width * scale);
+            double imageWidth = image.Width;
+            double imageHeight = image.Height;
+
+            double miniMapScale = this.Height / imageHeight;
+            int miniMapWidth = (int)(imageWidth * miniMapScale);
+
+            int viewWidth = (int)(this.mapPanel.Width * miniMapScale);
+            int viewHeight = (int)(this.mapPanel.Height * miniMapScale);
+
+            double changeOfScale = this.ViewBox.Width / (double)viewWidth;
 
             // Center mini map
             int x = this.Width / 2;
             x -= miniMapWidth / 2;
 
-            UpdateImage(ref image, x, miniMapWidth, this.Height);
-        }
+            this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, this.Height);
 
-        public virtual void UpdateImage(ref Bitmap image, int x, int miniMapWidth, int miniMapHeight)
-        {
+            int viewX = this.ViewBox.X;
+            int viewY = 0;
+            if (changeOfScale != 0)
+            {
+                viewY = (int)(this.ViewBox.Y / changeOfScale);
+            }
+            int maxY = this.Height - viewHeight;
+            if (viewY > maxY)
+            {
+                viewY = maxY;
+            }
+
+            this.ViewBox = new Rectangle(x, viewY, viewWidth, viewHeight);
+
             Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
             Graphics graphics = Graphics.FromImage(miniMapImage);
-            graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
+            graphics.DrawImage(image, x, 0, miniMapWidth, this.Height);
 
             this.Image = miniMapImage;
             this.miniMap = miniMapImage;
@@ -55,25 +73,7 @@ namespace MapMaker
         {
             this.mapPanel = mapPanel;
 
-            double width = image.Width;
-            double height = image.Height;
-
-            int miniMapHeight = this.Height;
-            this.scale = miniMapHeight / height;
-
-            int viewWidth = (int)(mapPanel.Width * scale);
-            int viewHeight = (int)(mapPanel.Height * scale);
-
-            int miniMapWidth = (int)(width * scale);
-
-            // Center mini map
-            int x = this.Width / 2;
-            x -= miniMapWidth / 2;
-
-            this.ViewBox = new Rectangle(x, 0, viewWidth, viewHeight);
-            this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, miniMapHeight);
-
-            UpdateImage(ref image, x, miniMapWidth, miniMapHeight);
+            UpdateImage(ref image);
         }
 
         public virtual void Scroll(object sender, ScrollEventArgs e)

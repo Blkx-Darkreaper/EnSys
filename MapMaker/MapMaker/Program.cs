@@ -25,6 +25,7 @@ namespace MapMaker
         }
 
         public static int TileLength { get; set; }
+        public static double MapScale { get; set; }
         public static int TilesetDisplayWidth { get; set; }
         private static string tilesetFilename { get; set; }
         private static Bitmap tilesetImage { get; set; }
@@ -1049,7 +1050,7 @@ namespace MapMaker
         {
             Point cursor = e.Location;
 
-            // Adjust cursor to scale
+            // Adjust cursor to miniMapScale
             Point scaledCursor = GetScaledCursor(cursor, scale);
             e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
 
@@ -1091,7 +1092,7 @@ namespace MapMaker
         {
             Point cursor = e.Location;
 
-            // Adjust cursor to scale
+            // Adjust cursor to miniMapScale
             Point scaledCursor = GetScaledCursor(cursor, scale);
             e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
 
@@ -1121,7 +1122,7 @@ namespace MapMaker
         {
             Point cursor = e.Location;
 
-            // Adjust cursor to scale
+            // Adjust cursor to miniMapScale
             Point scaledCursor = GetScaledCursor(cursor, scale);
             e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
 
@@ -1171,7 +1172,7 @@ namespace MapMaker
         {
             Point cursor = e.Location;
 
-            // Adjust cursor to scale
+            // Adjust cursor to miniMapScale
             Point scaledCursor = GetScaledCursor(cursor, scale);
             e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
 
@@ -1219,7 +1220,7 @@ namespace MapMaker
         {
             Point cursor = e.Location;
 
-            // Adjust cursor to scale
+            // Adjust cursor to miniMapScale
             int scaledX = (int)Math.Round(cursor.X / scale, 0);
             int scaledY = (int)Math.Round(cursor.Y / scale, 0);
             Point scaledCursor = new Point(scaledX, scaledY);
@@ -1629,13 +1630,13 @@ namespace MapMaker
 
                 //if (addPadding == true)
                 //{
-                //    x = i % tilesWide * (int)(TileLength * scale + 1);
-                //    y = i / tilesWide * (int)(TileLength * scale + 1);
+                //    x = i % tilesWide * (int)(TileLength * miniMapScale + 1);
+                //    y = i / tilesWide * (int)(TileLength * miniMapScale + 1);
                 //}
                 //else
                 //{
-                //    x = i % tilesWide * (int)(TileLength * scale);
-                //    y = i / tilesWide * (int)(TileLength * scale);
+                //    x = i % tilesWide * (int)(TileLength * miniMapScale);
+                //    y = i / tilesWide * (int)(TileLength * miniMapScale);
                 //}
 
                 if (addPadding == true)
@@ -1751,7 +1752,7 @@ namespace MapMaker
             int normalWidth = width;
             int normalHeight = height;
 
-            // Adjust rectangle to full scale
+            // Adjust rectangle to full miniMapScale
             if (scale != 1)
             {
                 normalCornerX = (int)Math.Round(cornerX / scale, 0);

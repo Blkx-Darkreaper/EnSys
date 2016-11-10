@@ -467,7 +467,6 @@
             // 
             this.MiniMapDisplay.Location = new System.Drawing.Point(12, 68);
             this.MiniMapDisplay.Name = "MiniMapDisplay";
-            this.MiniMapDisplay.scale = 0D;
             this.MiniMapDisplay.Size = new System.Drawing.Size(160, 160);
             this.MiniMapDisplay.TabIndex = 3;
             this.MiniMapDisplay.TabStop = false;
