@@ -18,7 +18,7 @@ namespace MapMaker
         protected int selectedTool { get; set; }
         protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.5.8";
+        protected string version = "1.5.10";
 
         public enum Tools
         {
@@ -279,6 +279,31 @@ namespace MapMaker
                     Program.PenTool(grid, selectedOverlay);
                     break;
             }
+        }
+
+        protected void MapDisplay_DoubleClick(object sender, EventArgs e)
+        {
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
+            {
+                return;
+            }
+
+            int clicks = 2;
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            int x = cursor.X;
+            int y = cursor.Y;
+            int delta = 0;
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+
+            bool editSectors = SectorChkptToggle.Checked;
+            if (editSectors == true)
+            {
+                return;
+            }
+
+            double scale = Program.MapScale;
+
+            Program.HandleSectorOverlayDoubleClick(mouseEvent, editSectors, scale);
         }
 
         protected void MapDisplay_MouseDown(object sender, MouseEventArgs e)
@@ -868,6 +893,9 @@ namespace MapMaker
 
             SectorChkptToggle.Enabled = enabled;
             AddToSectorButton.Enabled = enabled;
+            addSectorToolStripMenuItem.Enabled = enabled;
+            addCheckpointToolStripMenuItem.Enabled = enabled;
+            addSpawnpointToolStripMenuItem.Enabled = enabled;
         }
 
         protected void SetToolsEnabled(bool enabled)
@@ -902,6 +930,11 @@ namespace MapMaker
 
         protected void AddToSectorsButton_Click(object sender, EventArgs e)
         {
+            AddSectorOrCheckpoint();
+        }
+
+        protected void AddSectorOrCheckpoint()
+        {
             int vScroll = MapPanel.VerticalScroll.Value;
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
             double vScrollPercent = vScroll / (double)vScrollMax;
@@ -926,9 +959,34 @@ namespace MapMaker
             MessageBox.Show(String.Format("Strikeforce MapMaker\nVersion {0}\n2016", version), "About Strikeforce MapMaker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void GridToggle_CheckedChanged(object sender, EventArgs e)
+        protected void GridToggle_CheckedChanged(object sender, EventArgs e)
         {
             Program.MapHasChanged();
+        }
+
+        protected void addSectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SectorChkptToggle.Checked = true;
+            AddSectorOrCheckpoint();
+        }
+
+        protected void addCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SectorChkptToggle.Checked = false;
+            AddSectorOrCheckpoint();
+        }
+
+        protected void addSpawnpointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
+
+            int hScroll = MapPanel.HorizontalScroll.Value;
+            int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+            double hScrollPercent = hScroll / (double)hScrollMax;
+
+            Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
         }
     }
 }

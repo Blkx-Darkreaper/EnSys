@@ -64,7 +64,7 @@ namespace MapMaker
             //    viewY = maxY;
             //}
 
-            //this.ViewBox = new Rectangle(x, viewY, viewWidth, viewHeight);
+            //this.ViewBox = new Rectangle(deltaX, viewY, viewWidth, viewHeight);
 
             Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
             Graphics graphics = Graphics.FromImage(miniMapImage);

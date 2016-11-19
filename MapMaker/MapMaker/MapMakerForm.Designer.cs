@@ -38,6 +38,9 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addCheckpointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSpawnpointToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noOverlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sectorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,7 +147,10 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.undoToolStripMenuItem,
-            this.redoToolStripMenuItem});
+            this.redoToolStripMenuItem,
+            this.addSectorToolStripMenuItem,
+            this.addCheckpointToolStripMenuItem,
+            this.addSpawnpointToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -153,7 +159,7 @@
             // 
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -161,9 +167,34 @@
             // 
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // addSectorToolStripMenuItem
+            // 
+            this.addSectorToolStripMenuItem.Enabled = false;
+            this.addSectorToolStripMenuItem.Name = "addSectorToolStripMenuItem";
+            this.addSectorToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addSectorToolStripMenuItem.Text = "Add Sector";
+            this.addSectorToolStripMenuItem.Click += new System.EventHandler(this.addSectorToolStripMenuItem_Click);
+            // 
+            // addCheckpointToolStripMenuItem
+            // 
+            this.addCheckpointToolStripMenuItem.Enabled = false;
+            this.addCheckpointToolStripMenuItem.Name = "addCheckpointToolStripMenuItem";
+            this.addCheckpointToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addCheckpointToolStripMenuItem.Text = "Add Checkpoint";
+            this.addCheckpointToolStripMenuItem.Click += new System.EventHandler(this.addCheckpointToolStripMenuItem_Click);
+            // 
+            // addSpawnpointToolStripMenuItem
+            // 
+            this.addSpawnpointToolStripMenuItem.Enabled = false;
+            this.addSpawnpointToolStripMenuItem.Name = "addSpawnpointToolStripMenuItem";
+            this.addSpawnpointToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addSpawnpointToolStripMenuItem.Text = "Add Spawnpoint";
+            this.addSpawnpointToolStripMenuItem.Visible = false;
+            this.addSpawnpointToolStripMenuItem.Click += new System.EventHandler(this.addSpawnpointToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -439,6 +470,7 @@
             this.MapDisplay.TabStop = false;
             this.MapDisplay.Click += new System.EventHandler(this.MapDisplay_Click);
             this.MapDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.MapDisplay_Paint);
+            this.MapDisplay.DoubleClick += new System.EventHandler(this.MapDisplay_DoubleClick);
             this.MapDisplay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapDisplay_MouseDown);
             this.MapDisplay.MouseEnter += new System.EventHandler(this.MapDisplay_MouseEnter);
             this.MapDisplay.MouseLeave += new System.EventHandler(this.MapDisplay_MouseLeave);
@@ -547,6 +579,9 @@
         private System.Windows.Forms.CheckBox GridToggle;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSectorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addCheckpointToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addSpawnpointToolStripMenuItem;
     }
 }
 
