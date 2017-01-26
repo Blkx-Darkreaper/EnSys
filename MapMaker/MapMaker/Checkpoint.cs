@@ -13,9 +13,10 @@ namespace MapMaker
 {
     public class Checkpoint : Region, IComparable<Checkpoint>, IEquatable<Checkpoint>
     {
-        [JsonIgnore] public int Key { get; protected set; }
+        [JsonIgnore]
+        public int Key { get; protected set; }
 
-        public Checkpoint(int key, int width, int height) : base()
+        public Checkpoint(int key, int width, int height) : base(height)
         {
             this.Key = key;
             this.Location = new Point(0, key);
@@ -24,8 +25,9 @@ namespace MapMaker
             this.HasMouseFocus = false;
         }
 
-        [JsonConstructor] public Checkpoint(Point location, Size size)
-            : base()
+        [JsonConstructor]
+        public Checkpoint(Point location, Size size)
+            : base(size.Height)
         {
             this.Key = location.Y;
             this.Location = location;
@@ -74,7 +76,7 @@ namespace MapMaker
             graphics.FillEllipse(brush, endBounds);
         }
 
-        public override void UpdateBorders()
+        protected override void SetBorders()
         {
             base.SetBordersRelative(this.Area);
         }

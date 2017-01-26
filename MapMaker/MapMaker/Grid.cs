@@ -21,7 +21,8 @@ namespace MapMaker
         public int Zone { get; protected set; }
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
-        [JsonIgnore] public bool IsComplete { get; protected set; }
+        [JsonIgnore]
+        public bool IsComplete { get; protected set; }
 
         protected Grid() { }
 
@@ -55,7 +56,8 @@ namespace MapMaker
             this.IsComplete = true;
         }
 
-        [JsonConstructor] public Grid(int id, Point corner, bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
+        [JsonConstructor]
+        public Grid(int id, Point corner, bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
             this.Id = id;
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
