@@ -18,11 +18,12 @@ namespace SpriteRipper
         {
             this.BitsPerColour = bitsPerColour;
             this.tileSize = tileSize;
-            this.pattern = GetPattern(image, bitsPerColour, tileSize);
+            this.pattern = GetPattern(ref image, bitsPerColour, tileSize);
             image.Dispose();
         }
 
-        public Tile(Bitmap image, int bitsPerColour, int tileSize, int index) : this(image, bitsPerColour, tileSize)
+        public Tile(Bitmap image, int bitsPerColour, int tileSize, int index)
+            : this(image, bitsPerColour, tileSize)
         {
             this.Index = index;
         }
@@ -43,7 +44,8 @@ namespace SpriteRipper
             bool first = true;
             foreach (int number in pattern)
             {
-                if(first == false) {
+                if (first == false)
+                {
                     message += ", ";
                 }
 
@@ -125,7 +127,7 @@ namespace SpriteRipper
             return image;
         }
 
-        protected List<int> GetPattern(Bitmap image, int bitsPerColour, int tileSize)
+        protected List<int> GetPattern(ref Bitmap image, int bitsPerColour, int tileSize)
         {
             int? previousPixelInt = null;
 
@@ -211,7 +213,10 @@ namespace SpriteRipper
                 throw new Exception("Tile sizes do not match");
             }
 
-            int totalMatches = 0;
+            int exactMatches = 0;
+            int similarMatches = 0;
+            int threshold = 100;
+
             List<bool> patternMatches = new List<bool>();
             for (int i = 0; i < pattern.Count; i++)
             {
@@ -221,15 +226,22 @@ namespace SpriteRipper
                 if (diff == otherDiff)
                 {
                     patternMatches.Add(true);
-                    totalMatches++;
+                    exactMatches++;
+                    continue;
                 }
-                else
+
+                patternMatches.Add(false);
+
+                if (Math.Abs(diff - otherDiff) > threshold)
                 {
-                    patternMatches.Add(false);
+                    continue;
                 }
+
+                similarMatches++;
             }
 
-            patternMatch = (float)totalMatches / (float)patternMatches.Count;
+            patternMatch = (float)exactMatches / (float)patternMatches.Count; // only consider exact matches
+            //patternMatch = (float)(2 * exactMatches + similarMatches) / (float)(2 * patternMatches.Count);    // consider similarity
 
             return patternMatches;
         }

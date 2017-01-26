@@ -170,8 +170,6 @@ namespace SpriteRipper
             Images = new ImageCollection(path, tileSize, width, height, offsetX, offsetY);
 
             allSortedTiles = new TileSorting();
-
-            Images.SetSubImageByRefFromImage(ref image, 0);
         }
 
         public static Bitmap LoadCroppedImage(string filename, int tileSize, int offsetX, int offsetY)
@@ -184,13 +182,16 @@ namespace SpriteRipper
             int croppedWidth = tileSize * ((width - offsetX) / tileSize);
             int croppedHeight = tileSize * ((height - offsetY) / tileSize);
 
+            int x = -offsetX;
+            int y = -offsetY;
+
             if (croppedWidth != width || croppedHeight != height)
             {
-                Rectangle rect = new Rectangle(offsetX, offsetY, croppedWidth, croppedHeight);
+                Rectangle bounds = new Rectangle(0, 0, croppedWidth, croppedHeight);
                 Bitmap croppedImage = new Bitmap(croppedWidth, croppedHeight, PixelFormat.Format24bppRgb);
                 using (Graphics graphics = Graphics.FromImage(croppedImage))
                 {
-                    graphics.DrawImage(image, 0, 0, rect, GraphicsUnit.Pixel);
+                    graphics.DrawImage(image, bounds, offsetX, offsetY, croppedWidth, croppedHeight, GraphicsUnit.Pixel);
                 }
 
                 image = croppedImage;
@@ -466,10 +467,10 @@ namespace SpriteRipper
 
         private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int x, int y, int zoom)
         {
-                int tileIndex = tile.Index;
-                Bitmap tileImage = Program.GetTileImage(tileIndex);
+            int tileIndex = tile.Index;
+            Bitmap tileImage = Program.GetTileImage(tileIndex);
 
-                DrawImageOntoCanvas(ref image, ref tileImage, x, y, zoom);
+            DrawImageOntoCanvas(ref image, ref tileImage, x, y, zoom);
         }
 
         private static void DrawImageOntoCanvas(ref Bitmap canvas, ref Bitmap image, int x, int y)

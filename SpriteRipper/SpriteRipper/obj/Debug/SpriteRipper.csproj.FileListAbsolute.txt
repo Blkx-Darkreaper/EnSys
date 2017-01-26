@@ -25,3 +25,12 @@ C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\ob
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.Gui.resources
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.Properties.Resources.resources
 C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.csproj.GenerateResource.Cache
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\bin\Debug\SpriteRipper.exe.config
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.exe
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.pdb
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\bin\Debug\SpriteRipper.exe
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\bin\Debug\SpriteRipper.pdb
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.Gui.resources
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.Properties.Resources.resources
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Debug\SpriteRipper.csproj.GenerateResource.Cache

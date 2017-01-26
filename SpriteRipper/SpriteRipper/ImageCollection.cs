@@ -308,18 +308,18 @@ namespace SpriteRipper
         {
             Bitmap subImage = GetSubImage(subImageIndex);
 
-            int subImageWidth = CurrentSubImageSize.Width;
+            int subImageWidth = subImage.Width;
 
             int tilesWide = subImageWidth / TileSize;
 
             int x = (subImageTileIndex % tilesWide) * TileSize;
             int y = (subImageTileIndex / tilesWide) * TileSize;
 
-            Rectangle rect = new Rectangle(x, y, TileSize, TileSize);
+            Rectangle rect = new Rectangle(0, 0, TileSize, TileSize);
             Bitmap tileImage = new Bitmap(TileSize, TileSize);
             using (Graphics graphics = Graphics.FromImage(tileImage))
             {
-                graphics.DrawImage(subImage, 0, 0, rect, GraphicsUnit.Pixel);
+                graphics.DrawImage(subImage, rect, x, y, TileSize, TileSize, GraphicsUnit.Pixel);
             }
 
             return tileImage;

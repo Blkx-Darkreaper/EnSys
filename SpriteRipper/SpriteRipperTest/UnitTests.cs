@@ -114,6 +114,71 @@ namespace SpriteRipperTest
         }
 
         [TestMethod]
+        public void CompareSimilarTiles()
+        {
+            // Setup
+            int bitsPerColour = 8;
+            int tileSize = 32;
+            int offsetX = 0;
+            int offsetY = 0;
+
+            Program.LoadImage(@"C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\roofTest.png", tileSize, offsetX, offsetY);
+
+            int index;
+            Bitmap image1, image2;
+            Tile tile1, tile2;
+            Tuple<float, float> results;
+            float patternMatch, colourMatch;
+            bool identical;
+
+            index = 4;
+            image1 = Program.GetTileImage(index);
+            tile1 = new Tile(image1, bitsPerColour, tileSize, index);
+            Console.WriteLine("Tile 1: " + tile1.ToString());
+
+            index = 6;
+            image2 = Program.GetTileImage(index);
+            tile2 = new Tile(image2, bitsPerColour, tileSize, 1);
+            Console.WriteLine("Tile 2: " + tile2.ToString());
+
+            // Execution
+            results = tile1.GetMatches(tile2);
+            patternMatch = results.Item1;
+            Console.WriteLine("Pattern Match: " + patternMatch.ToString());
+
+            colourMatch = results.Item2;
+            Console.WriteLine("Colour Match: " + colourMatch.ToString());
+
+            identical = tile1.IdenticalTo(tile2);
+
+            // Assertion
+            Assert.IsFalse(identical);
+
+            index = 7;
+            image1 = Program.GetTileImage(index);
+            tile1 = new Tile(image1, bitsPerColour, tileSize, index);
+            Console.WriteLine("Tile 1: " + tile1.ToString());
+
+            index = 9;
+            image2 = Program.GetTileImage(index);
+            tile2 = new Tile(image2, bitsPerColour, tileSize, 1);
+            Console.WriteLine("Tile 2: " + tile2.ToString());
+
+            // Execution
+            results = tile1.GetMatches(tile2);
+            patternMatch = results.Item1;
+            Console.WriteLine("Pattern Match: " + patternMatch.ToString());
+
+            colourMatch = results.Item2;
+            Console.WriteLine("Colour Match: " + colourMatch.ToString());
+
+            identical = tile1.IdenticalTo(tile2);
+
+            // Assertion
+            Assert.IsFalse(identical);
+        }
+
+        [TestMethod]
         public void LimitedTest()
         {
             // Setup

@@ -725,7 +725,7 @@
             this.TilesetZoom.Size = new System.Drawing.Size(28, 20);
             this.TilesetZoom.TabIndex = 5;
             this.TilesetZoom.Value = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             0});
@@ -758,7 +758,7 @@
             this.TilesWide.Size = new System.Drawing.Size(54, 20);
             this.TilesWide.TabIndex = 2;
             this.TilesWide.Value = new decimal(new int[] {
-            5,
+            8,
             0,
             0,
             0});

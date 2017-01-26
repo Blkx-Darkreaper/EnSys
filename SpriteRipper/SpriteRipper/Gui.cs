@@ -319,7 +319,7 @@ namespace SpriteRipper
 
             int zoom = (int)ImageZoom.Value;
 
-            int subImageIndex = (int)SubImageSelector.Value;
+            //int subImageIndex = (int)SubImageSelector.Value;
 
             Size subImageSize = Program.Images.CurrentSubImageSize;
             if (subImageSize == null)
@@ -327,8 +327,8 @@ namespace SpriteRipper
                 throw new NullReferenceException("No sub image loaded");
             }
 
-            int width = subImageSize.Width - tileSize * (int)Math.Ceiling((double)offsetX / tileSize);
-            int height = subImageSize.Height - tileSize * (int)Math.Ceiling((double)offsetY / tileSize);
+            int width = subImageSize.Width;
+            int height = subImageSize.Height;
 
             int tilesWide = width / tileSize;
             int tilesHigh = height / tileSize;
@@ -347,6 +347,8 @@ namespace SpriteRipper
             Bitmap displayImage = new Bitmap(width, height);
             Program.DrawAllTilesOntoImage(ref displayImage, tilesWide, tileSize, zoom, addPadding);
 
+            ImageDisplay.Width = width;
+            ImageDisplay.Height = height;
             ImageDisplay.Image = displayImage;
 
             Status.Text = String.Format("Displayed image tiles");
@@ -434,7 +436,7 @@ namespace SpriteRipper
                     }
 
                     Rectangle insetBounds = new Rectangle(x + 15, y + 15, scaledSubImageWidth - 30, scaledSubImageHeight - 30);
-                    graphics.FillEllipse(green, insetBounds);
+                    graphics.FillRectangle(green, insetBounds);
                 }
 
                 // Highlight selected sub canvas
