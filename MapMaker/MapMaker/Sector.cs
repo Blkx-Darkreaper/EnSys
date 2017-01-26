@@ -11,10 +11,11 @@ namespace MapMaker
     public class Sector : Region
     {
         public int SectorId { get; protected set; }
+        public Spawnpoint Spawnpoint { get; protected set; }
         protected bool isEmpty { get; set; }
 
         public Sector(int sectorId, int tileLength)
-            : base(tileLength)
+            : base()
         {
             this.SectorId = sectorId;
             this.isEmpty = true;
@@ -25,12 +26,14 @@ namespace MapMaker
             this.Location = new Point(x, y);
             this.Size = new Size(width, height);
             this.isEmpty = false;
+
+            AddSpawnpoint();
         }
 
-        protected override void SetBorders()
+        public override void UpdateBorders()
         {
             int length = Math.Min(this.Width, this.Height);
-            if (length <= tileLength)
+            if (length <= Program.TileLength)
             {
                 base.SetBordersRelative(this.Area);
             }
@@ -38,6 +41,34 @@ namespace MapMaker
             {
                 base.SetBordersAbsolute(this.Area);
             }
+        }
+
+        protected override Rectangle UpdateArea(Point location, Size size)
+        {
+            Rectangle updatedArea = base.UpdateArea(location, size);
+
+            UpdateSpawnPosition(this.Area, 0, 0);
+
+            return updatedArea;
+        }
+
+        public override void Move(int deltaX, int deltaY)
+        {
+            base.Move(deltaX, deltaY);
+
+            UpdateSpawnPosition(this.Area, deltaX, deltaY);
+        }
+
+        protected virtual void UpdateSpawnPosition(Rectangle updatedArea, int deltaX, int deltaY)
+        {
+            if (Spawnpoint == null)
+            {
+                return;
+            }
+
+            Spawnpoint.Move(deltaX, deltaY);
+
+            Spawnpoint.KeepInBounds(updatedArea, Spawnpoint.Location.X, Spawnpoint.Location.Y);
         }
 
         public void AddGrid(Grid grid, int tileLength)
@@ -81,6 +112,40 @@ namespace MapMaker
 
             this.Width += deltaWidth;
             this.Height += deltaHeight;
+        }
+
+        public void AddSpawnpoint()
+        {
+            if (Spawnpoint != null)
+            {
+                throw new InvalidOperationException(string.Format("Sector {0} already contains a spawnpoint", SectorId));
+            }
+
+            int x = this.Location.X;
+            int y = this.Location.Y;
+
+            int width = this.Area.Width;
+            int height = this.Area.Height;
+
+            int tileLength = Program.TileLength;
+
+            int tilesWide = width / tileLength;
+            int tilesHigh = height / tileLength;
+
+            int midX = x + tileLength * (tilesWide / 2);
+            int midY = y + tileLength * (tilesHigh / 2);
+
+            Point centerTileLocation = Program.SnapToGrid(midX, midY);
+
+            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation);
+            AddSpawnpoint(spawnpoint);
+        }
+
+        public void AddSpawnpoint(Spawnpoint toAdd)
+        {
+            this.Spawnpoint = toAdd;
+            toAdd.SetParentSector(this);
+            Program.AddSpawnpoint(toAdd);
         }
     }
 }
