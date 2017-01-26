@@ -110,6 +110,7 @@ namespace SpriteRipper
         public static SaveFileDialog GetFilenameToSave()
         {
             SaveFileDialog dialog = new SaveFileDialog();
+            dialog.FileName = "tileset.png";
 
             // Set filter options
             dialog.Filter = IMAGE_FILTER;
