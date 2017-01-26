@@ -49,7 +49,6 @@ namespace SpriteRipper
         }
         Object IEnumerator.Current { get { return Current; } }
         public TileGroup Current { get { try { return allTileGroups[position]; } catch (IndexOutOfRangeException) { throw new InvalidOperationException(); } } }
-        //public Object Current { get { return allTileGroups[position]; } }
 
         public TileSorting()
         {
@@ -111,11 +110,6 @@ namespace SpriteRipper
             return maxGroupSize;
         }
 
-        //public void AddGroup(int masterIndex)
-        //{
-        //    TileGroup group = new TileGroup(masterIndex);
-        //    allTileGroups.Add(group);
-        //}
         public void AddGroup(Tile master)
         {
             TileGroup group = new TileGroup(master);

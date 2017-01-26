@@ -60,20 +60,6 @@ namespace SpriteRipper
             this.TileSize = tileSize;
             this.allSubImages = new List<SubImage>();
 
-            //Bitmap canvas = Program.LoadImage(path);
-            //int imageWidth = canvas.Width;
-            //int imageHeight = canvas.Height;
-
-            //int croppedWidth = TileSize * ((imageWidth - offsetX) / TileSize);
-            //int croppedHeight = TileSize * ((imageHeight - offsetY) / TileSize);
-
-            //if (croppedWidth != imageWidth || croppedHeight != imageHeight)
-            //{
-            //    Rectangle rect = new Rectangle(offsetX, offsetY, croppedWidth, croppedHeight);
-            //    Bitmap croppedImage = canvas.Clone(rect, PixelFormat.Format24bppRgb);
-            //    canvas = croppedImage;
-            //}
-
             int imageWidth = CroppedImageSize.Width;
             int imageHeight = CroppedImageSize.Height;
 
@@ -127,7 +113,6 @@ namespace SpriteRipper
                 allSubImages.Add(subImageToAdd);
             }
 
-            //this.CurrentSubImage = null;
             this.CurrentSubImageIndex = subImageIndex;
 
             Bitmap image = GetImage();
@@ -169,7 +154,6 @@ namespace SpriteRipper
         {
             int width = CroppedImageSize.Width;
             int totalTilesWide = width / TileSize;
-            //int imageHeight = CroppedImageSize.Height;
 
             SubImage subImage = allSubImages[subImageIndex];
 
@@ -180,9 +164,6 @@ namespace SpriteRipper
 
             int subImagesWide = (int)Math.Ceiling(width / (float)subImageWidth);
 
-            //int totalTilesWide = imageWidth / TileSize;
-            //int totalTilesHigh = imageHeight / TileSize;
-
             Size medianSubImageSize = allSubImages[0].Size;
             
             int medianSubImageWidth = medianSubImageSize.Width;
@@ -191,10 +172,6 @@ namespace SpriteRipper
             int medianSubImageHeight = medianSubImageSize.Height;
             int medianSubImageTilesHigh = medianSubImageHeight / TileSize;
 
-            //int tileIndex = tileIndex
-            //    + tileIndex / medianSubImageTilesWide * medianSubImageTilesWide * (subImagesWide - 1)
-            //    + (subImageIndex % subImagesWide) * medianSubImageTilesWide
-            //    + subImageIndex / subImagesWide * medianSubImageTilesWide * subImagesWide * medianSubImageTilesHigh;
             int tileIndex = subImageTileIndex % subImageTilesWide
                 + subImageTileIndex / subImageTilesWide * totalTilesWide
                 + subImageIndex / subImagesWide * medianSubImageTilesHigh * totalTilesWide
@@ -264,7 +241,6 @@ namespace SpriteRipper
             int x = (subImageIndex % subImagesWide) * medianSubImageWidth;
             int y = (subImageIndex / subImagesWide) * medianSubImageHeight;
             Rectangle rect = new Rectangle(x, y, subImageWidth, subImageHeight);
-            //Bitmap subImage = canvas.Clone(rect, PixelFormat.Format24bppRgb);
             subImage = new Bitmap(subImageWidth, subImageHeight);
             using (Graphics graphics = Graphics.FromImage(subImage))
             {
@@ -346,7 +322,6 @@ namespace SpriteRipper
                 graphics.DrawImage(subImage, 0, 0, rect, GraphicsUnit.Pixel);
             }
 
-            //Bitmap image = subImage.Clone(rect, subImage.PixelFormat);
             return tileImage;
         }
 

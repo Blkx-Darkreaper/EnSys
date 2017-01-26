@@ -10,42 +10,22 @@ namespace SpriteRipper
     public class Tile : IComparable<Tile>
     {
         public int Index { get; protected set; }
-        //public Bitmap loadedImage { get; set; }
         protected List<int> pattern { get; set; }
         public int BitsPerColour { get; protected set; }
-        //protected int cornerX { get; set; }
-        //protected int cornerY { get; set; }
         protected int tileSize { get; set; }
 
         public Tile(Bitmap image, int bitsPerColour, int tileSize)
         {
-            //this.loadedImage = loadedImage;
             this.BitsPerColour = bitsPerColour;
             this.tileSize = tileSize;
             this.pattern = GetPattern(image, bitsPerColour, tileSize);
             image.Dispose();
-            //loadedImage = null;
         }
 
         public Tile(Bitmap image, int bitsPerColour, int tileSize, int index) : this(image, bitsPerColour, tileSize)
         {
             this.Index = index;
         }
-
-        //public Tile(Bitmap canvas, int BitsPerColour, int x, int y, int TileSize)
-        //    : this(canvas, BitsPerColour, TileSize)
-        //{
-        //    this.cornerX = x;
-        //    this.cornerY = y;
-        //    this.TileSize = TileSize;
-        //}
-
-        //public Tile(Bitmap canvas, int BitsPerColour, int tileIndex, int x, int y, int TileSize) : this(canvas, BitsPerColour, TileSize, tileIndex)
-        //{
-        //    this.cornerX = x;
-        //    this.cornerY = y;
-        //    this.TileSize = TileSize;
-        //}
 
         public int CompareTo(Tile other)
         {
@@ -141,7 +121,6 @@ namespace SpriteRipper
 
         public Bitmap GetTileImage()
         {
-            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
             return image;
         }
@@ -209,19 +188,10 @@ namespace SpriteRipper
 
         public Tuple<float, float> GetMatches(Tile otherTile)
         {
-            //List<bool> patternMatches = GetPatternMatches(otherTile);
-            //float patternMatch = GetPatternMatch(patternMatches);
             float patternMatch = 0f;
             List<bool> patternMatches = GetPatternMatchAndMatches(otherTile, out patternMatch);
 
-            //List<int?> colourMatches = GetColourMatches(otherTile, patternMatches); //debug
-            //float colourMatch2 = GetColourMatch(colourMatches); //debug
             float colourMatch = GetColourMatch(otherTile, patternMatches);
-
-            //if (colourMatch2 != colourMatch)
-            //{
-            //    Console.WriteLine("Failed");
-            //}
 
             Tuple<float, float> results = new Tuple<float, float>(patternMatch, colourMatch);
             return results;
@@ -330,11 +300,6 @@ namespace SpriteRipper
         {
             List<int?> colourMatches = new List<int?>();
 
-            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
-
-            //int otherX = otherTile.cornerX;
-            //int otherY = otherTile.cornerY;
-            //Bitmap otherImage = Program.GetTileImage(otherX, otherY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
 
             using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
@@ -385,11 +350,6 @@ namespace SpriteRipper
 
             List<int?> colourMatches = new List<int?>();
 
-            //Bitmap canvas = Program.GetTileImage(cornerX, cornerY, TileSize);
-
-            //int otherX = otherTile.cornerX;
-            //int otherY = otherTile.cornerY;
-            //Bitmap otherImage = Program.GetTileImage(otherX, otherY, TileSize);
             Bitmap image = Program.GetTileImage(Index);
             using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
             {

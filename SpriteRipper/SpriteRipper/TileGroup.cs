@@ -9,13 +9,11 @@ namespace SpriteRipper
 {
     class TileGroup : IEnumerator<int>, IEnumerable<int>
     {
-        //public int MasterIndex { get; protected set; }
         public int MasterIndex { get { return Master.Index; } }
         public Tile Master { get; protected set; }
         protected int position = -1;
         protected SortedList<int, int> similarTiles { get; set; }
         public int Count { get { return similarTiles.Values.Count + 1; } }
-        //public Object Current { get { return similarTiles[position]; } }
         Object IEnumerator.Current { get { return Current; } }
         public int Current { get { try { return similarTiles.Values[position]; } catch (IndexOutOfRangeException) { throw new InvalidOperationException(); } } }
         public int this[int index]
@@ -24,11 +22,6 @@ namespace SpriteRipper
             set { similarTiles.Add(index, value); }
         }
 
-        //public TileGroup(int MasterIndex)
-        //{
-        //    this.MasterIndex = MasterIndex;
-        //    similarTiles = new SortedList<int, int>();
-        //}
         public TileGroup(Tile master)
         {
             this.Master = master;

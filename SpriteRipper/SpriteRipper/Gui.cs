@@ -16,7 +16,6 @@ namespace SpriteRipper
     public partial class Gui : Form
     {
         protected static string loadedFilename { get; set; }
-        //protected Bitmap loadedImage { get; set; }
         protected const string INIT_TOTAL = "Initial total";
         protected const string FINAL_TOTAL = "Final total";
         protected const string DUPLICATES = "Duplicates";
@@ -36,8 +35,6 @@ namespace SpriteRipper
             {
                 int progress = Program.TasksComplete;
                 BackgroundProgress.ReportProgress(progress);
-
-                //Thread.Sleep(100);
             }
         }
 
@@ -56,7 +53,6 @@ namespace SpriteRipper
         {
             EnableUpdating();
             Reset();
-            //EnableSorting();
             SetOffsetMax();
         }
 
@@ -119,9 +115,7 @@ namespace SpriteRipper
             int offsetX = (int)OffsetX.Value;
             int offsetY = (int)OffsetY.Value;
 
-            //loadedImage = Program.LoadImage(Filename);
             Program.LoadImage(filename, tileSize, offsetX, offsetY);
-            //loadedFilename = Filename;
 
             DisableSaving();
 
@@ -139,8 +133,6 @@ namespace SpriteRipper
             DisplayResult(InitTotal, totalTiles);
 
             EnableSorting();
-
-            //EnableUpdating();
 
             Status.Text = String.Format("Loaded {0}", filename);
             loadedFilename = filename;
@@ -210,42 +202,24 @@ namespace SpriteRipper
 
             Status.Text = String.Format("Displaying sub image");
 
-            //Bitmap canvas = Program.loadedImage;
-            //if (canvas == null)
-            //{
-            //    Program.LoadImage(loadedFilename, TileSize, offsetX, offsetY);
-            //}
-
             if (Program.Images == null)
             {
                 Program.LoadImage(loadedFilename, tileSize, offsetX, offsetY);
             }
 
-            //Bitmap loadedImage = Program.loadedImage;
             int subImageIndex = (int)SubImageSelector.Value;
             int tasks = Program.Images.GetSubImageTileCount(subImageIndex);
             //StartProgressBar(tasks);
 
             Program.LoadSubImage(bitsPerColour, tileSize, subImageIndex);
-            //canvas = Program.CurrentSubImage;
 
             //int tasks = Program.GetTileCount(canvas.Width, canvas.Height, TileSize);
-
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
-            //Program.LoadTilesThreaded(loadedImage, BitsPerColour, TileSize, offsetX, offsetY);
 
             DrawDisplay();
             DisableUpdating();
 
             int totalTiles = Program.GetTileCount();
             DisplayResult(InitTotal, totalTiles);
-
-            //DrawTileset();
-
-            //if (Program.TilesetReady == true)
-            //{
-            //    return;
-            //}
 
             EnableSorting();
         }
@@ -258,11 +232,6 @@ namespace SpriteRipper
             float colourThreshold = (float)ColourThreshold.Value;
 
             Status.Text = String.Format("Sorting image tiles");
-
-            //Program.ResetTileset();
-
-            //Bitmap loadedImage = Program.loadedImage;
-            //Bitmap canvas = Program.CurrentSubImage;
 
             //int tasks = Program.GetTileCount(canvas.Width, canvas.Height, TileSize);
             int tasks = Program.GetTileCount();
@@ -278,8 +247,6 @@ namespace SpriteRipper
 
         protected void BuildTileset_Click(object sender, EventArgs e)
         {
-            //Bitmap tileset = Program.ProcessImage(loadedImage, BitsPerColour, TileSize, patternThreshold, colourThreshold);
-
             DrawTileset();
 
             EnableSaving();
@@ -354,16 +321,12 @@ namespace SpriteRipper
 
             int subImageIndex = (int)SubImageSelector.Value;
 
-            //Bitmap loadedImage = Program.loadedImage;
-            //Bitmap canvas = Program.CurrentSubImage;
             Size subImageSize = Program.Images.CurrentSubImageSize;
             if (subImageSize == null)
             {
                 throw new NullReferenceException("No sub image loaded");
             }
 
-            //int imageWidth = canvas.Width - TileSize * (int)Math.Ceiling((double)offsetX / TileSize);
-            //int imageHeight = canvas.Height - TileSize * (int)Math.Ceiling((double)offsetY / TileSize);
             int width = subImageSize.Width - tileSize * (int)Math.Ceiling((double)offsetX / tileSize);
             int height = subImageSize.Height - tileSize * (int)Math.Ceiling((double)offsetY / tileSize);
 
@@ -494,7 +457,6 @@ namespace SpriteRipper
                 return;
             }
 
-            //TilesetDisplay.Image = null;
             int zoom = (int)TilesetZoom.Value;
 
             Bitmap tileset = GetTileset(zoom);
@@ -524,9 +486,6 @@ namespace SpriteRipper
 
             bool addPadding = TilesetPadding.Checked;
 
-            //Bitmap loadedImage = Program.loadedImage;
-            //Bitmap canvas = Program.CurrentSubImage;
-            //PixelFormat format = canvas.PixelFormat;
             PixelFormat format = Program.Images.GetPixelFormat();
 
             Bitmap tileset;
@@ -574,34 +533,14 @@ namespace SpriteRipper
 
         protected void Reset()
         {
-            //int tileSize = (int)TileSize.Value;
-            //int offsetX = (int)OffsetX.Value;
-            //int offsetY = (int)OffsetY.Value;
-            //int subImageIndex = (int)SubImageSelector.Value;
-
             DisableSaving();
             DisableSorting();
 
             Program.ResetAll();
-
-            //Program.Images.BuildImageCollection(tileSize, offsetX, offsetY, subImageIndex);
-            //Program.LoadImage(loadedFilename, tileSize, offsetX, offsetY);
-
-            //int bitsPerColour = (int)Bits.Value;
-            //Program.LoadSubImage(bitsPerColour, tileSize, subImageIndex);
-            //EnableSubImageSelection();
-
-            //int totalSubImages = Program.Images.TotalSubImages;
-            //this.sortedSubImageIndexes = new List<int>(totalSubImages);
         }
 
         protected void EnableUpdating()
         {
-            //Bitmap canvas = Program.CurrentSubImage;
-            //if (canvas == null)
-            //{
-            //    return;
-            //}
             ImageCollection imageGroup = Program.Images;
             if (imageGroup == null)
             {
@@ -625,12 +564,6 @@ namespace SpriteRipper
 
         protected void EnableSorting()
         {
-            //Bitmap canvas = Program.loadedImage;
-            //Bitmap canvas = Program.CurrentSubImage;
-            //if (canvas == null)
-            //{
-            //    return;
-            //}
             int tilesToSort = Program.GetTileCount();
             if (tilesToSort == 0)
             {
@@ -723,7 +656,6 @@ namespace SpriteRipper
             OffsetX.Maximum = maxOffset;
             OffsetY.Maximum = maxOffset;
 
-            //TilesWide.Minimum = 5 * TileSize;
             TilesetDisplay.Image = null;
             Program.ResetTileset();
         }
@@ -731,14 +663,12 @@ namespace SpriteRipper
         protected void OffsetX_ValueChanged(object sender, EventArgs e)
         {
             EnableUpdating();
-            //EnableSorting();
             Reset();
         }
 
         protected void OffsetY_ValueChanged(object sender, EventArgs e)
         {
             EnableUpdating();
-            //EnableSorting();
             Reset();
         }
 
