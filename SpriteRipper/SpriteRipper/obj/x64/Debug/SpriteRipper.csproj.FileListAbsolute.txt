@@ -1,0 +1,9 @@
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\bin\x64\Debug\SpriteRipper.exe.config
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\bin\x64\Debug\SpriteRipper.exe
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\bin\x64\Debug\SpriteRipper.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.Gui.resources
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.Properties.Resources.resources
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.csproj.GenerateResource.Cache
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.exe
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipper\obj\x64\Debug\SpriteRipper.pdb

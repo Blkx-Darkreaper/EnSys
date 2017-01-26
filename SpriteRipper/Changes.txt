@@ -1,0 +1,7 @@
+Break large images up into several smaller subimages
+For each subimage iterate through all tiles but don't create bitmaps for each tile until a comparison needs to be made, discard all tile bitmaps after use
+Once all tiles in a subimage group have been organized and all duplicates discarded move onto the next subimage
+When two sorted groups have been created compare and merge the two groups, then continue
+
+Add controls to allow different subimages to be displayed
+Add button to GUI to display the end product, place a limit on the max number of tiles in this tileset

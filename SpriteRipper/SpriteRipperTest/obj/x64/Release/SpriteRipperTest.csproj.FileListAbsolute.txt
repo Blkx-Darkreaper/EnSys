@@ -1,0 +1,7 @@
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\x64\Release\SpriteRipperTest.dll
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\x64\Release\SpriteRipperTest.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\x64\Release\SpriteRipper.exe
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\bin\x64\Release\SpriteRipper.pdb
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\x64\Release\SpriteRipperTest.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\x64\Release\SpriteRipperTest.dll
+C:\Users\NicB\Documents\Visual Studio 2013\Projects\SpriteRipper\SpriteRipperTest\obj\x64\Release\SpriteRipperTest.pdb
