@@ -178,208 +178,208 @@ namespace SpriteRipperTest
             Assert.IsFalse(identical);
         }
 
-        [TestMethod]
-        public void LimitedTest()
-        {
-            // Setup
-            int bitsPerColour = 8;
-            int tileSize = 16;
-            float patternThreshold = .5f;
-            float colourThreshold = .5f;
-            int offsetX = 0;
-            int offsetY = 0;
+        //[TestMethod]
+        //public void LimitedTest()
+        //{
+        //    // Setup
+        //    int bitsPerColour = 8;
+        //    int tileSize = 16;
+        //    float patternThreshold = .5f;
+        //    float colourThreshold = .5f;
+        //    int offsetX = 0;
+        //    int offsetY = 0;
 
-            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
-            Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
-            Bitmap image = Program.Images.GetImage();
+        //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
+        //    Bitmap image = Program.Images.GetImage();
 
-            // Execution
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
-            Program.SortTiles(patternThreshold, colourThreshold);
+        //    // Execution
+        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
+        //    Program.SortTiles(patternThreshold, colourThreshold);
 
-            // Assertion
-            int expTileCount = 21;
-            int expGroupCount = 2;
-            int expGroup1Count = 7;
-            int expGroup2Count = 1;
+        //    // Assertion
+        //    int expTileCount = 21;
+        //    int expGroupCount = 2;
+        //    int expGroup1Count = 7;
+        //    int expGroup2Count = 1;
 
-            int tileCount = Program.GetTileCount();
-            Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
+        //    int tileCount = Program.GetTileCount();
+        //    Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
 
-            int groupCount = Program.GetGroupCount();
-            Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
+        //    int groupCount = Program.GetGroupCount();
+        //    Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
 
-            int group1Count = Program.GetCountOfGroup(0);
-            int group2Count = Program.GetCountOfGroup(1);
+        //    int group1Count = Program.GetCountOfGroup(0);
+        //    int group2Count = Program.GetCountOfGroup(1);
 
-            Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
-            Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
-        }
+        //    Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
+        //    Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
+        //}
 
-        [TestMethod]
-        public void LimitedThreadedTest()
-        {
-            // Setup
-            int bitsPerColour = 8;
-            int tileSize = 16;
-            float patternThreshold = .5f;
-            float colourThreshold = .5f;
-            int offsetX = 0;
-            int offsetY = 0;
+        //[TestMethod]
+        //public void LimitedThreadedTest()
+        //{
+        //    // Setup
+        //    int bitsPerColour = 8;
+        //    int tileSize = 16;
+        //    float patternThreshold = .5f;
+        //    float colourThreshold = .5f;
+        //    int offsetX = 0;
+        //    int offsetY = 0;
 
-            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
-            Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
+        //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
+        //    Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
 
-            // Execution
-            Program.LoadTilesThreaded(image, bitsPerColour, tileSize, offsetX, offsetY);
-            Program.SortTiles(patternThreshold, colourThreshold);
+        //    // Execution
+        //    Program.LoadTilesThreaded(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.SortTiles(patternThreshold, colourThreshold);
 
-            // Assertion
-            int expTileCount = 21;
-            int expGroupCount = 2;
-            int expGroup1Count = 7;
-            int expGroup2Count = 1;
+        //    // Assertion
+        //    int expTileCount = 21;
+        //    int expGroupCount = 2;
+        //    int expGroup1Count = 7;
+        //    int expGroup2Count = 1;
 
-            int tileCount = Program.GetTileCount();
-            Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
+        //    int tileCount = Program.GetTileCount();
+        //    Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
 
-            int groupCount = Program.GetGroupCount();
-            Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
+        //    int groupCount = Program.GetGroupCount();
+        //    Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
 
-            int group1Count = Program.GetCountOfGroup(0);
-            int group2Count = Program.GetCountOfGroup(1);
+        //    int group1Count = Program.GetCountOfGroup(0);
+        //    int group2Count = Program.GetCountOfGroup(1);
 
-            Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
-            Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
-        }
+        //    Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
+        //    Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
+        //}
 
-        [TestMethod]
-        public void LimitedTest2()
-        {
-            // Setup
-            int bitsPerColour = 8;
-            int tileSize = 16;
-            float patternThreshold = .5f;
-            float colourThreshold = .5f;
-            int offsetX = 0;
-            int offsetY = 0;
+        //[TestMethod]
+        //public void LimitedTest2()
+        //{
+        //    // Setup
+        //    int bitsPerColour = 8;
+        //    int tileSize = 16;
+        //    float patternThreshold = .5f;
+        //    float colourThreshold = .5f;
+        //    int offsetX = 0;
+        //    int offsetY = 0;
 
-            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
-            Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", tileSize, offsetX, offsetY);
-            Bitmap image = Program.Images.GetImage();
+        //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", tileSize, offsetX, offsetY);
+        //    Bitmap image = Program.Images.GetImage();
 
-            // Execution
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
-            Program.SortTiles(patternThreshold, colourThreshold);
+        //    // Execution
+        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
+        //    Program.SortTiles(patternThreshold, colourThreshold);
 
-            // Assertion
-            int expTileCount = 42;
-            int expGroupCount = 2;
-            int expGroup1Count = 7;
-            int expGroup2Count = 1;
+        //    // Assertion
+        //    int expTileCount = 42;
+        //    int expGroupCount = 2;
+        //    int expGroup1Count = 7;
+        //    int expGroup2Count = 1;
 
-            int tileCount = Program.GetTileCount();
-            Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
+        //    int tileCount = Program.GetTileCount();
+        //    Assert.IsTrue(tileCount == expTileCount, string.Format("Expected {0}, Actual {1}", expTileCount, tileCount));
 
-            int groupCount = Program.GetGroupCount();
-            Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
+        //    int groupCount = Program.GetGroupCount();
+        //    Assert.IsTrue(groupCount == expGroupCount, string.Format("Groups: Expected {0}, Actual {1}", expGroupCount, groupCount));
 
-            int group1Count = Program.GetCountOfGroup(0);
-            int group2Count = Program.GetCountOfGroup(1);
+        //    int group1Count = Program.GetCountOfGroup(0);
+        //    int group2Count = Program.GetCountOfGroup(1);
 
-            Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
-            Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
-        }
+        //    Assert.IsTrue(group1Count == expGroup1Count, string.Format("Group1 members: Expected {0}, Actual {1}", expGroup1Count, group1Count));
+        //    Assert.IsTrue(group2Count == expGroup2Count, string.Format("Group2 members: Expected {0}, Actual {1}", expGroup2Count, group2Count));
+        //}
 
-        [TestMethod]
-        public void FullTest()
-        {
-            // Setup
-            int bitsPerColour = 8;
-            int tileSize = 16;
-            float patternThreshold = .5f;
-            float colourThreshold = .5f;
-            int offsetX = 0;
-            int offsetY = 0;
-            int zoom = 1;
+        //[TestMethod]
+        //public void FullTest()
+        //{
+        //    // Setup
+        //    int bitsPerColour = 8;
+        //    int tileSize = 16;
+        //    float patternThreshold = .5f;
+        //    float colourThreshold = .5f;
+        //    int offsetX = 0;
+        //    int offsetY = 0;
+        //    int zoom = 1;
 
-            int tilesWide = 5;
+        //    int tilesWide = 5;
 
-            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
-            Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
-            Bitmap image = Program.Images.GetImage();
+        //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+        //    Bitmap image = Program.Images.GetImage();
 
-            PixelFormat format = image.PixelFormat;
+        //    PixelFormat format = image.PixelFormat;
 
-            // Execution
-            Program.LoadAllTiles(image, bitsPerColour, tileSize);
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
-            Program.SortTiles(patternThreshold, colourThreshold);
-            Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
-            Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom, false);
+        //    // Execution
+        //    Program.LoadAllTiles(image, bitsPerColour, tileSize);
+        //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
+        //    Program.SortTiles(patternThreshold, colourThreshold);
+        //    Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
+        //    Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom, false);
 
-            // Assertion
-            int expectedWidth = tilesWide * tileSize * zoom + tilesWide - 1;
-            //int expectedHeight;
+        //    // Assertion
+        //    int expectedWidth = tilesWide * tileSize * zoom + tilesWide - 1;
+        //    //int expectedHeight;
 
-            int ungroupedWidth = ungroupedTileset.Width;
-            int ungroupedHeight = ungroupedTileset.Height;
+        //    int ungroupedWidth = ungroupedTileset.Width;
+        //    int ungroupedHeight = ungroupedTileset.Height;
 
-            Assert.IsTrue(ungroupedWidth == expectedWidth, string.Format("Width: Expected {0}, Actual {1}", expectedWidth, ungroupedWidth));
-            //Assert.IsTrue(ungroupedHeight == expectedHeight, string.Format("Width: Expected {0}, Actual {1}", expectedHeight, ungroupedHeight));
-        }
+        //    Assert.IsTrue(ungroupedWidth == expectedWidth, string.Format("Width: Expected {0}, Actual {1}", expectedWidth, ungroupedWidth));
+        //    //Assert.IsTrue(ungroupedHeight == expectedHeight, string.Format("Width: Expected {0}, Actual {1}", expectedHeight, ungroupedHeight));
+        //}
 
-        [TestMethod]
-        public void TimingTest()
-        {
-            // Setup
-            int bitsPerColour = 8;
-            int tileSize = 16;
-            float patternThreshold = .5f;
-            float colourThreshold = .5f;
-            int offsetX = 0;
-            int offsetY = 0;
+        //[TestMethod]
+        //public void TimingTest()
+        //{
+        //    // Setup
+        //    int bitsPerColour = 8;
+        //    int tileSize = 16;
+        //    float patternThreshold = .5f;
+        //    float colourThreshold = .5f;
+        //    int offsetX = 0;
+        //    int offsetY = 0;
 
-            //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
-            Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
-            Bitmap image = Program.Images.GetImage();
+        //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+        //    Bitmap image = Program.Images.GetImage();
 
-            long sortTimes8BitSum = 0;
-            long sortTimes4BitSum = 0;
-            int runs = 4;
+        //    long sortTimes8BitSum = 0;
+        //    long sortTimes4BitSum = 0;
+        //    int runs = 4;
 
-            // Execution
+        //    // Execution
 
-            // 8Bit sorting
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
-            for (int i = 0; i < runs; i++)
-            {
-                Program.SortTiles(patternThreshold, colourThreshold);
-                long sortTime = Program.SortTime;
-                sortTimes8BitSum += sortTime;
-            }
+        //    // 8Bit sorting
+        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
+        //    for (int i = 0; i < runs; i++)
+        //    {
+        //        Program.SortTiles(patternThreshold, colourThreshold);
+        //        long sortTime = Program.SortTime;
+        //        sortTimes8BitSum += sortTime;
+        //    }
 
-            long averageSortTime8Bit = sortTimes8BitSum / runs;
+        //    long averageSortTime8Bit = sortTimes8BitSum / runs;
 
-            // 4Bit sorting
-            bitsPerColour = 4;
-            Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
-            //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
-            for (int i = 0; i < runs; i++)
-            {
-                Program.SortTiles(patternThreshold, colourThreshold);
-                long sortTime = Program.SortTime;
-                sortTimes4BitSum += sortTime;
-            }
+        //    // 4Bit sorting
+        //    bitsPerColour = 4;
+        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
+        //    for (int i = 0; i < runs; i++)
+        //    {
+        //        Program.SortTiles(patternThreshold, colourThreshold);
+        //        long sortTime = Program.SortTime;
+        //        sortTimes4BitSum += sortTime;
+        //    }
 
-            long averageSortTime4Bit = sortTimes4BitSum / runs;
+        //    long averageSortTime4Bit = sortTimes4BitSum / runs;
 
-            // Assertion
-            Assert.IsTrue(averageSortTime4Bit < averageSortTime8Bit, string.Format("Average sort time: 4Bit {0}ms, 8Bit {1}ms", averageSortTime4Bit, averageSortTime8Bit));
-        }
+        //    // Assertion
+        //    Assert.IsTrue(averageSortTime4Bit < averageSortTime8Bit, string.Format("Average sort time: 4Bit {0}ms, 8Bit {1}ms", averageSortTime4Bit, averageSortTime8Bit));
+        //}
 
         [TestMethod]
         public void StressTest()
@@ -448,33 +448,38 @@ namespace SpriteRipperTest
             ImageCollection imageGroup = new ImageCollection("", tileSize, width, height, offsetX, offsetY);
 
             int tileIndex, subImageIndex, subImageTileIndex;
+            Tuple<int, int> subImageIndexPair;
 
             tileIndex = 0;
-            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            subImageIndexPair = imageGroup.GetSubImageIndexPair(tileIndex);
+            subImageIndex = subImageIndexPair.Item1;
             Assert.IsTrue(subImageIndex == 0);
 
-            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            subImageTileIndex = subImageIndexPair.Item2;
             Assert.IsTrue(subImageTileIndex == 0);
 
             tileIndex = 3;
-            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            subImageIndexPair = imageGroup.GetSubImageIndexPair(tileIndex);
+            subImageIndex = subImageIndexPair.Item1;
             Assert.IsTrue(subImageIndex == 1);
 
-            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            subImageTileIndex = subImageIndexPair.Item2;
             Assert.IsTrue(subImageTileIndex == 0);
 
             tileIndex = 8;
-            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            subImageIndexPair = imageGroup.GetSubImageIndexPair(tileIndex);
+            subImageIndex = subImageIndexPair.Item1;
             Assert.IsTrue(subImageIndex == 0);
 
-            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            subImageTileIndex = subImageIndexPair.Item2;
             Assert.IsTrue(subImageTileIndex == 5);
 
             tileIndex = 21;
-            subImageIndex = imageGroup.GetSubImageIndexFromTileIndex(tileIndex);
+            subImageIndexPair = imageGroup.GetSubImageIndexPair(tileIndex);
+            subImageIndex = subImageIndexPair.Item1;
             Assert.IsTrue(subImageIndex == 3);
 
-            subImageTileIndex = imageGroup.GetSubImageTileIndexFromTileIndex(tileIndex);
+            subImageTileIndex = subImageIndexPair.Item2;
             Assert.IsTrue(subImageTileIndex == 3);
         }
 

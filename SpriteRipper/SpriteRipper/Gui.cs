@@ -200,14 +200,14 @@ namespace SpriteRipper
             int offsetX = (int)OffsetX.Value;
             int offsetY = (int)OffsetY.Value;
 
-            Status.Text = String.Format("Displaying sub image");
+            int subImageIndex = (int)SubImageSelector.Value;
+            Status.Text = String.Format("Displaying sub image {0}", subImageIndex);
 
             if (Program.Images == null)
             {
                 Program.LoadImage(loadedFilename, tileSize, offsetX, offsetY);
             }
 
-            int subImageIndex = (int)SubImageSelector.Value;
             int tasks = Program.Images.GetSubImageTileCount(subImageIndex);
             //StartProgressBar(tasks);
 
@@ -314,19 +314,15 @@ namespace SpriteRipper
 
             int tileSize = (int)TileSize.Value;
 
-            int offsetX = (int)OffsetX.Value;
-            int offsetY = (int)OffsetY.Value;
-
             int zoom = (int)ImageZoom.Value;
 
-            //int subImageIndex = (int)SubImageSelector.Value;
-
-            Size subImageSize = Program.Images.CurrentSubImageSize;
-            if (subImageSize == null)
+            int currentSubImageIndex = Program.Images.CurrentSubImageIndex;
+            if (currentSubImageIndex < 0)
             {
                 throw new NullReferenceException("No sub image loaded");
             }
 
+            Size subImageSize = Program.Images.CurrentSubImageSize;
             int width = subImageSize.Width;
             int height = subImageSize.Height;
 

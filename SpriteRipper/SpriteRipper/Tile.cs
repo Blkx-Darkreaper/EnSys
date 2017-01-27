@@ -10,6 +10,8 @@ namespace SpriteRipper
     public class Tile : IComparable<Tile>
     {
         public int Index { get; protected set; }
+        public int SubImageIndex { get; protected set; }
+        public int SubImageTileIndex { get; protected set; }
         protected List<int> pattern { get; set; }
         public int BitsPerColour { get; protected set; }
         protected int tileSize { get; set; }
@@ -26,6 +28,13 @@ namespace SpriteRipper
             : this(image, bitsPerColour, tileSize)
         {
             this.Index = index;
+        }
+
+        public Tile(Bitmap image, int bitsPerColour, int tileSize, int index, int subImageIndex, int subImageTileIndex)
+            : this(image, bitsPerColour, tileSize, index)
+        {
+            this.SubImageIndex = subImageIndex;
+            this.SubImageTileIndex = subImageTileIndex;
         }
 
         public int CompareTo(Tile other)
@@ -123,7 +132,7 @@ namespace SpriteRipper
 
         public Bitmap GetTileImage()
         {
-            Bitmap image = Program.GetTileImage(Index);
+            Bitmap image = Program.GetTileImage(SubImageIndex, SubImageTileIndex);
             return image;
         }
 
@@ -312,9 +321,9 @@ namespace SpriteRipper
         {
             List<int?> colourMatches = new List<int?>();
 
-            Bitmap image = Program.GetTileImage(Index);
+            Bitmap image = Program.GetTileImage(SubImageIndex, SubImageTileIndex);
 
-            using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
+            using (Bitmap otherImage = Program.GetTileImage(otherTile.SubImageIndex, otherTile.SubImageTileIndex))
             {
                 for (int y = 0; y < tileSize; y++)
                 {
@@ -362,8 +371,8 @@ namespace SpriteRipper
 
             List<int?> colourMatches = new List<int?>();
 
-            Bitmap image = Program.GetTileImage(Index);
-            using (Bitmap otherImage = Program.GetTileImage(otherTile.Index))
+            Bitmap image = Program.GetTileImage(SubImageIndex, SubImageTileIndex);
+            using (Bitmap otherImage = Program.GetTileImage(otherTile.SubImageIndex, otherTile.SubImageTileIndex))
             {
                 for (int y = 0; y < tileSize; y++)
                 {

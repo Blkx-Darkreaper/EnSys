@@ -406,21 +406,6 @@ namespace SpriteRipper
             g.FillRectangle(brush, 0, 0, width, height);
         }
 
-        private static void DrawNextTileOntoImage(Bitmap tileset, Tile tileToDraw, int tileSize, int tilesWide, int zoom, bool addPadding, ref int count)
-        {
-            int x = (count % tilesWide) * tileSize * zoom;
-            int y = (count / tilesWide) * tileSize * zoom;
-
-            if (addPadding == true)
-            {
-                x += (count % tilesWide);
-                y += (count / tilesWide);
-            }
-
-            DrawTileOntoImage(ref tileset, tileToDraw, x, y, zoom);
-            count++;
-        }
-
         private static void DrawNextTileImageOntoCanvas(ref Bitmap canvas, ref Bitmap nextTileImage, int tilesWide, int zoom, bool addPadding, ref int count)
         {
             int tileSize = Images.TileSize;
@@ -440,6 +425,8 @@ namespace SpriteRipper
 
         public static void DrawAllTilesOntoImage(ref Bitmap image, int tilesWide, int tileSize, int zoom, bool addPadding)
         {
+            int subImageIndex = Images.CurrentSubImageIndex;
+
             for (int i = 0; i < allSubImageTiles.Count; i++)
             {
                 //Tile tileToCompare = allSubImageTiles[i];
@@ -457,19 +444,18 @@ namespace SpriteRipper
                     y = i / tilesWide * (tileSize * zoom);
                 }
 
-                DrawTileOntoImage(ref image, tile, x, y, zoom);
+                DrawTileOntoImage(ref image, tile, subImageIndex, i, x, y, zoom);
             }
         }
 
-        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int x, int y)
+        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int subImageIndex, int subImageTileIndex, int x, int y)
         {
-            DrawTileOntoImage(ref image, tile, x, y, 1);
+            DrawTileOntoImage(ref image, tile, subImageIndex, x, y, 1);
         }
 
-        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int x, int y, int zoom)
+        private static void DrawTileOntoImage(ref Bitmap image, Tile tile, int subImageIndex, int subImageTileIndex, int x, int y, int zoom)
         {
-            int tileIndex = tile.Index;
-            Bitmap tileImage = Program.GetTileImage(tileIndex);
+            Bitmap tileImage = GetTileImage(subImageIndex, subImageTileIndex);
 
             DrawImageOntoCanvas(ref image, ref tileImage, x, y, zoom);
         }
@@ -645,101 +631,101 @@ namespace SpriteRipper
             return null;
         }
 
-        public static void LoadAllTiles(Bitmap image, int bitsPerColour, int tileSize)
-        {
-            LoadAllTiles(image, bitsPerColour, tileSize, 0, 0);
-        }
+        //public static void LoadAllTiles(Bitmap image, int bitsPerColour, int tileSize)
+        //{
+        //    LoadAllTiles(image, bitsPerColour, tileSize, 0, 0);
+        //}
 
-        public static void LoadAllTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
-        {
-            DisplayReady = false;
-            int width = image.Width - offsetX;
-            int height = image.Height - offsetY;
-            int totalTiles = Program.GetTileCount(width, height, tileSize);
+        //public static void LoadAllTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
+        //{
+        //    DisplayReady = false;
+        //    int width = image.Width - offsetX;
+        //    int height = image.Height - offsetY;
+        //    int totalTiles = Program.GetTileCount(width, height, tileSize);
 
-            TasksComplete = 0;
-            TotalTasks = totalTiles;
+        //    TasksComplete = 0;
+        //    TotalTasks = totalTiles;
 
-            int subWidth = width;
-            int subHeight = height;
+        //    int subWidth = width;
+        //    int subHeight = height;
 
-            while (totalTiles > MAX_CONCURRENT_TILES)
-            {
-                subWidth /= 2;
-                subHeight /= 2;
+        //    while (totalTiles > MAX_CONCURRENT_TILES)
+        //    {
+        //        subWidth /= 2;
+        //        subHeight /= 2;
 
-                totalTiles = Program.GetTileCount(subWidth, subHeight, tileSize);
-            }
+        //        totalTiles = Program.GetTileCount(subWidth, subHeight, tileSize);
+        //    }
 
-            int subImagesWide = width / subWidth;
-            int totalSubImages = subImagesWide * (height / subHeight);
+        //    int subImagesWide = width / subWidth;
+        //    int totalSubImages = subImagesWide * (height / subHeight);
 
-            allSubImageTiles = new SortedSet<Tile>();
+        //    allSubImageTiles = new SortedSet<Tile>();
 
-            for (int i = 0; i < totalSubImages; i++)
-            {
-                int x = (i % subImagesWide) * subWidth;
-                int y = (i / subImagesWide) * subHeight;
-                Rectangle rect = new Rectangle(x, y, subWidth, subHeight);
-                Bitmap subImage = new Bitmap(subWidth, subHeight, PixelFormat.Format24bppRgb);
-                using (Graphics graphics = Graphics.FromImage(subImage))
-                {
-                    graphics.DrawImage(image, 0, 0, rect, GraphicsUnit.Pixel);
-                }
+        //    for (int i = 0; i < totalSubImages; i++)
+        //    {
+        //        int x = (i % subImagesWide) * subWidth;
+        //        int y = (i / subImagesWide) * subHeight;
+        //        Rectangle rect = new Rectangle(x, y, subWidth, subHeight);
+        //        Bitmap subImage = new Bitmap(subWidth, subHeight, PixelFormat.Format24bppRgb);
+        //        using (Graphics graphics = Graphics.FromImage(subImage))
+        //        {
+        //            graphics.DrawImage(image, 0, 0, rect, GraphicsUnit.Pixel);
+        //        }
 
-                LoadTiles(subImage, bitsPerColour, tileSize, offsetX, offsetY);
-            }
+        //        LoadTiles(subImage, bitsPerColour, tileSize, offsetX, offsetY);
+        //    }
 
-            DisplayReady = true;
-        }
+        //    DisplayReady = true;
+        //}
 
-        private static void LoadTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
-        {
-            int boundsX = image.Width - tileSize * (int)Math.Ceiling((double)offsetX / tileSize);
-            int boundsY = image.Height - tileSize * (int)Math.Ceiling((double)offsetY / tileSize);
+        //private static void LoadTiles(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
+        //{
+        //    int boundsX = image.Width - tileSize * (int)Math.Ceiling((double)offsetX / tileSize);
+        //    int boundsY = image.Height - tileSize * (int)Math.Ceiling((double)offsetY / tileSize);
 
-            for (int y = offsetY; y < boundsY; y += tileSize)
-            {
-                for (int x = offsetX; x < boundsX; x += tileSize)
-                {
-                    Tile tileToAdd;
-                    try
-                    {
-                        tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, TasksComplete);
-                    }
-                    catch (OutOfMemoryException ex)
-                    {
-                        MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+        //    for (int y = offsetY; y < boundsY; y += tileSize)
+        //    {
+        //        for (int x = offsetX; x < boundsX; x += tileSize)
+        //        {
+        //            Tile tileToAdd;
+        //            try
+        //            {
+        //                tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, TasksComplete);
+        //            }
+        //            catch (OutOfMemoryException ex)
+        //            {
+        //                MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                return;
+        //            }
 
-                    allSubImageTiles.Add(tileToAdd);
+        //            allSubImageTiles.Add(tileToAdd);
 
-                    TasksComplete++;
-                }
-            }
-        }
+        //            TasksComplete++;
+        //        }
+        //    }
+        //}
 
-        public static void LoadTilesThreaded(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
-        {
-            int rowCount = GetRowCount(image.Height, tileSize, offsetY);
-            int threads = 0;
+        //public static void LoadTilesThreaded(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY)
+        //{
+        //    int rowCount = GetRowCount(image.Height, tileSize, offsetY);
+        //    int threads = 0;
 
-            for (int i = 0; i < rowCount; i++)
-            {
-                if (threads == MAX_THREADS)
-                {
-                    Thread.Sleep(1000);
-                    continue;
-                }
+        //    for (int i = 0; i < rowCount; i++)
+        //    {
+        //        if (threads == MAX_THREADS)
+        //        {
+        //            Thread.Sleep(1000);
+        //            continue;
+        //        }
 
-                // Assign a row to a thread
-                Thread thread = new Thread(() => LoadTileRow(image, bitsPerColour, tileSize, offsetX, offsetY, i));
-                thread.Start();
-                thread.Join();
-                threads++;
-            }
-        }
+        //        // Assign a row to a thread
+        //        Thread thread = new Thread(() => LoadTileRow(image, bitsPerColour, tileSize, offsetX, offsetY, i));
+        //        thread.Start();
+        //        thread.Join();
+        //        threads++;
+        //    }
+        //}
 
         private class ThreadInfo
         {
@@ -763,31 +749,31 @@ namespace SpriteRipper
             }
         }
 
-        private static void LoadTileRow(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY, int rowNumber)
-        {
-            int tilesWide = GetColumnsCount(image.Width, tileSize, offsetX);
-            int y = tileSize * rowNumber + offsetY;
+        //private static void LoadTileRow(Bitmap image, int bitsPerColour, int tileSize, int offsetX, int offsetY, int rowNumber)
+        //{
+        //    int tilesWide = GetColumnsCount(image.Width, tileSize, offsetX);
+        //    int y = tileSize * rowNumber + offsetY;
 
-            for (int i = 0; i < tilesWide; i++)
-            {
-                int x = i * tileSize + offsetX;
-                int tileNumber = tilesWide * rowNumber + i;
+        //    for (int i = 0; i < tilesWide; i++)
+        //    {
+        //        int x = i * tileSize + offsetX;
+        //        int tileNumber = tilesWide * rowNumber + i;
 
-                Tile tileToAdd;
-                try
-                {
-                    tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, tileNumber);
-                }
-                catch (OutOfMemoryException ex)
-                {
-                    MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                tileDepository.Add(tileToAdd);
-            }
+        //        Tile tileToAdd;
+        //        try
+        //        {
+        //            tileToAdd = GetTile(image, bitsPerColour, x, y, tileSize, tileNumber);
+        //        }
+        //        catch (OutOfMemoryException ex)
+        //        {
+        //            MessageBox.Show(string.Format("Error loading tiles. {0}", ex.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //            return;
+        //        }
+        //        tileDepository.Add(tileToAdd);
+        //    }
 
-            TasksComplete += tilesWide;
-        }
+        //    TasksComplete += tilesWide;
+        //}
 
         public static int GetTileCount(int width, int height, int tileSize)
         {
@@ -820,28 +806,42 @@ namespace SpriteRipper
             return GetColumnsCount(width, tileSize, 0);
         }
 
-        private static Tile GetTile(Bitmap image, int bitsPerColour, int x, int y, int size, int index)
-        {
-            Bitmap subImage = GetSubImage(ref image, x, y, size);
-            Tile tile = new Tile(subImage, bitsPerColour, size, index);
-            return tile;
-        }
+        //private static Tile GetTile(Bitmap image, int bitsPerColour, int x, int y, int size, int index)
+        //{
+        //    Bitmap subImage = GetSubImage(ref image, x, y, size);
+        //    Tile tile = new Tile(subImage, bitsPerColour, size, index);
+        //    return tile;
+        //}
 
-        public static Bitmap GetTileImage(int tileIndex)
+        public static Bitmap GetTileImage(int index)
         {
             if (Images == null)
             {
                 throw new NullReferenceException("No image loaded");
             }
 
-            Bitmap tileImage = Images.GetTileImage(tileIndex);
+            Tuple<int, int> subImageIndexPair = Images.GetSubImageIndexPair(index);
+            int subImageIndex = subImageIndexPair.Item1;
+            int subImageTileIndex = subImageIndexPair.Item2;
+
+            return GetTileImage(subImageIndex, subImageTileIndex);
+        }
+
+        public static Bitmap GetTileImage(int subImageIndex, int subImageTileIndex)
+        {
+            if (Images == null)
+            {
+                throw new NullReferenceException("No image loaded");
+            }
+
+            Bitmap tileImage = Images.GetTileImage(subImageIndex, subImageTileIndex);
             return tileImage;
         }
 
         private static Tile GetTileFromSubImage(int bitsPerColour, int tileSize, int tileIndex, int subImageIndex, int subImageTileIndex)
         {
             Bitmap tileImage = Images.GetTileImage(subImageIndex, subImageTileIndex);
-            Tile tile = new Tile(tileImage, bitsPerColour, tileSize, tileIndex);
+            Tile tile = new Tile(tileImage, bitsPerColour, tileSize, tileIndex, subImageIndex, subImageTileIndex);
             return tile;
         }
 
@@ -857,11 +857,11 @@ namespace SpriteRipper
             return subImage;
         }
 
-        public static Bitmap GetTileImage(int x, int y, int size)
-        {
-            Bitmap currentSubImage = Images.CurrentSubImage;
-            Bitmap tileImage = GetSubImage(ref currentSubImage, x, y, size);
-            return tileImage;
-        }
+        //public static Bitmap GetTileImage(int x, int y, int size)
+        //{
+        //    Bitmap currentSubImage = Images.CurrentSubImage;
+        //    Bitmap tileImage = GetSubImage(ref currentSubImage, x, y, size);
+        //    return tileImage;
+        //}
     }
 }

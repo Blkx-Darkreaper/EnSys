@@ -14,3 +14,4 @@ C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\bin\Release\SpriteRi
 C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Release\SpriteRipper.Gui.resources
 C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Release\SpriteRipper.Properties.Resources.resources
 C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Release\SpriteRipper.csproj.GenerateResource.Cache
+C:\Users\NicB\Documents\Git\EnSys\SpriteRipper\SpriteRipper\obj\Release\SpriteRipper.csprojResolveAssemblyReference.cache
