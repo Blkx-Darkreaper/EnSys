@@ -23,11 +23,11 @@ namespace SpriteRipper
                     return new Size();
                 }
 
-                return allSubImages[CurrentSubImageIndex].Size;
+                return GetSubImageSize(CurrentSubImageIndex);
             }
         }
         protected List<SubImage> allSubImages { get; set; }
-        protected int subImagesWide { get; set; }
+        public int SubImagesWide { get; protected set; }
         public int TotalSubImages { get { return allSubImages.Count; } }
         public int CurrentSubImageIndex { get; protected set; }
         public Bitmap CurrentSubImage { get; protected set; }
@@ -76,7 +76,7 @@ namespace SpriteRipper
                 heightDivisor *= 2;
             }
 
-            this.subImagesWide = widthDivisor;
+            this.SubImagesWide = widthDivisor;
 
             int subImageWidth = imageWidth / widthDivisor;
             if (subImageWidth % tileSize != 0)
@@ -120,6 +120,12 @@ namespace SpriteRipper
             image.Dispose();
         }
 
+        public Size GetSubImageSize(int subImageIndex)
+        {
+            Size subImageSize = allSubImages[subImageIndex].Size;
+            return subImageSize;
+        }
+
         public int GetSubImageIndexFromTileIndex(int tileIndex)
         {
             int totalTilesWide = CroppedImageSize.Width / TileSize;
@@ -128,7 +134,7 @@ namespace SpriteRipper
             int subImageTilesWide = medianSubImageSize.Width / TileSize;
             int subImageTilesHigh = medianSubImageSize.Height / TileSize;
 
-            int subImageIndex = tileIndex / (totalTilesWide * subImageTilesHigh) * subImagesWide
+            int subImageIndex = tileIndex / (totalTilesWide * subImageTilesHigh) * SubImagesWide
                 + (tileIndex % totalTilesWide) / subImageTilesWide;
             return subImageIndex;
         }
@@ -238,8 +244,8 @@ namespace SpriteRipper
             int medianSubImageWidth = medianSubImageSize.Width;
             int medianSubImageHeight = medianSubImageSize.Height;
 
-            int x = (subImageIndex % subImagesWide) * medianSubImageWidth;
-            int y = (subImageIndex / subImagesWide) * medianSubImageHeight;
+            int x = (subImageIndex % SubImagesWide) * medianSubImageWidth;
+            int y = (subImageIndex / SubImagesWide) * medianSubImageHeight;
             Rectangle rect = new Rectangle(x, y, subImageWidth, subImageHeight);
             subImage = new Bitmap(subImageWidth, subImageHeight);
             using (Graphics graphics = Graphics.FromImage(subImage))

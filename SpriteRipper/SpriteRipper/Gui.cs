@@ -372,18 +372,11 @@ namespace SpriteRipper
             {
                 throw new NullReferenceException("No sub image loaded");
             }
-            Size subImageSize = Program.Images.CurrentSubImageSize;
-            if (subImageSize == null)
-            {
-                throw new NullReferenceException("No sub image loaded");
-            }
 
             int imageWidth = imageSize.Width;
-            int subImageWidth = subImageSize.Width;
-            int subImagesWide = (int)Math.Ceiling(imageWidth / (float)subImageWidth);
+            int subImagesWide = Program.Images.SubImagesWide;
 
             int imageHeight = imageSize.Height;
-            int subImageHeight = subImageSize.Height;
             int subImagesHigh = Program.Images.TotalSubImages / subImagesWide;
 
             int miniDisplayWidth = MiniDisplay.Width;
@@ -397,11 +390,8 @@ namespace SpriteRipper
             Bitmap miniDisplayImage = new Bitmap(MiniDisplay.Width, MiniDisplay.Height);
             using (Graphics graphics = Graphics.FromImage(miniDisplayImage))
             {
-                int scaledSubImageWidth = (int)Math.Round(subImageWidth * miniDisplayScale, 0) - 1;
-                int scaledSubImageHeight = (int)Math.Round(subImageHeight * miniDisplayScale, 0) - 1;
-
-                int scaledImageWidth = (int)Math.Round((float)scaledSubImageWidth * subImagesWide, 0);
-                int scaledImageHeight = (int)Math.Round((float)scaledSubImageHeight * subImagesHigh, 0);
+                int scaledImageWidth = (int)Math.Round(imageWidth * miniDisplayScale, 0) - subImagesWide;
+                int scaledImageHeight = (int)Math.Round(imageHeight * miniDisplayScale, 0) - subImagesHigh;
                 Rectangle imageBounds = new Rectangle(0, 0, scaledImageWidth, scaledImageHeight);
 
                 Pen black = new Pen(Brushes.Black);
@@ -419,11 +409,21 @@ namespace SpriteRipper
                 int currentSubImageIndex = Program.Images.CurrentSubImageIndex;
 
                 int x, y;
+                Size subImageSize = Program.Images.GetSubImageSize(0);
+                int scaledOffsetX = (int)Math.Round(subImageSize.Width * miniDisplayScale, 0) - 1;
+                int scaledOffsetY = (int)Math.Round(subImageSize.Height * miniDisplayScale, 0) - 1;
+                int scaledSubImageWidth, scaledSubImageHeight;
+
                 int totalSubImages = Program.Images.TotalSubImages;
                 for (int i = 0; i < totalSubImages; i++)
                 {
-                    x = 1 + (i % subImagesWide) * scaledSubImageWidth;
-                    y = 1 + (i / subImagesWide) * scaledSubImageHeight;
+                    x = 1 + (i % subImagesWide) * scaledOffsetX;
+                    y = 1 + (i / subImagesWide) * scaledOffsetY;
+
+                    subImageSize = Program.Images.GetSubImageSize(i);
+                    scaledSubImageWidth = (int)Math.Round(subImageSize.Width * miniDisplayScale, 0) - 1;
+                    scaledSubImageHeight = (int)Math.Round(subImageSize.Height * miniDisplayScale, 0) - 1;
+
                     imageBounds = new Rectangle(x, y, scaledSubImageWidth, scaledSubImageHeight);
 
                     graphics.DrawRectangle(blue, imageBounds);
@@ -442,8 +442,13 @@ namespace SpriteRipper
                 // Highlight selected sub canvas
                 Pen red = new Pen(Brushes.Red);
                 red.Alignment = PenAlignment.Inset;
-                x = 1 + (currentSubImageIndex % subImagesWide) * scaledSubImageWidth;
-                y = 1 + (currentSubImageIndex / subImagesWide) * scaledSubImageHeight;
+
+                subImageSize = Program.Images.CurrentSubImageSize;
+                scaledSubImageWidth = (int)Math.Round(subImageSize.Width * miniDisplayScale, 0) - 1;
+                scaledSubImageHeight = (int)Math.Round(subImageSize.Height * miniDisplayScale, 0) - 1;
+
+                x = 1 + (currentSubImageIndex % subImagesWide) * scaledOffsetX;
+                y = 1 + (currentSubImageIndex / subImagesWide) * scaledOffsetY;
                 imageBounds = new Rectangle(x, y, scaledSubImageWidth, scaledSubImageHeight);
 
                 graphics.DrawRectangle(red, imageBounds);
