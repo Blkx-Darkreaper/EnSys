@@ -92,6 +92,7 @@
             this.ColourPicker = new System.Windows.Forms.ColorDialog();
             this.MiniPanel = new System.Windows.Forms.Panel();
             this.MiniDisplay = new System.Windows.Forms.PictureBox();
+            this.SortAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ImageDisplay)).BeginInit();
             this.Menu.SuspendLayout();
             this.TileSizeBox.SuspendLayout();
@@ -121,7 +122,6 @@
             // 
             // Sort
             // 
-            this.Sort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.Sort.Enabled = false;
             this.Sort.Location = new System.Drawing.Point(71, 26);
             this.Sort.Name = "Sort";
@@ -329,21 +329,21 @@
             // 
             // DisplayBox
             // 
+            this.DisplayBox.Controls.Add(this.SortAll);
             this.DisplayBox.Controls.Add(this.BuildTileset);
             this.DisplayBox.Controls.Add(this.Update);
             this.DisplayBox.Controls.Add(this.Sort);
             this.DisplayBox.Location = new System.Drawing.Point(12, 27);
             this.DisplayBox.Name = "DisplayBox";
-            this.DisplayBox.Size = new System.Drawing.Size(206, 91);
+            this.DisplayBox.Size = new System.Drawing.Size(271, 91);
             this.DisplayBox.TabIndex = 9;
             this.DisplayBox.TabStop = false;
             this.DisplayBox.Text = "Display";
             // 
             // BuildTileset
             // 
-            this.BuildTileset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.BuildTileset.Enabled = false;
-            this.BuildTileset.Location = new System.Drawing.Point(122, 26);
+            this.BuildTileset.Location = new System.Drawing.Point(181, 26);
             this.BuildTileset.Name = "BuildTileset";
             this.BuildTileset.Size = new System.Drawing.Size(72, 49);
             this.BuildTileset.TabIndex = 5;
@@ -353,7 +353,6 @@
             // 
             // Update
             // 
-            this.Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.Update.Enabled = false;
             this.Update.Location = new System.Drawing.Point(10, 26);
             this.Update.Name = "Update";
@@ -392,7 +391,7 @@
             this.ImagePanel.Controls.Add(this.ImageDisplay);
             this.ImagePanel.Location = new System.Drawing.Point(12, 302);
             this.ImagePanel.Name = "ImagePanel";
-            this.ImagePanel.Size = new System.Drawing.Size(600, 403);
+            this.ImagePanel.Size = new System.Drawing.Size(690, 403);
             this.ImagePanel.TabIndex = 11;
             // 
             // TilesetPanel
@@ -662,7 +661,7 @@
             this.Grouping.Controls.Add(this.TilesWide);
             this.Grouping.Controls.Add(this.Compressed);
             this.Grouping.Controls.Add(this.Grouped);
-            this.Grouping.Location = new System.Drawing.Point(225, 27);
+            this.Grouping.Location = new System.Drawing.Point(303, 27);
             this.Grouping.Name = "Grouping";
             this.Grouping.Size = new System.Drawing.Size(289, 91);
             this.Grouping.TabIndex = 14;
@@ -864,18 +863,29 @@
             // MiniPanel
             // 
             this.MiniPanel.Controls.Add(this.MiniDisplay);
-            this.MiniPanel.Location = new System.Drawing.Point(598, 27);
+            this.MiniPanel.Location = new System.Drawing.Point(618, 27);
             this.MiniPanel.Name = "MiniPanel";
-            this.MiniPanel.Size = new System.Drawing.Size(353, 269);
+            this.MiniPanel.Size = new System.Drawing.Size(378, 269);
             this.MiniPanel.TabIndex = 18;
             // 
             // MiniDisplay
             // 
             this.MiniDisplay.Location = new System.Drawing.Point(3, 3);
             this.MiniDisplay.Name = "MiniDisplay";
-            this.MiniDisplay.Size = new System.Drawing.Size(340, 255);
+            this.MiniDisplay.Size = new System.Drawing.Size(360, 256);
             this.MiniDisplay.TabIndex = 0;
             this.MiniDisplay.TabStop = false;
+            // 
+            // SortAll
+            // 
+            this.SortAll.Enabled = false;
+            this.SortAll.Location = new System.Drawing.Point(122, 26);
+            this.SortAll.Name = "SortAll";
+            this.SortAll.Size = new System.Drawing.Size(53, 49);
+            this.SortAll.TabIndex = 6;
+            this.SortAll.Text = "Sort All";
+            this.SortAll.UseVisualStyleBackColor = true;
+            this.SortAll.Click += new System.EventHandler(this.SortAll_Click);
             // 
             // Gui
             // 
@@ -1005,6 +1015,7 @@
         private System.Windows.Forms.PictureBox MiniDisplay;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button SortAll;
     }
 }
 

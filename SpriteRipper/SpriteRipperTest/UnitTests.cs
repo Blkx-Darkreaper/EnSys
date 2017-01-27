@@ -318,7 +318,7 @@ namespace SpriteRipperTest
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
         //    Program.SortTiles(patternThreshold, colourThreshold);
         //    Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
-        //    Bitmap ungroupedTileset = Program.GetTileset(format, tileSize, tilesWide, zoom, false);
+        //    Bitmap ungroupedTileset = Program.GetCompressedTileset(format, tileSize, tilesWide, zoom, false);
 
         //    // Assertion
         //    int expectedWidth = tilesWide * tileSize * zoom + tilesWide - 1;

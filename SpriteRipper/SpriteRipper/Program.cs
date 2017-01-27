@@ -316,10 +316,12 @@ namespace SpriteRipper
             for (int i = 0; i < allSortedTiles.Count; i++)
             {
                 TileGroup group = allSortedTiles[i];
-                int masterIndex = group.MasterIndex;
+                Tile masterTile = group.Master;
+                int subImageIndex = masterTile.SubImageIndex;
+                int subImageTileIndex = masterTile.SubImageTileIndex;
 
                 // Get Tile
-                Bitmap masterTileImage = Images.GetTileImage(masterIndex);
+                Bitmap masterTileImage = Images.GetTileImage(subImageIndex, subImageTileIndex);
 
                 // draw tile onto tileset
                 int x = 0;
@@ -354,8 +356,13 @@ namespace SpriteRipper
             return tileset;
         }
 
-        public static Bitmap GetTileset(PixelFormat format, int tileSize, int tilesWide, int zoom, bool addPadding)
+        public static Bitmap GetCompressedTileset(PixelFormat format, int tileSize, int tilesWide, int zoom, bool addPadding)
         {
+            if (allSortedTiles == null)
+            {
+                return null;
+            }
+
             int totalTiles = allSortedTiles.TileCount;
 
             int width = tilesWide * tileSize * zoom;

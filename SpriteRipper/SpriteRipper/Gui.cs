@@ -245,6 +245,45 @@ namespace SpriteRipper
             EnableTilesetBuild();
         }
 
+        private void SortAll_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to proceed?", "Sort all tiles", MessageBoxButtons.YesNo);
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            int bitsPerColour = (int)Bits.Value;
+            int tileSize = (int)TileSize.Value;
+            float patternThreshold = (float)PatternThreshold.Value;
+            float colourThreshold = (float)ColourThreshold.Value;
+
+            Status.Text = String.Format("Sorting all image tiles");
+
+            //int tasks = Program.GetTileCount(canvas.Width, canvas.Height, TileSize);
+            int totalSubImages = Program.Images.TotalSubImages;
+
+            for (int i = 0; i < totalSubImages; i++)
+            {
+                Program.LoadSubImage(bitsPerColour, tileSize, i);
+
+                DrawDisplay();
+                DisableUpdating();
+
+                int totalTiles = Program.GetTileCount();
+                DisplayResult(InitTotal, totalTiles);
+
+                Program.SortTiles(patternThreshold, colourThreshold);
+
+                int subImageIndex = (int)SubImageSelector.Value;
+                Program.Images.SetSubImageSorted(subImageIndex, true);
+            }
+
+            DrawMiniDisplay();
+            DisableSorting();
+            EnableTilesetBuild();
+        }
+
         protected void BuildTileset_Click(object sender, EventArgs e)
         {
             DrawTileset();
@@ -499,7 +538,7 @@ namespace SpriteRipper
             else
             {
                 int tilesWide = (int)TilesWide.Value;
-                tileset = Program.GetTileset(format, tileSize, tilesWide, zoom, addPadding);
+                tileset = Program.GetCompressedTileset(format, tileSize, tilesWide, zoom, addPadding);
             }
 
             return tileset;
@@ -585,6 +624,7 @@ namespace SpriteRipper
             }
 
             Sort.Enabled = true;
+            SortAll.Enabled = true;
             ProgressBar.Value = 0;
         }
 
