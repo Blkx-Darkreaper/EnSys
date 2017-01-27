@@ -299,6 +299,12 @@ namespace SpriteRipper
             return totalSubImageTiles;
         }
 
+        public bool GetSubImageSorted(int subImageIndex)
+        {
+            bool isSorted = allSubImages[subImageIndex].IsSorted;
+            return isSorted;
+        }
+
         public void SetSubImageSorted(int subImageIndex, bool isSorted)
         {
             allSubImages[subImageIndex].IsSorted = isSorted;

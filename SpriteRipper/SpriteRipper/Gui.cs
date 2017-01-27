@@ -265,6 +265,12 @@ namespace SpriteRipper
 
             for (int i = 0; i < totalSubImages; i++)
             {
+                bool isSorted = Program.Images.GetSubImageSorted(i);
+                if (isSorted == true)
+                {
+                    continue;
+                }
+
                 Program.LoadSubImage(bitsPerColour, tileSize, i);
 
                 DrawDisplay();
