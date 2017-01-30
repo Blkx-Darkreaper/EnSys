@@ -183,18 +183,18 @@ namespace SpriteRipperTest
         //{
         //    // Setup
         //    int bitsPerColour = 8;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
         //    float patternThreshold = .5f;
         //    float colourThreshold = .5f;
         //    int offsetX = 0;
         //    int offsetY = 0;
 
         //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
-        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2.png", TileSize, offsetX, offsetY);
         //    Bitmap image = Program.Images.GetImage();
 
         //    // Execution
-        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.LoadAllTiles(image, bitsPerColour, TileSize, offsetX, offsetY);
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
         //    Program.SortTiles(patternThreshold, colourThreshold);
 
@@ -222,17 +222,17 @@ namespace SpriteRipperTest
         //{
         //    // Setup
         //    int bitsPerColour = 8;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
         //    float patternThreshold = .5f;
         //    float colourThreshold = .5f;
         //    int offsetX = 0;
         //    int offsetY = 0;
 
         //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2.png");
-        //    Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", tileSize, offsetX, offsetY);
+        //    Bitmap image = Program.LoadCroppedImage(@"C:\Users\nicB\Documents\test2.png", TileSize, offsetX, offsetY);
 
         //    // Execution
-        //    Program.LoadTilesThreaded(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.LoadTilesThreaded(image, bitsPerColour, TileSize, offsetX, offsetY);
         //    Program.SortTiles(patternThreshold, colourThreshold);
 
         //    // Assertion
@@ -259,18 +259,18 @@ namespace SpriteRipperTest
         //{
         //    // Setup
         //    int bitsPerColour = 8;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
         //    float patternThreshold = .5f;
         //    float colourThreshold = .5f;
         //    int offsetX = 0;
         //    int offsetY = 0;
 
         //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png");
-        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", tileSize, offsetX, offsetY);
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test2a.png", TileSize, offsetX, offsetY);
         //    Bitmap image = Program.Images.GetImage();
 
         //    // Execution
-        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.LoadAllTiles(image, bitsPerColour, TileSize, offsetX, offsetY);
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
         //    Program.SortTiles(patternThreshold, colourThreshold);
 
@@ -298,7 +298,7 @@ namespace SpriteRipperTest
         //{
         //    // Setup
         //    int bitsPerColour = 8;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
         //    float patternThreshold = .5f;
         //    float colourThreshold = .5f;
         //    int offsetX = 0;
@@ -308,20 +308,20 @@ namespace SpriteRipperTest
         //    int tilesWide = 5;
 
         //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
-        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", TileSize, offsetX, offsetY);
         //    Bitmap image = Program.Images.GetImage();
 
         //    PixelFormat format = image.PixelFormat;
 
         //    // Execution
-        //    Program.LoadAllTiles(image, bitsPerColour, tileSize);
+        //    Program.LoadAllTiles(image, bitsPerColour, TileSize);
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize, offsetX, offsetY);
         //    Program.SortTiles(patternThreshold, colourThreshold);
-        //    Bitmap groupedTileset = Program.GetGroupedTileset(format, tileSize, zoom, false);
-        //    Bitmap ungroupedTileset = Program.GetCompressedTileset(format, tileSize, tilesWide, zoom, false);
+        //    Bitmap groupedTileset = Program.GetGroupedTileset(format, TileSize, zoom, false);
+        //    Bitmap ungroupedTileset = Program.GetCompressedTileset(format, TileSize, tilesWide, zoom, false);
 
         //    // Assertion
-        //    int expectedWidth = tilesWide * tileSize * zoom + tilesWide - 1;
+        //    int expectedWidth = tilesWide * TileSize * zoom + tilesWide - 1;
         //    //int expectedHeight;
 
         //    int ungroupedWidth = ungroupedTileset.Width;
@@ -336,14 +336,14 @@ namespace SpriteRipperTest
         //{
         //    // Setup
         //    int bitsPerColour = 8;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
         //    float patternThreshold = .5f;
         //    float colourThreshold = .5f;
         //    int offsetX = 0;
         //    int offsetY = 0;
 
         //    //Bitmap canvas = Program.LoadImage(@"C:\Users\nicB\Documents\test.png");
-        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", tileSize, offsetX, offsetY);
+        //    Program.LoadImage(@"C:\Users\nicB\Documents\test.png", TileSize, offsetX, offsetY);
         //    Bitmap image = Program.Images.GetImage();
 
         //    long sortTimes8BitSum = 0;
@@ -353,7 +353,7 @@ namespace SpriteRipperTest
         //    // Execution
 
         //    // 8Bit sorting
-        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.LoadAllTiles(image, bitsPerColour, TileSize, offsetX, offsetY);
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
         //    for (int i = 0; i < runs; i++)
         //    {
@@ -366,7 +366,7 @@ namespace SpriteRipperTest
 
         //    // 4Bit sorting
         //    bitsPerColour = 4;
-        //    Program.LoadAllTiles(image, bitsPerColour, tileSize, offsetX, offsetY);
+        //    Program.LoadAllTiles(image, bitsPerColour, TileSize, offsetX, offsetY);
         //    //Program.LoadAllTilesByRef(BitsPerColour, TileSize);
         //    for (int i = 0; i < runs; i++)
         //    {
@@ -422,9 +422,9 @@ namespace SpriteRipperTest
         //{
         //    int imageWidth = 4080;
         //    int imageHeight = 4048;
-        //    int tileSize = 16;
+        //    int TileSize = 16;
 
-        //    Size subImageSize = Program.GetSubImageSize(imageWidth, imageHeight, tileSize);
+        //    Size subImageSize = Program.GetSubImageSize(imageWidth, imageHeight, TileSize);
 
         //    int subImageWidth = subImageSize.Width;
         //    int expectedSubWidth = 272;

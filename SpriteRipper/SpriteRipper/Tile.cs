@@ -14,12 +14,12 @@ namespace SpriteRipper
         public int SubImageTileIndex { get; protected set; }
         protected List<int> pattern { get; set; }
         public int BitsPerColour { get; protected set; }
-        protected int tileSize { get; set; }
+        public int TileSize { get; protected set; }
 
         public Tile(Bitmap image, int bitsPerColour, int tileSize)
         {
             this.BitsPerColour = bitsPerColour;
-            this.tileSize = tileSize;
+            this.TileSize = tileSize;
             this.pattern = GetPattern(ref image, bitsPerColour, tileSize);
             image.Dispose();
         }
@@ -217,7 +217,7 @@ namespace SpriteRipper
             }
 
             // Compare tileToCompare sizes
-            if (tileSize != otherTile.tileSize)
+            if (TileSize != otherTile.TileSize)
             {
                 throw new Exception("Tile sizes do not match");
             }
@@ -270,7 +270,7 @@ namespace SpriteRipper
             }
 
             // Compare tileToCompare sizes
-            if (tileSize != otherTile.tileSize)
+            if (TileSize != otherTile.TileSize)
             {
                 throw new Exception("Tile sizes do not match");
             }
@@ -325,11 +325,11 @@ namespace SpriteRipper
 
             using (Bitmap otherImage = Program.GetTileImage(otherTile.SubImageIndex, otherTile.SubImageTileIndex))
             {
-                for (int y = 0; y < tileSize; y++)
+                for (int y = 0; y < TileSize; y++)
                 {
-                    for (int x = 0; x < tileSize; x++)
+                    for (int x = 0; x < TileSize; x++)
                     {
-                        int matchIndex = x + tileSize * y - 1;
+                        int matchIndex = x + TileSize * y - 1;
 
                         if (matchIndex != -1)
                         {
@@ -374,11 +374,11 @@ namespace SpriteRipper
             Bitmap image = Program.GetTileImage(SubImageIndex, SubImageTileIndex);
             using (Bitmap otherImage = Program.GetTileImage(otherTile.SubImageIndex, otherTile.SubImageTileIndex))
             {
-                for (int y = 0; y < tileSize; y++)
+                for (int y = 0; y < TileSize; y++)
                 {
-                    for (int x = 0; x < tileSize; x++)
+                    for (int x = 0; x < TileSize; x++)
                     {
-                        int matchIndex = x + tileSize * y - 1;
+                        int matchIndex = x + TileSize * y - 1;
 
                         int key;
                         bool hasKey;
