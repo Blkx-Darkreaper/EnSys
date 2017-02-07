@@ -8,79 +8,18 @@ using System.Windows.Forms;
 
 namespace MapMaker
 {
-    public class Sector : Region
+    public class Sector : ExpandableRegion
     {
-        public int SectorId { get; protected set; }
-        protected bool isEmpty { get; set; }
+        public Zone Parent { get; set; }
+        public Point SpawnPoint { get; protected set; }
 
-        public Sector(int sectorId, int tileLength)
-            : base(tileLength)
+        public Sector(int id, int tileLength)
+            : base(id, tileLength)
         {
-            this.SectorId = sectorId;
-            this.isEmpty = true;
         }
 
-        public Sector(int sectorId, int tileLength, int x, int y, int width, int height) : this(sectorId, tileLength)
+        public Sector(int id, int tileLength, int x, int y, int width, int height) : base(id, tileLength, x, y, width, height)
         {
-            this.Location = new Point(x, y);
-            this.Size = new Size(width, height);
-            this.isEmpty = false;
-        }
-
-        protected override void SetBorders()
-        {
-            int length = Math.Min(this.Width, this.Height);
-            if (length <= tileLength)
-            {
-                base.SetBordersRelative(this.Area);
-            }
-            else
-            {
-                base.SetBordersAbsolute(this.Area);
-            }
-        }
-
-        public void AddGrid(Grid grid, int tileLength)
-        {
-            int gridNwX = grid.Corner.X;
-            int gridNwY = grid.Corner.Y;
-
-            if (isEmpty == true)
-            {
-                this.Location = new Point(gridNwX, gridNwY);
-                this.Width = tileLength;
-                this.Height = tileLength;
-                this.isEmpty = false;
-                return;
-            }
-
-            int sectorNwX = this.Location.X;
-            int updatedSectorX = sectorNwX;
-            if (sectorNwX > gridNwX)
-            {
-                updatedSectorX = gridNwX;
-            }
-
-            int sectorNwY = this.Location.Y;
-            int updatedSectorY = sectorNwY;
-            if (sectorNwY > gridNwY)
-            {
-                updatedSectorY = gridNwY;
-            }
-
-            this.Location = new Point(updatedSectorX, updatedSectorY);
-
-            int gridSeX = gridNwX + tileLength;
-            int gridSeY = gridNwY + tileLength;
-
-            int sectorSeX = updatedSectorX + this.Width;
-            int sectorSeY = updatedSectorY + this.Height;
-
-            int deltaWidth = gridSeX - sectorSeX;
-            int deltaHeight = gridSeY - sectorSeY;
-
-            this.Width += deltaWidth;
-            this.Height += deltaHeight;
         }
     }
 }

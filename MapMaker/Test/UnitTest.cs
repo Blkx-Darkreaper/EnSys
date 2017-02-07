@@ -63,8 +63,9 @@ namespace Test
             }
 
             int nextSector = Grid.NextSector;
+            int nextZone = Grid.NextZone;
 
-            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, mapSize, allMapGrids, allCheckpoints);
+            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, nextZone, mapSize, allMapGrids, allCheckpoints);
 
             string json = Program.SerializeMap(map);
 
@@ -280,27 +281,27 @@ namespace Test
         //[TestMethod]
         //public void GetSectorShape()
         //{
-        //    Sector sector = new Sector(0);
+        //    Sector zone = new Sector(0);
 
         //    Grid grid;
         //    int length = 32;
 
         //    grid = new Grid(new Point(0, 0));
-        //    sector.AddGrid(grid, length);
+        //    zone.AddGrid(grid, length);
 
         //    grid = new Grid(new Point(32, 0));
-        //    sector.AddGrid(grid, length);
+        //    zone.AddGrid(grid, length);
 
         //    grid = new Grid(new Point(0, 32));
-        //    sector.AddGrid(grid, length);
+        //    zone.AddGrid(grid, length);
 
         //    grid = new Grid(new Point(64, 32));
-        //    sector.AddGrid(grid, length);
+        //    zone.AddGrid(grid, length);
 
         //    grid = new Grid(new Point(64, 0));
-        //    sector.AddGrid(grid, length);
+        //    zone.AddGrid(grid, length);
 
-        //    GraphicsPath bounds = sector.GetShape(1);
+        //    GraphicsPath bounds = zone.GetShape(1);
         //    for (int i = 0; i < bounds.PathPoints.Length; i++)
         //    {
         //        PointF point = bounds.PathPoints[i];
@@ -344,7 +345,7 @@ namespace Test
             List<Grid> quadrant1 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant1)
             {
-                grid.SectorId = 1;
+                grid.Sector = 1;
             }
 
             start = new Point(64, 0);
@@ -352,7 +353,7 @@ namespace Test
             List<Grid> quadrant2 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant2)
             {
-                grid.SectorId = 2;
+                grid.Sector = 2;
             }
 
             start = new Point(0, 64);
@@ -360,7 +361,7 @@ namespace Test
             List<Grid> quadrant0 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant0)
             {
-                grid.SectorId = 0;
+                grid.Sector = 0;
             }
 
             Program.InitSectors();
