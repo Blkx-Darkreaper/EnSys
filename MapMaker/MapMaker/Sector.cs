@@ -59,6 +59,15 @@ namespace MapMaker
             UpdateSpawnPosition(this.Area, deltaX, deltaY);
         }
 
+        public override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            int x = this.Location.X;
+            int y = this.Location.Y;
+            KeepInBounds(Area, x, y);
+        }
+
         protected virtual void UpdateSpawnPosition(Rectangle updatedArea, int deltaX, int deltaY)
         {
             if (Spawnpoint == null)
