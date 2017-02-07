@@ -861,5 +861,21 @@ namespace MapMaker
             this.Location = location;
             this.Size = size;
         }
+
+        public virtual void KeepInBounds(Rectangle bounds, int x, int y)
+        {
+            int tileLength = Program.TileLength;
+
+            int minX = bounds.X;
+            int maxX = minX + bounds.Width - tileLength;
+
+            int minY = bounds.Y;
+            int maxY = minY + bounds.Height - tileLength;
+
+            x = Program.Clamp(x, minX, maxX);
+            y = Program.Clamp(y, minY, maxY);
+
+            this.Location = new Point(x, y);
+        }
     }
 }

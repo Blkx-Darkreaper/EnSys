@@ -14,24 +14,24 @@ namespace MapMaker
         [JsonIgnore] public Sector ParentSector { get; protected set; }
         [JsonIgnore] protected int parentSectorId;
         public int ParentSectorId { get { if (ParentSector != null) { return ParentSector.SectorId; } else { return parentSectorId; } } protected set { parentSectorId = value; } }
-        protected bool isHeadquartersLocation;
-        public bool IsHeadquartersLocation
+        protected bool isHeadquartersSpawn;
+        public bool IsHeadquartersSpawn
         {
-            get { return isHeadquartersLocation; }
+            get { return isHeadquartersSpawn; }
             protected set
             {
                 if (value == false)
                 {
-                    this.isHeadquartersLocation = false;
+                    this.isHeadquartersSpawn = false;
                     return;
                 }
 
                 if (headquartersSpawn != null)
                 {
-                    headquartersSpawn.IsHeadquartersLocation = false;
+                    headquartersSpawn.IsHeadquartersSpawn = false;
                 }
 
-                this.isHeadquartersLocation = value;
+                this.isHeadquartersSpawn = value;
                 if (value == false)
                 {
                     return;
@@ -41,6 +41,33 @@ namespace MapMaker
             }
         }
         protected static Spawnpoint headquartersSpawn { get; set; }
+        protected bool isRaiderSpawn;
+        public bool IsRaiderSpawn
+        {
+            get { return isRaiderSpawn; }
+            protected set
+            {
+                if (value == false)
+                {
+                    this.isRaiderSpawn = false;
+                    return;
+                }
+
+                if (raiderSpawn != null)
+                {
+                    raiderSpawn.IsRaiderSpawn = false;
+                }
+
+                this.isRaiderSpawn = value;
+                if (value == false)
+                {
+                    return;
+                }
+
+                raiderSpawn = this;
+            }
+        }
+        protected static Spawnpoint raiderSpawn { get; set; }
 
         [JsonConstructor] public Spawnpoint(Point location, Size size, int parentSectorId, bool isHeadquartersLocation)
             : this(location, size, isHeadquartersLocation)
@@ -53,7 +80,7 @@ namespace MapMaker
         public Spawnpoint(Point location, Size size, bool isHeadquartersLocation)
             : base(location, size.Width, size.Height)
         {
-            this.IsHeadquartersLocation = isHeadquartersLocation;
+            this.IsHeadquartersSpawn = isHeadquartersLocation;
         }
 
         public void SetParentSector(Sector parent)
@@ -90,7 +117,7 @@ namespace MapMaker
             Pen pen = new Pen(brush);
             graphics.DrawRectangle(pen, x, y, tileLength, tileLength);
 
-            if (IsHeadquartersLocation == true)
+            if (IsHeadquartersSpawn == true)
             {
                 Point start = new Point(x, y);
                 Point end = new Point(x + tileLength, y + tileLength);
@@ -118,7 +145,7 @@ namespace MapMaker
 
         public virtual void OnDoubleClick(MouseEventArgs e)
         {
-            this.IsHeadquartersLocation = !this.IsHeadquartersLocation;
+            this.IsHeadquartersSpawn = !this.IsHeadquartersSpawn;
         }
 
         public override void OnMouseDown(MouseEventArgs e)
@@ -151,22 +178,6 @@ namespace MapMaker
             KeepInBounds(ParentSector.Area, x, y);
 
             this.previousCursor = cursor;
-        }
-
-        public void KeepInBounds(Rectangle bounds, int x, int y)
-        {
-            int tileLength = Program.TileLength;
-
-            int minX = bounds.X;
-            int maxX = minX + bounds.Width - tileLength;
-
-            int minY = bounds.Y;
-            int maxY = minY + bounds.Height - tileLength;
-
-            x = Program.Clamp(x, minX, maxX);
-            y = Program.Clamp(y, minY, maxY);
-
-            this.Location = new Point(x, y);
         }
     }
 }
