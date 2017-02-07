@@ -13,7 +13,6 @@ namespace MapMaker
 {
     public class Checkpoint : Region, IComparable<Checkpoint>, IEquatable<Checkpoint>
     {
-        [JsonIgnore]
         public int Key { get; protected set; }
 
         public Checkpoint(int key, int width, int height) : base(height)
@@ -26,8 +25,8 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Checkpoint(Point location, Size size)
-            : base(size.Height)
+        public Checkpoint(int key, Rectangle area, Point location, Size size, int width, int height, string cursor, bool isMouseOver, bool hasMouseFocus)
+            : base(height)
         {
             this.Key = location.Y;
             this.Location = location;
@@ -112,7 +111,11 @@ namespace MapMaker
             Point cursor = e.Location;
 
             int deltaY = cursor.Y - previousCursor.Y;
+            //int sign = Program.GetSign(deltaY);
+
             int y = this.Location.Y + deltaY;
+            //y += sign;
+
             this.Location = new Point(0, y);
 
             this.previousCursor = cursor;

@@ -8,9 +8,34 @@ namespace MapMaker
 {
     public class DrawState  // Caretaker
     {
+        // Non memento pattern
+        //public LinkedList<GridHistory> allUpdatedGrids { get; protected set; }
+        // Memento pattern
         public List<Grid> AllMementos { get; protected set; } // previous states
         public List<Grid> AllOmens { get; protected set; }    // future states
         public bool IsEmpty { get; protected set; }
+
+        /* Non memento pattern
+        public DrawEvent(List<GridHistory> omens)
+        {
+            allUpdatedGrids = new LinkedList<GridHistory>(omens);
+        }
+
+        public DrawEvent(GridHistory grid) : this() {
+            AddMemento(grid);
+        }
+
+        public DrawEvent()
+        {
+            allUpdatedGrids = new LinkedList<GridHistory>();
+        }
+
+        public void AddMemento(GridHistory grid)
+        {
+            grid.SaveState();
+            allUpdatedGrids.AddLast(grid);
+        }
+        */
 
         public DrawState(Grid grid)
             : this()
@@ -63,5 +88,21 @@ namespace MapMaker
             AllOmens.Add(omen);
             IsEmpty = false;
         }
+
+        //public void Undo()
+        //{
+        //    foreach (GridHistory grid in allUpdatedGrids)
+        //    {
+        //        grid.PreviousState();
+        //    }
+        //}
+
+        //public void Redo()
+        //{
+        //    foreach (GridHistory grid in allUpdatedGrids)
+        //    {
+        //        grid.NextState();
+        //    }
+        //}
     }
 }

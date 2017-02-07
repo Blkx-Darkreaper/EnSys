@@ -12,15 +12,15 @@ namespace MapMaker
 {
     public partial class MapMakerForm : Form
     {
+        public double MapScale { get; protected set; }
         protected Bitmap mapImage = null;
         protected bool isDrawingOnMap { get; set; }
         protected Point previousCursor { get; set; }
-        protected Tool selectedTool { get; set; }
-        protected Overlay selectedOverlay { get; set; }
+        protected int selectedTool { get; set; }
+        protected int selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.5.8";
 
-        public enum Tool
+        public enum Tools
         {
             Pen, Line, Rectangle, Fill
         }
@@ -29,10 +29,10 @@ namespace MapMaker
         {
             InitializeComponent();
 
-            Program.MapScale = 1;
+            this.MapScale = 1;
             this.isDrawingOnMap = false;
-            this.selectedTool = Tool.Pen;
-            this.selectedOverlay = Overlay.None;
+            this.selectedTool = (int)Tools.Pen;
+            this.selectedOverlay = (int)Program.Overlays.None;
 
             int tilesetDisplayWidth = TilesetDisplay.Width;
 
@@ -71,13 +71,10 @@ namespace MapMaker
 
         public void UpdateMap()
         {
-            bool addPadding = (bool)GridToggle.Checked;
-            double scale = Program.MapScale;
-
             Bitmap image = (Bitmap)MapDisplay.Image;
             if (image == null)
             {
-                image = Program.GetMapImage(scale);
+                image = Program.GetMapImage(MapScale);
                 mapImage = GetImageCopy(ref image);
             }
             else
@@ -86,14 +83,7 @@ namespace MapMaker
             }
 
             // Mini map
-            if (MiniMapDisplay.Image == null)
-            {
-                MiniMapDisplay.SetImage(ref image, MapPanel);
-            }
-            else
-            {
-                MiniMapDisplay.UpdateImage(ref image);
-            }
+            MiniMapDisplay.SetImage(ref image, MapPanel);
 
             // Line and Rectangle tools
             DrawToolPreview(ref image);
@@ -115,9 +105,9 @@ namespace MapMaker
                 return;
             }
 
-            if (selectedTool != Tool.Line)
+            if (selectedTool != (int)Tools.Line)
             {
-                if (selectedTool != Tool.Rectangle)
+                if (selectedTool != (int)Tools.Rectangle)
                 {
                     return;
                 }
@@ -126,8 +116,7 @@ namespace MapMaker
             Point start = previousCursor;
             Point end = MapDisplay.PointToClient(Cursor.Position);
 
-            double scale = Program.MapScale;
-            List<Grid> selectedGrids = Program.GetGridsInArea(start, end, scale);
+            List<Grid> selectedGrids = Program.GetGridsInArea(start, end, MapScale);
 
             Pen pen = new Pen(Brushes.Red);
             pen.Width = 2;
@@ -135,8 +124,7 @@ namespace MapMaker
 
             switch (selectedTool)
             {
-                case Tool.Line:
-                    // Draw tile preview
+                case (int)Tools.Line:
                     //foreach (Grid grid in selectedGrids)
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
@@ -153,15 +141,13 @@ namespace MapMaker
                     //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
-                    // Draw line
                     using (Graphics g = Graphics.FromImage(image))
                     {
                         g.DrawLine(pen, start, end);
                     }
                     break;
 
-                case Tool.Rectangle:
-                    // Draw tile preview
+                case (int)Tools.Rectangle:
                     //foreach (Grid grid in selectedGrids)
                     //{
                     //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
@@ -169,7 +155,6 @@ namespace MapMaker
                     //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
-                    // Draw rectangle
                     using (Graphics g = Graphics.FromImage(image))
                     {
                         int x = Math.Min(start.X, end.X);
@@ -189,35 +174,29 @@ namespace MapMaker
 
         protected void UpdateOverlay(ref Bitmap image)
         {
-            double scale = Program.MapScale;
-
             switch (selectedOverlay)
             {
                 // Sectors/Zones
-                case Overlay.Sectors:
-                    Program.DrawSectors(ref image, scale);
-                    break;
-
-                case Overlay.Zones:
-                    Program.DrawZones(ref image, scale);
+                case (int)Program.Overlays.Sectors:
+                    Program.DrawSectors(ref image, MapScale);
                     break;
 
                 // Construction
-                case Overlay.Construction:
-                    Program.DrawConstructibility(ref image, scale);
+                case (int)Program.Overlays.Construction:
+                    Program.DrawConstructibility(ref image, MapScale);
                     break;
 
                 // Ground passability
-                case Overlay.Drivable:
-                    Program.DrawDrivability(ref image, scale);
+                case (int)Program.Overlays.Drivable:
+                    Program.DrawDrivability(ref image, MapScale);
                     break;
 
                 // Air passability
-                case Overlay.Flyable:
-                    Program.DrawFlyability(ref image, scale);
+                case (int)Program.Overlays.Flyable:
+                    Program.DrawFlyability(ref image, MapScale);
                     break;
 
-                case Overlay.None:
+                case (int)Program.Overlays.None:
                 default:
                     break;
             }
@@ -245,8 +224,7 @@ namespace MapMaker
                 return image;
             }
 
-            double scale = Program.MapScale;
-            image = Program.DrawMap(ref image, scale);
+            image = Program.DrawMap(ref image, MapScale);
             this.mapImage = GetImageCopy(ref image);
 
             return image;
@@ -254,7 +232,7 @@ namespace MapMaker
 
         public void UpdateTileset()
         {
-            //bool addPadding = (bool)GridToggle.Checked;
+            //bool addPadding = (bool)Padding.Checked;
             bool addPadding = false;
 
             Bitmap image = Program.DrawTileset(addPadding);
@@ -268,17 +246,17 @@ namespace MapMaker
 
             switch (selectedTool)
             {
-                case Tool.Fill:
+                case (int)Tools.Fill:
                     Program.FillTool(grid, selectedOverlay);
                     break;
 
-                case Tool.Rectangle:
+                case (int)Tools.Rectangle:
                     break;
 
-                case Tool.Line:
+                case (int)Tools.Line:
                     break;
 
-                case Tool.Pen:
+                case (int)Tools.Pen:
                 default:
                     Program.PenTool(grid, selectedOverlay);
                     break;
@@ -298,42 +276,37 @@ namespace MapMaker
 
             switch (selectedTool)
             {
-                case Tool.Line:
-                case Tool.Rectangle:
+                case (int)Tools.Line:
+                case (int)Tools.Rectangle:
                     Program.DisplayHasChanged();
                     previousCursor = MapDisplay.PointToClient(Cursor.Position);
                     break;
 
-                case Tool.Pen:
-                case Tool.Fill:
+                case (int)Tools.Pen:
+                case (int)Tools.Fill:
                 default:
                     Grid grid = GetGridAtCursor();
-                    double scale = Program.MapScale;
 
                     switch (selectedOverlay)
                     {
-                        case Overlay.Zones:
-                            bool editZones = !LockZones.Checked;
-                            Program.HandleZoneOverlayMouseDown(e, editZones, scale);
+                        case (int)Program.Overlays.Sectors:
+                            bool editSectors = SectorChkptToggle.Checked;
+                            Program.HandleSectorOverlayMouseDown(e, editSectors, MapScale);
                             break;
 
-                        case Overlay.Sectors:
-                            Program.HandleSectorOverlayMouseDown(e, scale);
-                            break;
-
-                        case Overlay.Construction:
+                        case (int)Program.Overlays.Construction:
                             Program.SetSelectedValue(!grid.AllowsConstruction);
                             break;
 
-                        case Overlay.Drivable:
+                        case (int)Program.Overlays.Drivable:
                             Program.SetSelectedValue(!grid.AllowsDriving);
                             break;
 
-                        case Overlay.Flyable:
+                        case (int)Program.Overlays.Flyable:
                             Program.SetSelectedValue(!grid.AllowsFlying);
                             break;
 
-                        case Overlay.None:
+                        case (int)Program.Overlays.None:
                         default:
                             break;
                     }
@@ -344,18 +317,11 @@ namespace MapMaker
         protected void MapDisplay_MouseUp(object sender, MouseEventArgs e)
         {
             this.isDrawingOnMap = false;
-            double scale = Program.MapScale;
 
-            switch (selectedOverlay)
+            if (selectedOverlay == (int)Program.Overlays.Sectors)
             {
-                case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseUp(e, scale);
-                    break;
-
-                case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
-                    Program.HandleZoneOverlayMouseUp(e, editZones, scale);
-                    break;
+                bool editSectors = SectorChkptToggle.Checked;
+                Program.HandleSectorOverlayMouseUp(e, editSectors, MapScale);
             }
 
             if (e.Button == MouseButtons.Right)
@@ -368,12 +334,12 @@ namespace MapMaker
 
             switch (selectedTool)
             {
-                case Tool.Line:
-                    Program.LineTool(previousCursor, cursor, selectedOverlay, scale);
+                case (int)Tools.Line:
+                    Program.LineTool(previousCursor, cursor, selectedOverlay, MapScale);
                     break;
 
-                case Tool.Rectangle:
-                    Program.RectangleTool(previousCursor, cursor, selectedOverlay, scale);
+                case (int)Tools.Rectangle:
+                    Program.RectangleTool(previousCursor, cursor, selectedOverlay, MapScale);
                     break;
             }
 
@@ -391,16 +357,10 @@ namespace MapMaker
 
         protected void MapDisplay_MouseMove(object sender, MouseEventArgs e)
         {
-            double scale = Program.MapScale;
-            switch (selectedOverlay)
+            if (selectedOverlay == (int)Program.Overlays.Sectors)
             {
-                case Overlay.Zones:
-                bool editZones = !LockZones.Checked;
-                Program.HandleZoneOverlayMouseMove(e, editZones, scale);
-                return;
-
-                case Overlay.Sectors:
-                Program.HandleSectorOverlayMouseMove(e, scale);
+                bool editSectors = SectorChkptToggle.Checked;
+                Program.HandleSectorOverlayMouseMove(e, editSectors, MapScale);
                 return;
             }
 
@@ -411,12 +371,12 @@ namespace MapMaker
 
             switch (selectedTool)
             {
-                case Tool.Line:
-                case Tool.Rectangle:
+                case (int)Tools.Line:
+                case (int)Tools.Rectangle:
                     Program.MapHasChanged();
                     break;
 
-                case (int)Tool.Pen:
+                case (int)Tools.Pen:
                     Grid grid = GetGridAtCursor();
                     Program.PenTool(grid, selectedOverlay);
                     break;
@@ -425,37 +385,27 @@ namespace MapMaker
 
         protected void MapDisplay_MouseEnter(object sender, EventArgs e)
         {
-            if (selectedOverlay != Overlay.Sectors)
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
             {
                 return;
             }
 
             int clicks = 0;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            //int x = (int)Math.Round(cursor.X / MapScale, 0);
+            //int y = (int)Math.Round(cursor.Y / MapScale, 0);
             int x = cursor.X;
             int y = cursor.Y;
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
-            bool editSectors = selectedOverlay == Overlay.Sectors;
-            double scale = Program.MapScale;
-
-            switch (selectedOverlay)
-            {
-                case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
-                    Program.HandleZoneOverlayMouseEnter(mouseEvent, editZones, scale);
-                    break;
-
-                case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseEnter(mouseEvent, scale);
-                    break;
-            }
+            bool editSectors = SectorChkptToggle.Checked;
+            Program.HandleSectorOverlayMouseEnter(mouseEvent, editSectors, MapScale);
         }
 
         protected void MapDisplay_MouseLeave(object sender, EventArgs e)
         {
-            if (selectedOverlay != Overlay.Sectors)
+            if (selectedOverlay != (int)Program.Overlays.Sectors)
             {
                 return;
             }
@@ -467,20 +417,8 @@ namespace MapMaker
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
-            bool editSectors = selectedOverlay == Overlay.Sectors;
-            double scale = Program.MapScale;
-
-            switch (selectedOverlay)
-            {
-                case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
-                    Program.HandleZoneOverlayMouseLeave(mouseEvent, editZones, scale);
-                    break;
-
-                case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseLeave(mouseEvent, scale);
-                    break;
-            }
+            bool editSectors = SectorChkptToggle.Checked;
+            Program.HandleSectorOverlayMouseLeave(mouseEvent, editSectors, MapScale);
         }
 
         protected Grid GetGridAtCursor()
@@ -489,8 +427,7 @@ namespace MapMaker
             int x = cursor.X;
             int y = cursor.Y;
 
-            double scale = Program.MapScale;
-            Grid grid = Program.GetMapGrid(x, y, scale);
+            Grid grid = Program.GetMapGrid(x, y, MapScale);
             return grid;
         }
 
@@ -529,6 +466,24 @@ namespace MapMaker
                 Redo();
             }
         }
+
+        //public void SetSector(Keys keyCode)
+        //{
+        //    if (selectedOverlay != (int)Program.Overlays.Sectors)
+        //    {
+        //        return;
+        //    }
+
+        //    int sectorId = GetLetterKeyNumber(keyCode);
+        //    if (sectorId == -1)
+        //    {
+        //        return;
+        //    }
+
+        //    sectorId %= 25;
+
+        //    Program.SetSelectedGridSector(sectorId);
+        //}
 
         private static int GetLetterKeyNumber(Keys keyCode)
         {
@@ -611,7 +566,6 @@ namespace MapMaker
             MapDisplay.Size = mapSize;
             Program.BuildMap(mapSize);
 
-            SetToolsEnabled(true);
             SetMapOptionsEnabled(true);
             ResetView();
             UpdateDisplay();
@@ -773,8 +727,6 @@ namespace MapMaker
             int height = MapMakerForm.ActiveForm.Height;
 
             ResizeComponents(width, height);
-            Program.InvalidateMap();
-            UpdateMap();
         }
 
         protected void mapPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -805,58 +757,43 @@ namespace MapMaker
 
         protected void ScaleNone_Click(object sender, EventArgs e)
         {
-            if (Program.MapScale == 1)
-            {
-                return;
-            }
-
-            Program.MapScale = 1;
+            this.MapScale = 1;
             Program.InvalidateMap();
             UpdateMap();
         }
 
         protected void ScaleHalf_Click(object sender, EventArgs e)
         {
-            if (Program.MapScale == 0.5)
-            {
-                return;
-            }
-
-            Program.MapScale = 0.5;
+            this.MapScale = 1 / 2.0;
             Program.InvalidateMap();
             UpdateMap();
         }
 
         protected void ScaleQuarter_Click(object sender, EventArgs e)
         {
-            if (Program.MapScale == 0.25)
-            {
-                return;
-            }
-
-            Program.MapScale = 0.25;
+            this.MapScale = 1 / 4.0;
             Program.InvalidateMap();
             UpdateMap();
         }
 
         protected void PenTool_Click(object sender, EventArgs e)
         {
-            this.selectedTool = Tool.Pen;
+            this.selectedTool = (int)Tools.Pen;
         }
 
         protected void LineTool_Click(object sender, EventArgs e)
         {
-            this.selectedTool = Tool.Line;
+            this.selectedTool = (int)Tools.Line;
         }
 
         protected void RectangleTool_Click(object sender, EventArgs e)
         {
-            this.selectedTool = Tool.Rectangle;
+            this.selectedTool = (int)Tools.Rectangle;
         }
 
         protected void FillTool_Click(object sender, EventArgs e)
         {
-            this.selectedTool = Tool.Fill;
+            this.selectedTool = (int)Tools.Fill;
         }
 
         protected void MapPanel_Scroll(object sender, ScrollEventArgs e)
@@ -866,66 +803,50 @@ namespace MapMaker
 
         protected void noOverlayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.selectedOverlay = Overlay.None;
+            this.selectedOverlay = (int)Program.Overlays.None;
             UpdateMap();
 
-            SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void sectorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.selectedOverlay = Overlay.Sectors;
+            this.selectedOverlay = (int)Program.Overlays.Sectors;
             UpdateMap();
 
             SetSectorControlsEnabled(true);
         }
 
-        protected void zonesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.selectedOverlay = Overlay.Zones;
-            UpdateMap();
-
-            SetZoneControlsEnabled(true);
-        }
-
         protected void constructionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.selectedOverlay = Overlay.Construction;
+            this.selectedOverlay = (int)Program.Overlays.Construction;
             UpdateMap();
 
-            SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void drivableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.selectedOverlay = Overlay.Drivable;
+            this.selectedOverlay = (int)Program.Overlays.Drivable;
             UpdateMap();
 
-            SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void flyableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.selectedOverlay = Overlay.Flyable;
+            this.selectedOverlay = (int)Program.Overlays.Flyable;
             UpdateMap();
 
-            SetZoneControlsEnabled(false);
-        }
-
-        protected void SetZoneControlsEnabled(bool enabled)
-        {
-            SetToolsEnabled(!enabled);
-
-            AddCheckpointButton.Enabled = enabled;
-            AddButton.Enabled = enabled;
-            LockZones.Enabled = enabled;
+            SetSectorControlsEnabled(false);
         }
 
         protected void SetSectorControlsEnabled(bool enabled)
         {
             SetToolsEnabled(!enabled);
 
-            AddButton.Enabled = enabled;
+            SectorChkptToggle.Enabled = enabled;
+            AddToSectorButton.Enabled = enabled;
         }
 
         protected void SetToolsEnabled(bool enabled)
@@ -950,7 +871,6 @@ namespace MapMaker
             SaveFileButton.Enabled = enabled;
 
             noOverlayToolStripMenuItem.Enabled = enabled;
-            zonesToolStripMenuItem.Enabled = enabled;
             sectorsToolStripMenuItem.Enabled = enabled;
             constructionToolStripMenuItem.Enabled = enabled;
             drivableToolStripMenuItem.Enabled = enabled;
@@ -959,50 +879,25 @@ namespace MapMaker
             mapPropertiesToolStripMenuItem.Enabled = enabled;
         }
 
-        protected void AddButton_Click(object sender, EventArgs e)
+        protected void AddToSectorsButton_Click(object sender, EventArgs e)
         {
             int vScroll = MapPanel.VerticalScroll.Value;
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
             double vScrollPercent = vScroll / (double)vScrollMax;
 
-            switch (selectedOverlay)
+            bool addSector = SectorChkptToggle.Checked;
+            if (addSector == true)
             {
-                case Overlay.Sectors:
-                    int hScroll = MapPanel.HorizontalScroll.Value;
-                    int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
-                    double hScrollPercent = hScroll / (double)hScrollMax;
+                int hScroll = MapPanel.HorizontalScroll.Value;
+                int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+                double hScrollPercent = hScroll / (double)hScrollMax;
 
-                    Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
-                    break;
-
-                case Overlay.Zones:
-                    Program.AddZone(vScrollPercent, MapPanel.Size);
-                    break;
-
-                default:
-                    break;
+                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
             }
-        }
-
-        protected void AddCheckpoint_Click(object sender, EventArgs e)
-        {
-            int vScroll = MapPanel.VerticalScroll.Value;
-            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
-            double vScrollPercent = vScroll / (double)vScrollMax;
-
-            LockZones.Checked = true;
-
-            Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
-        }
-
-        protected void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(String.Format("Strikeforce MapMaker\nVersion {0}\n2016", version), "About Strikeforce MapMaker", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void GridToggle_CheckedChanged(object sender, EventArgs e)
-        {
-            Program.MapHasChanged();
+            else
+            {
+                Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+            }
         }
     }
 }

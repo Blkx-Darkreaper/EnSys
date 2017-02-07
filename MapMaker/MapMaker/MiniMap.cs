@@ -14,6 +14,7 @@ namespace MapMaker
     public class MiniMap : PictureBox
     {
         public Rectangle ViewBox { get; set; }
+        public double scale { get; set; }
         protected Bitmap miniMap { get; set; }
         protected Rectangle miniMapBounds { get; set; }
         protected bool isDragging { get; set; }
@@ -28,60 +29,34 @@ namespace MapMaker
             //this.Cursor = Cursors.Hand;
         }
 
-        public virtual void UpdateImage(ref Bitmap image)
+        public virtual void SetImage(ref Bitmap image, Panel mapPanel)
         {
-            double imageWidth = image.Width;
-            double imageHeight = image.Height;
+            this.mapPanel = mapPanel;
 
-            double miniMapScale = this.Height / imageHeight;
-            int miniMapWidth = (int)(imageWidth * miniMapScale);
+            double width = image.Width;
+            double height = image.Height;
 
-            int viewWidth = (int)(this.mapPanel.Width * miniMapScale);
-            int viewHeight = (int)(this.mapPanel.Height * miniMapScale);
+            int miniMapHeight = this.Height;
+            this.scale = miniMapHeight / height;
 
-            double changeOfScale = this.ViewBox.Width / (double)viewWidth;
+            int viewWidth = (int)(mapPanel.Width * scale);
+            int viewHeight = (int)(mapPanel.Height * scale);
 
-            if (viewWidth > miniMapWidth)
-            {
-                viewWidth = miniMapWidth;
-            }
+            int miniMapWidth = (int)(width * scale);
 
             // Center mini map
             int x = this.Width / 2;
             x -= miniMapWidth / 2;
 
-            this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, this.Height);
-
-            //int viewX = this.ViewBox.X;
-            //int viewY = 0;
-            //if (changeOfScale != 0)
-            //{
-            //    viewY = (int)(this.ViewBox.Y / changeOfScale);
-            //}
-            //int maxY = this.Height - viewHeight;
-            //if (viewY > maxY)
-            //{
-            //    viewY = maxY;
-            //}
-
-            //this.ViewBox = new Rectangle(x, viewY, viewWidth, viewHeight);
+            this.ViewBox = new Rectangle(x, 0, viewWidth, viewHeight);
+            this.miniMapBounds = new Rectangle(x, 0, miniMapWidth, miniMapHeight);
 
             Bitmap miniMapImage = new Bitmap(this.Width, this.Height);
             Graphics graphics = Graphics.FromImage(miniMapImage);
-            graphics.DrawImage(image, x, 0, miniMapWidth, this.Height);
+            graphics.DrawImage(image, x, 0, miniMapWidth, miniMapHeight);
 
             this.Image = miniMapImage;
             this.miniMap = miniMapImage;
-
-            this.ViewBox = new Rectangle(0, 0, viewWidth, viewHeight);
-            UpdateViewBoxPosition();
-        }
-
-        public virtual void SetImage(ref Bitmap image, Panel mapPanel)
-        {
-            this.mapPanel = mapPanel;
-
-            UpdateImage(ref image);
         }
 
         public virtual void Scroll(object sender, ScrollEventArgs e)
@@ -93,15 +68,15 @@ namespace MapMaker
             }
 
             Panel mapPanel = (Panel)sender;
-            UpdateViewBoxPosition(mapPanel);
+            MoveViewBox(mapPanel);
         }
 
-        private void UpdateViewBoxPosition()
+        private void MoveViewBox()
         {
-            UpdateViewBoxPosition(mapPanel);
+            MoveViewBox(mapPanel);
         }
 
-        private void UpdateViewBoxPosition(Panel panel)
+        private void MoveViewBox(Panel panel)
         {
             int hScroll = panel.HorizontalScroll.Value;
             int vScroll = panel.VerticalScroll.Value;
@@ -141,7 +116,7 @@ namespace MapMaker
             // ViewBox box
             Pen pen = new Pen(Program.SelectionColour);
             pen.Alignment = PenAlignment.Inset;
-            graphics.DrawRectangle(pen, this.ViewBox);
+            graphics.DrawRectangle(pen, ViewBox);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)
@@ -177,10 +152,12 @@ namespace MapMaker
             bool cursorInsideViewBox = ViewBox.Contains(cursor);
             if (cursorInsideViewBox == true)
             {
+                //Cursor.Current = Cursors.NoMove2D;
                 this.Cursor = Cursors.Hand;
             }
             else
             {
+                //Cursor.Current = Cursors.Default;
                 this.Cursor = Cursors.Default;
             }
         }
@@ -200,7 +177,16 @@ namespace MapMaker
             this.Cursor = Cursors.NoMove2D;
 
             int deltaX = cursor.X - previousCursor.X;
+            //int signX = Program.GetSign(deltaX);
+            ////deltaX = (int)Math.Log10(Math.Abs(deltaX));
+            //deltaX = Program.ClampToMin(Math.Abs(deltaX), 1);
+            //deltaX = signX * deltaX;
+
             int deltaY = cursor.Y - previousCursor.Y;
+            //int signY = Program.GetSign(deltaY);
+            ////deltaY = (int)Math.Log10(Math.Abs(deltaY));
+            //deltaY = Program.ClampToMin(Math.Abs(deltaY), 1);
+            //deltaY = signY * deltaY;
 
             int hScrollChange = mapPanel.HorizontalScroll.SmallChange;
             int hScroll = mapPanel.HorizontalScroll.Value;
@@ -219,7 +205,7 @@ namespace MapMaker
             mapPanel.HorizontalScroll.Value = x;
             mapPanel.VerticalScroll.Value = y;
 
-            UpdateViewBoxPosition();
+            MoveViewBox();
 
             this.previousCursor = cursor;
         }
