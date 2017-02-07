@@ -16,11 +16,16 @@ namespace MapMaker
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
-        public int SectorId { get; set; }
+        public bool IsHeadquartersSpawn { get; protected set; }
+        public bool IsSectorSpawn { get; protected set; }
+        public bool IsRaiderSpawn { get; protected set; }
+        public int Sector { get; set; }
         public static int NextSector = 0;
-        public int Zone { get; protected set; }
+        public int Zone { get; set; }
+        public static int NextZone = 0;
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
+        [JsonIgnore]
         public bool IsComplete { get; protected set; }
 
         protected Grid() { }
@@ -36,18 +41,18 @@ namespace MapMaker
             this.IsComplete = false;
         }
 
-        public Grid(Point corner, Tile tile) : this(corner, NextSector, tile) { }
+        public Grid(Point corner, Tile tile) : this(corner, NextSector, NextZone, tile) { }
 
-        public Grid(Point corner, int sectorId, Tile tile) : this(corner)
+        public Grid(Point corner, int sector, Tile tile) : this(corner)
         {
             this.AllowsDriving = true;
             this.AllowsFlying = true;
             this.AllowsConstruction = true;
-            this.SectorId = sectorId;
+            this.Sector = sector;
             this.Tile = tile;
         }
 
-        public Grid(Point corner, int sectorId, int zone, Tile tile) : this(corner, sectorId, tile)
+        public Grid(Point corner, int sector, int zone, Tile tile) : this(corner, sector, tile)
         {
             this.Id = nextId++;
             this.Zone = zone;
@@ -56,24 +61,18 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Grid(int id, Point corner, bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
+        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn, bool isRaiderSpawn, 
+            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
             this.Id = id;
+            this.IsHeadquartersSpawn = isHeadquartersSpawn;
+            this.IsSectorSpawn = isSectorSpawn;
+            this.IsRaiderSpawn = isRaiderSpawn;
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
             this.AllowsConstruction = allowsConstruction;
-            this.SectorId = sector;
+            this.Sector = sector;
             this.Zone = zone;
         }
-
-        //public bool Equals(Grid other)
-        //{
-        //    if (other == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    return Id.Equals(other.Id);
-        //}
 
         public bool Equals(Grid other)
         {
@@ -147,8 +146,8 @@ namespace MapMaker
 
         public virtual void CycleSector()
         {
-            this.SectorId++;
-            this.SectorId %= Program.MaxSectors;
+            this.Sector++;
+            this.Sector %= (Program.AllSectors.Count + 1);
         }
 
         public Grid GetCopy()
@@ -159,7 +158,7 @@ namespace MapMaker
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
-            copy.SectorId = this.SectorId;
+            copy.Sector = this.Sector;
             copy.Tile = this.Tile;
             copy.Zone = this.Zone;
             copy.isCopy = true;
@@ -175,7 +174,7 @@ namespace MapMaker
             this.AllowsConstruction = copy.AllowsConstruction;
             this.AllowsDriving = copy.AllowsDriving;
             this.AllowsFlying = copy.AllowsFlying;
-            this.SectorId = copy.SectorId;
+            this.Sector = copy.Sector;
             this.Tile = copy.Tile;
             this.Zone = copy.Zone;
         }

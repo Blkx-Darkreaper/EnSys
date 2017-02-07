@@ -64,7 +64,7 @@ namespace MapMaker
             int height = MapSize.Height;
             int oldWidth = MapSize.Width;
 
-            // Width cannot exceed height
+            // Width cannot exceed imageHeight
             if (width > height)
             {
                 width = height;
@@ -97,7 +97,7 @@ namespace MapMaker
             int width = MapSize.Width;
             int oldHeight = MapSize.Height;
 
-            // Height cannot deceed width
+            // Height cannot deceed imageWidth
             if (height < width)
             {
                 height = width;
