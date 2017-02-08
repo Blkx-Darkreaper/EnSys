@@ -54,6 +54,7 @@ namespace MapMaker
         public static bool HasTerrainChanged { get; private set; }
         public static bool HasUnsavedChanges { get; private set; }
         public static Dictionary<int, Checkpoint> AllCheckpoints { get; set; }
+        public static List<Spawnpoint> AllSpawnpoints { get; set; }
         public static Dictionary<int, Zone> AllZones { get; set; }
         public static Dictionary<int, Sector> AllSectors { get; set; }
         private static List<DrawState> allDrawStates { get; set; }
@@ -79,6 +80,7 @@ namespace MapMaker
             HasTerrainChanged = false;
             HasUnsavedChanges = false;
             AllCheckpoints = new Dictionary<int, Checkpoint>();
+            AllSpawnpoints = new List<Spawnpoint>();
             AllSectors = new Dictionary<int, Sector>();
             AllZones = new Dictionary<int, Zone>();
             allDrawStates = new List<DrawState>();
@@ -125,7 +127,7 @@ namespace MapMaker
                 bool sectorExists = AllSectors.ContainsKey(sectorId);
                 if (sectorExists == false)
                 {
-                    AllSectors.Add(sectorId, new Sector(sectorId, TileLength));
+                    AllSectors.Add(sectorId, new Sector(sectorId));
                 }
 
                 sector = AllSectors[sectorId];
@@ -156,7 +158,7 @@ namespace MapMaker
                 bool zoneExists = AllZones.ContainsKey(zoneId);
                 if (zoneExists == false)
                 {
-                    AllZones.Add(zoneId, new Zone(zoneId, TileLength));
+                    AllZones.Add(zoneId, new Zone(zoneId));
                 }
 
                 Zone zone = AllZones[zoneId];
@@ -173,7 +175,7 @@ namespace MapMaker
                 bool sectorExists = AllSectors.ContainsKey(sectorId);
                 if (sectorExists == false)
                 {
-                    AllSectors.Add(sectorId, new Sector(sectorId, TileLength));
+                    AllSectors.Add(sectorId, new Sector(sectorId));
                 }
 
                 Sector sector = AllSectors[sectorId];
@@ -202,8 +204,35 @@ namespace MapMaker
 
             foreach (Checkpoint toAdd in checkpoints)
             {
+                toAdd.SetBorders();
+
                 int y = toAdd.Location.Y;
                 AllCheckpoints.Add(y, toAdd);
+            }
+        }
+
+        public static void LoadSpawnpoints(List<Spawnpoint> spawnpoints)
+        {
+            if (spawnpoints == null)
+            {
+                return;
+            }
+
+            foreach (Spawnpoint toAdd in spawnpoints)
+            {
+                toAdd.SetBorders();
+
+                int sectorId = toAdd.ParentSectorId;
+
+                bool sectorExists = AllSectors.ContainsKey(sectorId);
+                if (sectorExists == false)
+                {
+                    continue;
+                }
+
+                Sector parentSector = AllSectors[sectorId];
+
+                parentSector.AddSpawnpoint(toAdd);
             }
         }
 
@@ -647,6 +676,7 @@ namespace MapMaker
             Program.dateCreated = map.DateCreated;
             Program.tilesetFilename = map.TilesetFilename;
             Program.TileLength = map.TileLength;
+            Grid.NextSector = map.NextSector;
             Program.mapSize = map.MapSize;
 
             AllMapGrids = map.AllMapGrids;
@@ -663,6 +693,9 @@ namespace MapMaker
 
             // Create Sectors
             //Program.InitSectors();
+
+            // Load Spawnpoints
+            Program.LoadSpawnpoints(map.AllSpawnpoints);
 
             Program.LoadTilesetImageFromFile(tilesetFilename);
             Program.BuildTileset(TileLength, TilesetDisplayWidth);
@@ -774,7 +807,8 @@ namespace MapMaker
 
         private static void SaveMapFile(string filename)
         {
-            StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, Grid.NextZone, mapSize, AllMapGrids, AllCheckpoints.Values.ToList());
+            StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, Grid.NextZone,
+                mapSize, AllMapGrids, AllCheckpoints.Values.ToList(), AllSpawnpoints);
             string json = Program.SerializeMap(map);
 
             WriteTextFile(filename, json);
@@ -1103,6 +1137,14 @@ namespace MapMaker
             }
         }
 
+        private static Point GetScaledCursor(Point cursor, double scale)
+        {
+            int scaledX = (int)Math.Round(cursor.X / scale, 0);
+            int scaledY = (int)Math.Round(cursor.Y / scale, 0);
+            Point scaledCursor = new Point(scaledX, scaledY);
+            return scaledCursor;
+        }
+
         public static void HandleZoneOverlayMouseEnter(MouseEventArgs e, bool editZones, double scale)
         {
             Point cursor = e.Location;
@@ -1245,7 +1287,23 @@ namespace MapMaker
             }
             else
             {
-                // Checkpoints
+                // Checkpoints and Spawnpoints
+                foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+                {
+                    spawnpoint.OnMouseMove(e);
+
+                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    if (mouseWithinBounds == true)
+                    {
+                        spawnpoint.OnMouseEnter(e);
+                        Cursor.Current = spawnpoint.Cursor;
+                        OverlayHasChanged();
+                        continue;
+                    }
+
+                    spawnpoint.OnMouseLeave(e);
+                    OverlayHasChanged();
+                }
                 foreach (Checkpoint checkpoint in AllCheckpoints.Values)
                 {
                     checkpoint.OnMouseMove(e);
@@ -1262,6 +1320,26 @@ namespace MapMaker
                     checkpoint.OnMouseLeave(e);
                     OverlayHasChanged();
                 }
+            }
+        }
+
+        public static void HandleSectorOverlayDoubleClick(MouseEventArgs e, double scale)
+        {
+            Point cursor = e.Location;
+
+            // Adjust cursor to miniMapScale
+            Point scaledCursor = GetScaledCursor(cursor, scale);
+            e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
+
+            foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+            {
+                bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                if (mouseWithinBounds == false)
+                {
+                    continue;
+                }
+
+                spawnpoint.OnDoubleClick(e);
             }
         }
 
@@ -1317,7 +1395,18 @@ namespace MapMaker
             }
             else
             {
-                // Checkpoints
+                // Checkpoints and Spawnpoints
+                foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+                {
+                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    if (mouseWithinBounds == false)
+                    {
+                        continue;
+                    }
+
+                    spawnpoint.OnMouseDown(e);
+                    Cursor.Current = spawnpoint.Cursor;
+                }
                 foreach (Checkpoint checkpoint in AllCheckpoints.Values)
                 {
                     bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
@@ -1352,14 +1441,6 @@ namespace MapMaker
                 sector.OnMouseDown(e);
                 Cursor.Current = sector.Cursor;
             }
-        }
-
-        private static Point GetScaledCursor(Point cursor, double scale)
-        {
-            int scaledX = (int)Math.Round(cursor.X / scale, 0);
-            int scaledY = (int)Math.Round(cursor.Y / scale, 0);
-            Point scaledCursor = new Point(scaledX, scaledY);
-            return scaledCursor;
         }
 
         public static void HandleZoneOverlayMouseUp(MouseEventArgs e, bool editZones, double scale)
@@ -1402,9 +1483,21 @@ namespace MapMaker
             }
             else
             {
-                // Checkpoints
-                List<Checkpoint> checkpoints = new List<Checkpoint>(AllCheckpoints.Values);
-                foreach (Checkpoint checkpoint in checkpoints)
+                // Checkpoints and Spawnpoints
+                foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+                {
+                    bool selected = spawnpoint.HasMouseFocus;
+                    if (selected == false)
+                    {
+                        continue;
+                    }
+
+                    spawnpoint.OnMouseUp(e);
+                    Cursor.Current = spawnpoint.Cursor;
+                }
+
+                List<Checkpoint> allCheckpoints = AllCheckpoints.Values.ToList();   // Need seperate list to avoid iteration exceptions
+                foreach (Checkpoint checkpoint in allCheckpoints)
                 {
                     bool selected = checkpoint.HasMouseFocus;
                     if (selected == false)
@@ -1892,13 +1985,13 @@ namespace MapMaker
 
                 //if (addPadding == true)
                 //{
-                //    x = i % tilesWide * (int)(TileLength * miniMapScale + 1);
-                //    y = i / tilesWide * (int)(TileLength * miniMapScale + 1);
+                //    deltaX = i % tilesWide * (int)(TileLength * miniMapScale + 1);
+                //    deltaY = i / tilesWide * (int)(TileLength * miniMapScale + 1);
                 //}
                 //else
                 //{
-                //    x = i % tilesWide * (int)(TileLength * miniMapScale);
-                //    y = i / tilesWide * (int)(TileLength * miniMapScale);
+                //    deltaX = i % tilesWide * (int)(TileLength * miniMapScale);
+                //    deltaY = i / tilesWide * (int)(TileLength * miniMapScale);
                 //}
 
                 if (addPadding == true)
@@ -2369,7 +2462,7 @@ namespace MapMaker
             return letter;
         }
 
-        public static void AddSector(double hScrollPercent, double vScrollPercent, Size displaySize)
+        private static Point GetMapPoint(double hScrollPercent, double vScrollPercent, Size displaySize)
         {
             int mapWidth = mapSize.Width;
             int mapHeight = mapSize.Height;
@@ -2388,6 +2481,12 @@ namespace MapMaker
             int y = (int)Math.Round(vScrollPercent * maxY + viewHeight / 2, 0);
 
             // Snap to grid
+            Point mapPoint = SnapToGrid(x, y);
+            return mapPoint;
+        }
+
+        public static Point SnapToGrid(int x, int y)
+        {
             int remainder;
             remainder = x % TileLength;
             if (remainder >= (TileLength / 2))
@@ -2410,9 +2509,66 @@ namespace MapMaker
             }
 
             int nextSectorId = AllSectors.Count + 1;
+            return new Point(x, y);
+        }
+
+        public static void SnapToGrid(int x, int y, int width, int height, out Point location, out Size size)
+        {
+            int remainder;
+            remainder = x % TileLength;
+            if (remainder >= (TileLength / 2))
+            {
+                x += TileLength - remainder;
+            }
+            if (remainder < (TileLength / 2))
+            {
+                x -= remainder;
+            }
+
+            remainder = width % TileLength;
+            if (remainder >= (TileLength / 2))
+            {
+                width += TileLength - remainder;
+            }
+            if (remainder < (TileLength / 2))
+            {
+                width -= remainder;
+            }
+
+            remainder = y % TileLength;
+            if (remainder >= (TileLength / 2))
+            {
+                y += TileLength - remainder;
+            }
+            if (remainder < (TileLength / 2))
+            {
+                y -= remainder;
+            }
+
+            remainder = height % TileLength;
+            if (remainder >= (TileLength / 2))
+            {
+                height += TileLength - remainder;
+            }
+            if (remainder < (TileLength / 2))
+            {
+                height -= remainder;
+            }
+
+            location = new Point(x, y);
+            size = new Size(width, height);
+        }
+
+        public static void AddSector(double hScrollPercent, double vScrollPercent, Size displaySize)
+        {
+            Point mapPoint = GetMapPoint(hScrollPercent, vScrollPercent, displaySize);
+            int x = mapPoint.X;
+            int y = mapPoint.Y;
+
+            int nextSectorId = AllSectors.Count + 1;
             int width = TileLength * 3;
             int height = TileLength * 3;
-            Sector toAdd = new Sector(nextSectorId, TileLength, x, y, width, height);
+            Sector toAdd = new Sector(nextSectorId, x, y, width, height);
             Rectangle areaToAdd = toAdd.Area;
 
             foreach (Sector sector in AllSectors.Values)
@@ -2464,7 +2620,7 @@ namespace MapMaker
             Grid.NextZone = nextZoneId + 1;
             int width = mapWidth;
             int height = TileLength * 3;
-            Zone zoneToAdd = new Zone(nextZoneId, TileLength, x, y, width, height);
+            Zone zoneToAdd = new Zone(nextZoneId, x, y, width, height);
             Rectangle areaToAdd = zoneToAdd.Area;
 
             foreach (Zone zone in AllZones.Values)
@@ -2487,7 +2643,7 @@ namespace MapMaker
                 Grid.NextSector = nextSectorId + 1;
             }
 
-            Sector sectorToAdd = new Sector(nextSectorId, TileLength, x, y, width, height);
+            Sector sectorToAdd = new Sector(nextSectorId, x, y, width, height);
             areaToAdd = sectorToAdd.Area;
 
             foreach (Sector sector in AllSectors.Values)
@@ -2510,26 +2666,8 @@ namespace MapMaker
 
         public static void AddCheckPoint(double vScrollPercent, Size displaySize)
         {
-            int mapWidth = mapSize.Width;
-            int mapHeight = mapSize.Height;
-
-            int scrollBarHeight = 25;
-            int displayHeight = displaySize.Height;
-            int viewHeight = displayHeight - scrollBarHeight;
-            int maxY = mapHeight - viewHeight;
-
-            int y = (int)Math.Round(vScrollPercent * maxY + viewHeight / 2, 0);
-
-            // Snap to grid
-            int remainder = y % TileLength;
-            if (remainder >= (TileLength / 2))
-            {
-                y += TileLength - remainder;
-            }
-            if (remainder < (TileLength / 2))
-            {
-                y -= remainder;
-            }
+            Point mapPoint = GetMapPoint(0, vScrollPercent, displaySize);
+            int y = mapPoint.Y;
 
             bool alreadyExists = AllCheckpoints.ContainsKey(y);
             if (alreadyExists == true)
@@ -2537,10 +2675,50 @@ namespace MapMaker
                 return;
             }
 
+            int mapWidth = mapSize.Width;
             Checkpoint checkpoint = new Checkpoint(y, mapWidth, TileLength);
             AllCheckpoints.Add(y, checkpoint);
 
             Program.OverlayHasChanged();
+        }
+
+        public static void AddSpawnpoint(Spawnpoint spawnpoint)
+        {
+            AllSpawnpoints.Add(spawnpoint);
+            OverlayHasChanged();
+        }
+
+        public static void AddSpawnpoint(double hScrollPercent, double vScrollPercent, Size displaySize)
+        {
+            Point mapPoint = GetMapPoint(hScrollPercent, vScrollPercent, displaySize);
+
+            Sector selectedSector = null;
+            foreach (Sector sector in AllSectors.Values)
+            {
+                bool contains = sector.Area.Contains(mapPoint);
+                if (contains == false)
+                {
+                    continue;
+                }
+
+                selectedSector = sector;
+                break;
+            }
+
+            if (selectedSector == null)
+            {
+                MessageBox.Show(string.Format("No sector selected"));
+                return;
+            }
+
+            try
+            {
+                selectedSector.AddSpawnpoint();
+            }
+            catch (InvalidOperationException exception)
+            {
+                MessageBox.Show(string.Format("{0}", exception.Message));
+            }
         }
 
         public static void MoveCheckpoint(Checkpoint checkpointToMove)

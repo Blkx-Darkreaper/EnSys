@@ -8,13 +8,13 @@ namespace MapMaker
     {
         public List<Sector> AllSectors { get; protected set; }
 
-        public Zone(int id, int tileLength)
-            : base(id, tileLength)
+        public Zone(int id)
+            : base(id)
         {
             this.AllSectors = new List<Sector>();
         }
 
-        public Zone(int id, int tileLength, int x, int y, int width, int height) : base(id, tileLength, x, y, width, height)
+        public Zone(int id, int x, int y, int width, int height) : base(id, x, y, width, height)
         {
             this.AllSectors = new List<Sector>();
         }

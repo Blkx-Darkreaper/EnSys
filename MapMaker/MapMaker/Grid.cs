@@ -25,8 +25,7 @@ namespace MapMaker
         public static int NextZone = 0;
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
-        [JsonIgnore]
-        public bool IsComplete { get; protected set; }
+        [JsonIgnore] public bool IsComplete { get; protected set; }
 
         protected Grid() { }
 

@@ -16,3 +16,12 @@ C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Debug\Newtonsoft.Json.xml
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.dll
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.pdb
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\obj\Debug\Test.dll
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\Test.dll
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\Test.pdb
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\MapMaker.exe
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\Newtonsoft.Json.dll
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\MapMaker.pdb
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\bin\Debug\Newtonsoft.Json.xml
+D:\Users\Darkreaper\Git\EnSys\MapMaker\Test\obj\Debug\Test.pdb

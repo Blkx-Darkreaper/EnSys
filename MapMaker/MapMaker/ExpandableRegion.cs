@@ -12,25 +12,25 @@ namespace MapMaker
         public int Id { get; protected set; }
         protected bool isEmpty { get; set; }
 
-        public ExpandableRegion(int id, int tileLength)
-            : base(tileLength)
+        public ExpandableRegion(int id)
+            : base()
         {
             this.Id = id;
             this.isEmpty = true;
         }
 
-        public ExpandableRegion(int id, int tileLength, int x, int y, int width, int height)
-            : this(id, tileLength)
+        public ExpandableRegion(int id, int x, int y, int width, int height)
+            : this(id)
         {
             this.Location = new Point(x, y);
             this.Size = new Size(width, height);
             this.isEmpty = false;
         }
 
-        protected override void SetBorders()
+        public override void SetBorders()
         {
             int length = Math.Min(this.Width, this.Height);
-            if (length <= tileLength)
+            if (length <= Program.TileLength)
             {
                 base.SetBordersRelative(this.Area);
             }

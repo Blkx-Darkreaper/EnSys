@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="Region.cs" />
     <Compile Include="Sector.cs" />
+    <Compile Include="Spawnpoint.cs" />
     <Compile Include="StrikeforceMap.cs" />
     <Compile Include="MapMakerForm.cs">
       <SubType>Form</SubType>

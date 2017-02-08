@@ -11,22 +11,15 @@ namespace MapMaker
 {
     public class Region : IComparable<Region>, IEquatable<Region>
     {
-        [JsonIgnore]
-        public Rectangle Area { get; protected set; }
+        [JsonIgnore] public Rectangle Area { get; protected set; }
         protected Rectangle previousArea { get; set; }
         public Point Location { get { return Area.Location; } protected set { Area = UpdateAreaLocation(value); } }
         public Size Size { get { return Area.Size; } protected set { Area = UpdateAreaSize(value); } }
-        [JsonIgnore]
-        public int Width { get { return Area.Width; } protected set { Area = UpdateAreaWidth(value); } }
-        [JsonIgnore]
-        public int Height { get { return Area.Height; } protected set { Area = UpdateAreaHeight(value); } }
-        [JsonIgnore]
-        public Cursor Cursor { get; protected set; }
-        [JsonIgnore]
-        public bool IsMouseOver { get; protected set; }
-        [JsonIgnore]
-        public bool HasMouseFocus { get; protected set; }
-        protected int tileLength { get; set; }
+        [JsonIgnore] public int Width { get { return Area.Width; } protected set { Area = UpdateAreaWidth(value); } }
+        [JsonIgnore] public int Height { get { return Area.Height; } protected set { Area = UpdateAreaHeight(value); } }
+        [JsonIgnore] public Cursor Cursor { get; protected set; }
+        [JsonIgnore] public bool IsMouseOver { get; protected set; }
+        [JsonIgnore] public bool HasMouseFocus { get; protected set; }
         protected Rectangle northMargin { get; set; }
         protected Rectangle southMargin { get; set; }
         protected Rectangle westMargin { get; set; }
@@ -35,21 +28,20 @@ namespace MapMaker
         protected int currentMouseBorder { get; set; }
         protected Point previousCursor { get; set; }
 
-        public Region(int tileLength)
+        public Region()
         {
             this.Area = new Rectangle();
             this.previousArea = new Rectangle();
             this.Cursor = Cursors.Default;
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
-            this.tileLength = tileLength;
             this.currentMouseBorder = -1;
 
             SetBorders();
         }
 
-        public Region(Point location, int width, int height, int tileLength)
-            : this(tileLength)
+        public Region(Point location, int width, int height)
+            : this()
         {
             this.Location = location;
             this.Width = width;
@@ -58,7 +50,7 @@ namespace MapMaker
             SetBorders();
         }
 
-        protected virtual void SetBorders()
+        public virtual void SetBorders()
         {
             SetBordersAbsolute(this.Area);
         }
@@ -69,6 +61,8 @@ namespace MapMaker
             int y = area.Y;
             int width = area.Width;
             int height = area.Height;
+
+            int tileLength = Program.TileLength;
 
             northMargin = new Rectangle(x, y, width, tileLength);
 
@@ -563,12 +557,20 @@ namespace MapMaker
             return true;
         }
 
-        public virtual void Move(int x, int y)
+        public virtual void Move(int deltaX, int deltaY)
         {
+            if (deltaX == 0)
+            {
+                if (deltaY == 0)
+                {
+                    return;
+                }
+            }
+
             Rectangle oldArea = new Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
 
-            int updatedX = Location.X + x;
-            int updatedY = Location.Y + y;
+            int updatedX = Location.X + deltaX;
+            int updatedY = Location.Y + deltaY;
 
             Location = new Point(updatedX, updatedY);
         }
@@ -853,50 +855,27 @@ namespace MapMaker
             int width = this.Width;
             int height = this.Height;
 
-            int remainder;
+            Point location;
+            Size size;
+            Program.SnapToGrid(x, y, width, height, out location, out size);
+            this.Location = location;
+            this.Size = size;
+        }
 
-            remainder = x % tileLength;
-            if (remainder >= (tileLength / 2))
-            {
-                x += tileLength - remainder;
-            }
-            if (remainder < (tileLength / 2))
-            {
-                x -= remainder;
-            }
+        public virtual void KeepInBounds(Rectangle bounds, int x, int y)
+        {
+            int tileLength = Program.TileLength;
 
-            remainder = width % tileLength;
-            if (remainder >= (tileLength / 2))
-            {
-                width += tileLength - remainder;
-            }
-            if (remainder < (tileLength / 2))
-            {
-                width -= remainder;
-            }
+            int minX = bounds.X;
+            int maxX = minX + bounds.Width - tileLength;
 
-            remainder = y % tileLength;
-            if (remainder >= (tileLength / 2))
-            {
-                y += tileLength - remainder;
-            }
-            if (remainder < (tileLength / 2))
-            {
-                y -= remainder;
-            }
+            int minY = bounds.Y;
+            int maxY = minY + bounds.Height - tileLength;
 
-            remainder = height % tileLength;
-            if (remainder >= (tileLength / 2))
-            {
-                height += tileLength - remainder;
-            }
-            if (remainder < (tileLength / 2))
-            {
-                height -= remainder;
-            }
+            x = Program.Clamp(x, minX, maxX);
+            y = Program.Clamp(y, minY, maxY);
 
             this.Location = new Point(x, y);
-            this.Size = new Size(width, height);
         }
     }
 }

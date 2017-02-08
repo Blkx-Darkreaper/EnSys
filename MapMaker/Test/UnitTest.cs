@@ -40,6 +40,7 @@ namespace Test
             Size mapSize = new Size(96, 96);
             List<Grid> allMapGrids = new List<Grid>();
             List<Checkpoint> allCheckpoints = new List<Checkpoint>();
+            List<Spawnpoint> allSpawnpoints = new List<Spawnpoint>();
 
             Tile grass = new Tile(0, new Point(0, 0));
             Tile cobblestones = new Tile(2, new Point(128, 0));
@@ -65,7 +66,7 @@ namespace Test
             int nextSector = Grid.NextSector;
             int nextZone = Grid.NextZone;
 
-            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, nextZone, mapSize, allMapGrids, allCheckpoints);
+            StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, nextZone, mapSize, allMapGrids, allCheckpoints, allSpawnpoints);
 
             string json = Program.SerializeMap(map);
 
@@ -314,7 +315,7 @@ namespace Test
         {
             LoadTileset(640, 800);
 
-            // 4 x 2
+            // 4 deltaX 2
             Point start = new Point(40, 40);
             Point end = new Point(136, 80);
 
