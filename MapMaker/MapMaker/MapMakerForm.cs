@@ -307,6 +307,12 @@ namespace MapMaker
 
         protected void MapDisplay_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Right)
+            {
+                CancelDrawing();
+                return;
+            }
+
             if (e.Button != MouseButtons.Left)
             {
                 return;
@@ -315,6 +321,38 @@ namespace MapMaker
             this.isDrawingOnMap = true;
             Program.AddDrawState();
             SetRedoEnabled();
+
+            Grid grid = GetGridAtCursor();
+            double scale = Program.MapScale;
+
+            switch (selectedOverlay)
+            {
+                case Overlay.Zones:
+                    bool editZones = !LockRegions.Checked;
+                    Program.HandleZoneOverlayMouseDown(e, editZones, scale);
+                    return;
+
+                case Overlay.Sectors:
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseDown(e, editSectors, scale);
+                    return;
+
+                case Overlay.Construction:
+                    Program.SetSelectedValue(!grid.AllowsConstruction);
+                    break;
+
+                case Overlay.Drivable:
+                    Program.SetSelectedValue(!grid.AllowsDriving);
+                    break;
+
+                case Overlay.Flyable:
+                    Program.SetSelectedValue(!grid.AllowsFlying);
+                    break;
+
+                case Overlay.None:
+                default:
+                    break;
+            }
 
             switch (selectedTool)
             {
@@ -327,37 +365,6 @@ namespace MapMaker
                 case Tool.Pen:
                 case Tool.Fill:
                 default:
-                    Grid grid = GetGridAtCursor();
-                    double scale = Program.MapScale;
-
-                    switch (selectedOverlay)
-                    {
-                        case Overlay.Zones:
-                            bool editZones = !LockRegions.Checked;
-                            Program.HandleZoneOverlayMouseDown(e, editZones, scale);
-                            break;
-
-                        case Overlay.Sectors:
-                            bool editSectors = !LockRegions.Checked;
-                            Program.HandleSectorOverlayMouseDown(e, editSectors, scale);
-                            break;
-
-                        case Overlay.Construction:
-                            Program.SetSelectedValue(!grid.AllowsConstruction);
-                            break;
-
-                        case Overlay.Drivable:
-                            Program.SetSelectedValue(!grid.AllowsDriving);
-                            break;
-
-                        case Overlay.Flyable:
-                            Program.SetSelectedValue(!grid.AllowsFlying);
-                            break;
-
-                        case Overlay.None:
-                        default:
-                            break;
-                    }
                     break;
             }
         }
@@ -372,18 +379,19 @@ namespace MapMaker
                 case Overlay.Sectors:
                     bool editSectors = !LockRegions.Checked;
                     Program.HandleSectorOverlayMouseUp(e, editSectors, scale);
-                    break;
+                    return;
 
                 case Overlay.Zones:
                     bool editZones = !LockRegions.Checked;
                     Program.HandleZoneOverlayMouseUp(e, editZones, scale);
-                    break;
-            }
+                    return;
 
-            if (e.Button == MouseButtons.Right)
-            {
-                CancelDrawing();
-                return;
+                case Overlay.Construction:
+                case Overlay.Drivable:
+                case Overlay.Flyable:
+                case Overlay.None:
+                default:
+                    break;
             }
 
             Point cursor = MapDisplay.PointToClient(Cursor.Position);

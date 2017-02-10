@@ -226,7 +226,7 @@
             // 
             this.noOverlayToolStripMenuItem.Enabled = false;
             this.noOverlayToolStripMenuItem.Name = "noOverlayToolStripMenuItem";
-            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.noOverlayToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.noOverlayToolStripMenuItem.Text = "Map";
             this.noOverlayToolStripMenuItem.Click += new System.EventHandler(this.noOverlayToolStripMenuItem_Click);
             // 
@@ -234,7 +234,7 @@
             // 
             this.zonesToolStripMenuItem.Enabled = false;
             this.zonesToolStripMenuItem.Name = "zonesToolStripMenuItem";
-            this.zonesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zonesToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.zonesToolStripMenuItem.Text = "Zones";
             this.zonesToolStripMenuItem.Click += new System.EventHandler(this.zonesToolStripMenuItem_Click);
             // 
@@ -242,7 +242,7 @@
             // 
             this.sectorsToolStripMenuItem.Enabled = false;
             this.sectorsToolStripMenuItem.Name = "sectorsToolStripMenuItem";
-            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sectorsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.sectorsToolStripMenuItem.Text = "Sectors";
             this.sectorsToolStripMenuItem.Click += new System.EventHandler(this.sectorsToolStripMenuItem_Click);
             // 
@@ -250,7 +250,7 @@
             // 
             this.constructionToolStripMenuItem.Enabled = false;
             this.constructionToolStripMenuItem.Name = "constructionToolStripMenuItem";
-            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.constructionToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.constructionToolStripMenuItem.Text = "Constructable";
             this.constructionToolStripMenuItem.Click += new System.EventHandler(this.constructionToolStripMenuItem_Click);
             // 
@@ -258,7 +258,7 @@
             // 
             this.drivableToolStripMenuItem.Enabled = false;
             this.drivableToolStripMenuItem.Name = "drivableToolStripMenuItem";
-            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.drivableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.drivableToolStripMenuItem.Text = "Drivable";
             this.drivableToolStripMenuItem.Click += new System.EventHandler(this.drivableToolStripMenuItem_Click);
             // 
@@ -266,7 +266,7 @@
             // 
             this.flyableToolStripMenuItem.Enabled = false;
             this.flyableToolStripMenuItem.Name = "flyableToolStripMenuItem";
-            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.flyableToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.flyableToolStripMenuItem.Text = "Flyable";
             this.flyableToolStripMenuItem.Click += new System.EventHandler(this.flyableToolStripMenuItem_Click);
             // 
