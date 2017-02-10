@@ -41,8 +41,8 @@ namespace Test
             List<Checkpoint> allCheckpoints = new List<Checkpoint>();
             List<Spawnpoint> allSpawnpoints = new List<Spawnpoint>();
 
-            Tile grass = new Tile(0, new Point(0, 0));
-            Tile cobblestones = new Tile(2, new Point(128, 0));
+            Tile grass = new Tile(0, 0, 0);
+            Tile cobblestones = new Tile(2, 128, 0);
 
             for (int i = 0; i < 9; i++)
             {
@@ -52,18 +52,18 @@ namespace Test
                 Grid gridToAdd;
                 if (i != 4)
                 {
-                    gridToAdd = new Grid(new Point(x, y), grass);
+                    gridToAdd = new Grid(x, y, grass);
                 }
                 else
                 {
-                    gridToAdd = new Grid(new Point(x, y), cobblestones);
+                    gridToAdd = new Grid(x, y, cobblestones);
                 }
 
                 allMapGrids.Add(gridToAdd);
             }
 
-            int nextSector = Grid.NextSector;
-            int nextZone = Grid.NextZone;
+            int nextSector = Grid.NextSectorId;
+            int nextZone = Grid.NextZoneId;
 
             StrikeforceMap map = new StrikeforceMap(author, dateCreated, tilesetFilename, tileLength, nextSector, nextZone, mapSize, allMapGrids, allCheckpoints);
 
@@ -345,7 +345,7 @@ namespace Test
             List<Grid> quadrant1 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant1)
             {
-                grid.Sector = 1;
+                grid.SectorId = 1;
             }
 
             start = new Point(64, 0);
@@ -353,7 +353,7 @@ namespace Test
             List<Grid> quadrant2 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant2)
             {
-                grid.Sector = 2;
+                grid.SectorId = 2;
             }
 
             start = new Point(0, 64);
@@ -361,7 +361,7 @@ namespace Test
             List<Grid> quadrant0 = Program.GetGridsInArea(start, end, scale);
             foreach (Grid grid in quadrant0)
             {
-                grid.Sector = 0;
+                grid.SectorId = 0;
             }
 
             Program.InitSectors();

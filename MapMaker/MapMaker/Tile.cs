@@ -12,10 +12,10 @@ namespace MapMaker
         public Point Corner { get; protected set; }
         public int TilesetIndex { get; set; }
 
-        public Tile(int index, Point corner)
+        public Tile(int index, int x, int y)
         {
             this.TilesetIndex = index;
-            this.Corner = corner;
+            this.Corner = new Point(x, y);
         }
 
         public bool Equals(Tile other)

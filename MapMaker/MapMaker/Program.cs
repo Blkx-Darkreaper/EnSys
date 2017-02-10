@@ -117,7 +117,7 @@ namespace MapMaker
         {
             foreach (Grid grid in AllMapGrids)
             {
-                int sectorId = grid.Sector;
+                int sectorId = grid.SectorId;
                 if (sectorId == 0)
                 {
                     continue;
@@ -149,7 +149,7 @@ namespace MapMaker
         {
             foreach (Grid grid in AllMapGrids)
             {
-                int zoneId = grid.Zone;
+                int zoneId = grid.ZoneId;
                 if (zoneId == 0)
                 {
                     continue;
@@ -166,7 +166,7 @@ namespace MapMaker
                 // Resize zone to accomodate grid
                 zone.AddGrid(grid, TileLength);
 
-                int sectorId = grid.Sector;
+                int sectorId = grid.SectorId;
                 if (sectorId == 0)
                 {
 
@@ -191,7 +191,9 @@ namespace MapMaker
                     continue;
                 }
 
-                Spawnpoint spawnpoint = new Spawnpoint(grid.Corner, sector, grid.IsHeadquartersSpawn);
+                int x = grid.Corner.X;
+                int y = grid.Corner.Y;
+                Spawnpoint spawnpoint = new Spawnpoint(x, y, sector, grid.IsHeadquartersSpawn);
             }
 
             int sectors = AllSectors.Count;
@@ -456,9 +458,8 @@ namespace MapMaker
             {
                 int x = (i % tilesWide) * (2 * tileLength);
                 int y = (i / tilesWide) * (3 * tileLength);
-                Point corner = new Point(x, y);
 
-                Tile tileToAdd = new Tile(i, corner);
+                Tile tileToAdd = new Tile(i, x, y);
                 tileset.Add(tileToAdd);
             }
 
@@ -499,9 +500,7 @@ namespace MapMaker
             {
                 for (int x = 0; x < width; x += TileLength)
                 {
-                    Point corner = new Point(x, y);
-
-                    Grid gridToAdd = new Grid(corner, defaultTile);
+                    Grid gridToAdd = new Grid(x, y, defaultTile);
                     AllMapGrids.Add(gridToAdd);
                 }
             }
@@ -533,8 +532,7 @@ namespace MapMaker
             {
                 for (int x = 0; x < maxWidth; x += TileLength)
                 {
-                    Point corner = new Point(x, y);
-                    Grid dummy = new Grid(corner, defaultTile);
+                    Grid dummy = new Grid(x, y, defaultTile);
 
                     bool gridAlreadyAdded = AllMapGrids.Contains(dummy);
 
@@ -659,7 +657,7 @@ namespace MapMaker
             Program.dateCreated = map.DateCreated;
             Program.tilesetFilename = map.TilesetFilename;
             Program.TileLength = map.TileLength;
-            Grid.NextSector = map.NextSector;
+            Grid.NextSectorId = map.NextSector;
             Program.mapSize = map.MapSize;
 
             AllMapGrids = map.AllMapGrids;
@@ -784,7 +782,7 @@ namespace MapMaker
 
         private static void SaveMapFile(string filename)
         {
-            StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, Grid.NextSector, Grid.NextZone,
+            StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, Grid.NextSectorId, Grid.NextZoneId,
                 mapSize, AllMapGrids, AllCheckpoints.Values.ToList());
             string json = Program.SerializeMap(map);
 
@@ -1598,7 +1596,7 @@ namespace MapMaker
             List<Grid> gridsToUpdate = GetGridsInArea(start, end, 1);
             foreach (Grid grid in gridsToUpdate)
             {
-                grid.Sector = updatedSectorId;
+                grid.SectorId = updatedSectorId;
             }
         }
 
@@ -1618,7 +1616,7 @@ namespace MapMaker
             List<Grid> gridsToUpdate = GetGridsInArea(start, end, 1);
             foreach (Grid grid in gridsToUpdate)
             {
-                grid.Zone = updatedZoneId;
+                grid.ZoneId = updatedZoneId;
             }
         }
 
@@ -2183,7 +2181,7 @@ namespace MapMaker
             {
                 for (int x = normalCornerX; x < normalWidth; x += TileLength)
                 {
-                    Grid dummy = new Grid(new Point(x, y));
+                    Grid dummy = new Grid(x, y);
                     Grid grid = AllMapGrids.Find(g => g.Equals(dummy));
                     selectedGrids.Add(grid);
                 }
@@ -2657,7 +2655,7 @@ namespace MapMaker
             }
 
             int nextZoneId = AllZones.Count + 1;
-            Grid.NextZone = nextZoneId + 1;
+            Grid.NextZoneId = nextZoneId + 1;
             int width = mapWidth;
             int height = TileLength * 3;
             Zone zoneToAdd = new Zone(nextZoneId, x, y, width, height);
@@ -2678,9 +2676,9 @@ namespace MapMaker
             UpdateGridZones(areaToAdd, nextZoneId);
 
             int nextSectorId = AllSectors.Count + 1;
-            if (nextSectorId + 1 > Grid.NextSector)
+            if (nextSectorId + 1 > Grid.NextSectorId)
             {
-                Grid.NextSector = nextSectorId + 1;
+                Grid.NextSectorId = nextSectorId + 1;
             }
 
             Sector sectorToAdd = new Sector(nextSectorId, x, y, width, height);

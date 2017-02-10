@@ -22,9 +22,6 @@ namespace MapMaker
 
         public Sector(int id, int x, int y, int width, int height) : base(id, x, y, width, height)
         {
-            this.Corner = new Point(x, y);
-            this.Size = new Size(width, height);
-            this.isEmpty = false;
             this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
 
             AddSpawnpointInCenter();
@@ -103,7 +100,7 @@ namespace MapMaker
 
             Point centerTileLocation = Program.SnapToGrid(midX, midY);
 
-            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation, this, false);
+            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation.X, centerTileLocation.Y, this, false);
         }
 
         public void AddSpawnpoint(Spawnpoint toAdd)

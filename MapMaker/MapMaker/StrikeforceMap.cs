@@ -31,9 +31,9 @@ namespace MapMaker
             this.TilesetFilename = tilesetFilename;
             this.TileLength = tileLength;
             this.NextSector = nextSector;
-            Grid.NextSector = nextSector;
+            Grid.NextSectorId = nextSector;
             this.NextZone = nextZone;
-            Grid.NextZone = nextZone;
+            Grid.NextZoneId = nextZone;
             this.MapSize = mapSize;
             this.AllMapGrids = allMapGrids;
             this.AllCheckpoints = allCheckpoints;

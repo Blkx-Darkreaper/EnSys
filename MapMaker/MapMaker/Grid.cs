@@ -19,10 +19,10 @@ namespace MapMaker
         public bool IsSpawnpoint { get { return IsHeadquartersSpawn || IsSectorSpawn; } }
         public bool IsHeadquartersSpawn { get; protected set; }
         public bool IsSectorSpawn { get; protected set; }
-        public int Sector { get; set; }
-        public static int NextSector = 0;
-        public int Zone { get; set; }
-        public static int NextZone = 0;
+        public int SectorId { get; set; }
+        public static int NextSectorId = 0;
+        public int ZoneId { get; set; }
+        public static int NextZoneId = 0;
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
         [JsonIgnore] public bool IsComplete { get; protected set; }
@@ -34,42 +34,42 @@ namespace MapMaker
             MatchCopy(copy);
         }
 
-        public Grid(Point corner)
+        public Grid(int x, int y)
         {
-            this.Corner = corner;
+            this.Corner = new Point(x, y);
             this.IsComplete = false;
         }
 
-        public Grid(Point corner, Tile tile) : this(corner, NextSector, NextZone, tile) { }
+        public Grid(int x, int y, Tile tile) : this(x, y, NextSectorId, NextZoneId, tile) { }
 
-        public Grid(Point corner, int sector, Tile tile) : this(corner)
+        public Grid(int x, int y, int sectorId, Tile tile) : this(x, y)
         {
             this.AllowsDriving = true;
             this.AllowsFlying = true;
             this.AllowsConstruction = true;
-            this.Sector = sector;
+            this.SectorId = sectorId;
             this.Tile = tile;
         }
 
-        public Grid(Point corner, int sector, int zone, Tile tile) : this(corner, sector, tile)
+        public Grid(int x, int y, int sectorId, int zoneId, Tile tile) : this(x, y, sectorId, tile)
         {
             this.Id = nextId++;
-            this.Zone = zone;
+            this.ZoneId = zoneId;
             this.isCopy = false;
             this.IsComplete = true;
         }
 
         [JsonConstructor]
-        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn,
-            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
+        public Grid(int id, int x, int y, bool isHeadquartersSpawn, bool isSectorSpawn,
+            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sectorId, int zoneId, Tile tile) : this(x, y, tile) {
             this.Id = id;
             this.IsHeadquartersSpawn = isHeadquartersSpawn;
             this.IsSectorSpawn = isSectorSpawn;
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
             this.AllowsConstruction = allowsConstruction;
-            this.Sector = sector;
-            this.Zone = zone;
+            this.SectorId = sectorId;
+            this.ZoneId = zoneId;
         }
 
         public bool Equals(Grid other)
@@ -144,8 +144,8 @@ namespace MapMaker
 
         public virtual void CycleSector()
         {
-            this.Sector++;
-            this.Sector %= (Program.AllSectors.Count + 1);
+            this.SectorId++;
+            this.SectorId %= (Program.AllSectors.Count + 1);
         }
 
         public Grid GetCopy()
@@ -156,9 +156,9 @@ namespace MapMaker
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
-            copy.Sector = this.Sector;
+            copy.SectorId = this.SectorId;
             copy.Tile = this.Tile;
-            copy.Zone = this.Zone;
+            copy.ZoneId = this.ZoneId;
             copy.isCopy = true;
             copy.IsComplete = true;
 
@@ -172,9 +172,9 @@ namespace MapMaker
             this.AllowsConstruction = copy.AllowsConstruction;
             this.AllowsDriving = copy.AllowsDriving;
             this.AllowsFlying = copy.AllowsFlying;
-            this.Sector = copy.Sector;
+            this.SectorId = copy.SectorId;
             this.Tile = copy.Tile;
-            this.Zone = copy.Zone;
+            this.ZoneId = copy.ZoneId;
         }
     }
 }

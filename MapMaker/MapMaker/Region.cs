@@ -40,10 +40,10 @@ namespace MapMaker
             SetBorders();
         }
 
-        public Region(Point corner, int width, int height)
+        public Region(int x, int y, int width, int height)
             : this()
         {
-            this.Corner = corner;
+            this.Corner = new Point(x, y);
             this.Width = width;
             this.Height = height;
 

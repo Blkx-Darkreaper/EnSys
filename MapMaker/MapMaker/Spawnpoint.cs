@@ -29,7 +29,7 @@ namespace MapMaker
         protected static Spawnpoint headquartersSpawn { get; set; }
         [JsonIgnore] public string AlreadyHasParentErrorMessage { get; protected set; }
 
-        public Spawnpoint(Point corner, Sector parentSector, bool isHQSpawn) : base(corner, Program.TileLength, Program.TileLength)
+        public Spawnpoint(int x, int y, Sector parentSector, bool isHQSpawn) : base(x, y, Program.TileLength, Program.TileLength)
         {
             this.IsHeadquartersSpawn = isHQSpawn;
 
