@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace MapMaker
@@ -25,6 +26,28 @@ namespace MapMaker
             this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
 
             AddSpawnpointInCenter();
+        }
+
+        public override void Draw(Graphics graphics, double scale, Color colour)
+        {
+            Pen pen = new Pen(colour, 4);
+            if (IsMouseOver == true || IsSelected == true)
+            {
+                pen = new Pen(colour, 6);
+            }
+
+            pen.Alignment = PenAlignment.Inset;
+
+            Rectangle bounds = GetScaledBounds(scale);
+
+            graphics.DrawRectangle(pen, bounds);
+
+            Font font = new Font(FontFamily.GenericSansSerif, 12f);
+
+            int scaledX = (int)Math.Round(Location.X * scale, 0);
+            int scaledY = (int)Math.Round(Location.Y * scale, 0);
+            Point scaledLocation = new Point(scaledX, scaledY);
+            graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 
         public override void SetBorders()
@@ -56,12 +79,22 @@ namespace MapMaker
             UpdateSpawnPosition(this.Area, deltaX, deltaY);
         }
 
+        public override void Delete()
+        {
+            this.Spawn.Delete();
+
+            Program.AllSectors.Remove(this.Id);
+            Parent.AllSectors.Remove(this);
+
+            Program.UpdateGridSectors(this.Area, 0);
+        }
+
         public override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
-            int x = this.Corner.X;
-            int y = this.Corner.Y;
+            int x = this.Location.X;
+            int y = this.Location.Y;
             KeepInBounds(Area, x, y);
         }
 
@@ -73,8 +106,7 @@ namespace MapMaker
             }
 
             Spawn.Move(deltaX, deltaY);
-
-            Spawn.KeepInBounds(updatedArea, Spawn.Corner.X, Spawn.Corner.Y);
+            Spawn.KeepInBounds(updatedArea, Spawn.Location.X, Spawn.Location.Y);
         }
 
         public void AddSpawnpointInCenter()
@@ -84,8 +116,8 @@ namespace MapMaker
                 throw new InvalidOperationException(AlreadyHasSpawnErrorMessage);
             }
 
-            int x = this.Corner.X;
-            int y = this.Corner.Y;
+            int x = this.Location.X;
+            int y = this.Location.Y;
 
             int width = this.Area.Width;
             int height = this.Area.Height;

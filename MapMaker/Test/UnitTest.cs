@@ -192,8 +192,8 @@ namespace Test
             Program.BuildMap(mapSize);
 
             Grid twelve = Program.AllMapGrids[12];
-            int x = twelve.Corner.X;
-            int y = twelve.Corner.Y;
+            int x = twelve.Location.X;
+            int y = twelve.Location.Y;
 
             int[] adjacentIndexes = Program.GetAdjacentGridIndexes(twelve);
 
@@ -324,12 +324,12 @@ namespace Test
             Assert.IsTrue(selectedGrids.Count == 8);
 
             Grid first = selectedGrids[0];
-            Assert.IsTrue(first.Corner.X == 32);
-            Assert.IsTrue(first.Corner.Y == 32);
+            Assert.IsTrue(first.Location.X == 32);
+            Assert.IsTrue(first.Location.Y == 32);
 
             Grid last = selectedGrids[selectedGrids.Count - 1];
-            Assert.IsTrue(last.Corner.X == 160);
-            Assert.IsTrue(last.Corner.Y == 64);
+            Assert.IsTrue(last.Location.X == 160);
+            Assert.IsTrue(last.Location.Y == 64);
         }
 
         [TestMethod]
@@ -371,10 +371,10 @@ namespace Test
 
             //Sector sector0 = Program.AllSectors[0];
             //bounds = sector0.Area;
-            //x = bounds.Corner.X;
+            //x = bounds.Location.X;
             //Assert.IsTrue(x == 0);
 
-            //y = bounds.Corner.Y;
+            //y = bounds.Location.Y;
             //Assert.IsTrue(y == 64);
 
             //width = bounds.Width;

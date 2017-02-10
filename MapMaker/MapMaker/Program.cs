@@ -44,6 +44,7 @@ namespace MapMaker
         private static Size tilesetDisplaySize { get; set; }
         public static Color SelectionColour { get; set; }
         public static Tile SelectedTile { get; private set; }
+        public static Region SelectedRegion { get; set; }
         private static bool selectedValue { get; set; }
         private static int selectedNumber { get; set; }
         public static List<Grid> AllMapGrids;
@@ -73,6 +74,7 @@ namespace MapMaker
             tileset = new List<Tile>();
             SelectionColour = Color.Blue;
             SelectedTile = null;
+            SelectedRegion = null;
             AllMapGrids = new List<Grid>();
             allUpdatedMapGrids = new Queue<Grid>();
             HasDisplayChanged = false;
@@ -169,21 +171,24 @@ namespace MapMaker
                 int sectorId = grid.SectorId;
                 if (sectorId == 0)
                 {
-
+                    continue;
                 }
+
+                Sector sector;
 
                 bool sectorExists = AllSectors.ContainsKey(sectorId);
                 if (sectorExists == false)
                 {
-                    AllSectors.Add(sectorId, new Sector(sectorId));
+                    sector = new Sector(sectorId);
+                    AllSectors.Add(sectorId, sector);
+
+                    zone.AddSector(sector);
                 }
 
-                Sector sector = AllSectors[sectorId];
+                sector = AllSectors[sectorId];
 
                 // Resize zone to accomodate grid
                 sector.AddGrid(grid, TileLength);
-
-                zone.AddSector(sector);
 
                 bool isSpawnpoint = grid.IsSpawnpoint;
                 if (isSpawnpoint == false)
@@ -191,9 +196,16 @@ namespace MapMaker
                     continue;
                 }
 
-                int x = grid.Corner.X;
-                int y = grid.Corner.Y;
+                int x = grid.Location.X;
+                int y = grid.Location.Y;
                 Spawnpoint spawnpoint = new Spawnpoint(x, y, sector, grid.IsHeadquartersSpawn);
+                spawnpoint.IsLocked = true;
+            }
+
+            // Unlock all spawnpoints
+            foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+            {
+                spawnpoint.IsLocked = false;
             }
 
             int sectors = AllSectors.Count;
@@ -216,7 +228,7 @@ namespace MapMaker
             {
                 toAdd.SetBorders();
 
-                int y = toAdd.Corner.Y;
+                int y = toAdd.Location.Y;
                 AllCheckpoints.Add(y, toAdd);
             }
         }
@@ -954,8 +966,8 @@ namespace MapMaker
 
             foreach (Grid grid in selectedGrids)
             {
-                int scaledX = (int)Math.Round(grid.Corner.X * scale, 0);
-                int scaledY = (int)Math.Round(grid.Corner.Y * scale, 0);
+                int scaledX = (int)Math.Round(grid.Location.X * scale, 0);
+                int scaledY = (int)Math.Round(grid.Location.Y * scale, 0);
                 int scaledLength = (int)Math.Round(TileLength * scale, 0);
 
                 Rectangle bounds = new Rectangle(scaledX, scaledY, scaledLength, scaledLength);
@@ -1120,7 +1132,124 @@ namespace MapMaker
             return scaledCursor;
         }
 
-        public static void HandleSectorOverlayDoubleClick(MouseEventArgs e, bool editSectors, double scale)
+        private static void SetSelectedRegion(Region region)
+        {
+            if (SelectedRegion == region)
+            {
+                SelectedRegion = null;
+                return;
+            }
+
+            SelectedRegion = region;
+        }
+
+        public static void HandleZoneOverlayMouseClick(MouseEventArgs e, bool editZones, double scale)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                Program.SelectedRegion = null;
+                return;
+            }
+
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            Point cursor = e.Location;
+
+            // Adjust cursor to miniMapScale
+            Point scaledCursor = GetScaledCursor(cursor, scale);
+            e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
+
+            if (editZones == true)
+            {
+                // Zones
+                foreach (Zone zone in AllZones.Values)
+                {
+                    bool mouseWithinCenterBounds = zone.IsInCenter(scaledCursor);
+                    if (mouseWithinCenterBounds == false)
+                    {
+                        continue;
+                    }
+
+                    zone.OnMouseClick(e);
+                    SetSelectedRegion(zone);
+                    OverlayHasChanged();
+                }
+            }
+            else
+            {
+                // Checkpoints
+                foreach (Checkpoint checkpoint in AllCheckpoints.Values)
+                {
+                    bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
+                    if (mouseWithinBounds == false)
+                    {
+                        continue;
+                    }
+
+                    checkpoint.OnMouseClick(e);
+                    SetSelectedRegion(checkpoint);
+                    OverlayHasChanged();
+                }
+            }
+        }
+
+        public static void HandleSectorOverlayMouseClick(MouseEventArgs e, bool editSectors, double scale)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                Program.SelectedRegion = null;
+                return;
+            }
+
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            Point cursor = e.Location;
+
+            // Adjust cursor to miniMapScale
+            Point scaledCursor = GetScaledCursor(cursor, scale);
+            e = new MouseEventArgs(e.Button, e.Clicks, scaledCursor.X, scaledCursor.Y, e.Delta);
+
+            if (editSectors == true)
+            {
+                // Sectors
+                foreach (Sector sector in AllSectors.Values)
+                {
+                    bool mouseWithinCenterBounds = sector.IsInCenter(scaledCursor);
+                    if (mouseWithinCenterBounds == false)
+                    {
+                        continue;
+                    }
+
+                    sector.OnMouseClick(e);
+                    SetSelectedRegion(sector);
+                    OverlayHasChanged();
+                }
+            }
+            else
+            {
+                // Spawnpoints
+                foreach (Spawnpoint spawnpoint in AllSpawnpoints)
+                {
+                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    if (mouseWithinBounds == false)
+                    {
+                        continue;
+                    }
+
+                    spawnpoint.OnMouseClick(e);
+                    SetSelectedRegion(spawnpoint);
+                    OverlayHasChanged();
+                }
+            }
+        }
+
+        public static void HandleSectorOverlayMouseDoubleClick(MouseEventArgs e, bool editSectors, double scale)
         {
             if (editSectors == true)
             {
@@ -1496,14 +1625,15 @@ namespace MapMaker
                     Rectangle[] removed = zone.GetRemoved();
                     foreach (Rectangle area in removed)
                     {
+                        UpdateGridZones(area, 0);
                         UpdateGridSectors(area, 0);
                     }
 
-                    int sectorId = zone.Id;
+                    int zoneId = zone.Id;
                     Rectangle[] added = zone.GetAdded();
                     foreach (Rectangle area in added)
                     {
-                        UpdateGridSectors(area, sectorId);
+                        UpdateGridZones(area, zoneId);
                     }
                 }
             }
@@ -1580,6 +1710,17 @@ namespace MapMaker
             }
         }
 
+        public static void DeleteSelectedRegion()
+        {
+            if (SelectedRegion == null)
+            {
+                return;
+            }
+
+            SelectedRegion.Delete();
+            SelectedRegion = null;
+        }
+
         public static void UpdateGridSectors(Rectangle updatedArea, int updatedSectorId)
         {
             Point start = updatedArea.Location;
@@ -1593,7 +1734,7 @@ namespace MapMaker
 
             Point end = new Point(endX, endY);
 
-            List<Grid> gridsToUpdate = GetGridsInArea(start, end, 1);
+            List<Grid> gridsToUpdate = GetGridsInArea(start, end);
             foreach (Grid grid in gridsToUpdate)
             {
                 grid.SectorId = updatedSectorId;
@@ -1613,7 +1754,7 @@ namespace MapMaker
 
             Point end = new Point(endX, endY);
 
-            List<Grid> gridsToUpdate = GetGridsInArea(start, end, 1);
+            List<Grid> gridsToUpdate = GetGridsInArea(start, end);
             foreach (Grid grid in gridsToUpdate)
             {
                 grid.ZoneId = updatedZoneId;
@@ -1760,7 +1901,7 @@ namespace MapMaker
 
         private static void DrawLabel(Graphics graphics, double scale, Grid grid, string label)
         {
-            Point gridCorner = grid.Corner;
+            Point gridCorner = grid.Location;
             int cornerX = (int)(gridCorner.X * scale);
             int cornerY = (int)(gridCorner.Y * scale);
             int length = (int)(TileLength * scale);
@@ -1794,7 +1935,7 @@ namespace MapMaker
 
         private static void DrawCircle(Graphics graphics, double scale, Grid grid, Color colour)
         {
-            Point gridCorner = grid.Corner;
+            Point gridCorner = grid.Location;
             int length = (int)(TileLength * scale);
             int radius = (int)(TileLength * 0.2);
             int cornerX = (int)(gridCorner.X * scale);
@@ -1832,26 +1973,9 @@ namespace MapMaker
 
                     int colourIndex = i % ColourRoulette.Count;
                     colour = ColourRoulette[colourIndex];
-                    Pen pen = new Pen(colour, 4);
 
                     Sector currentSector = AllSectors.Values.ElementAt(i);
-                    if (currentSector.IsMouseOver == true)
-                    {
-                        pen = new Pen(colour, 6);
-                    }
-
-                    pen.Alignment = PenAlignment.Inset;
-
-                    Rectangle bounds = currentSector.GetScaledBounds(scale);
-
-                    graphics.DrawRectangle(pen, bounds);
-
-                    Font font = new Font(FontFamily.GenericSansSerif, 12f);
-
-                    int scaledX = (int)Math.Round(currentSector.Corner.X * scale, 0);
-                    int scaledY = (int)Math.Round(currentSector.Corner.Y * scale, 0);
-                    Point scaledLocation = new Point(scaledX, scaledY);
-                    graphics.DrawString(currentSector.Id.ToString(), font, Brushes.White, scaledLocation);
+                    currentSector.Draw(graphics, scale, colour);
                 }
 
                 // Draw Zones around Sectors
@@ -1895,26 +2019,9 @@ namespace MapMaker
 
                     int colourIndex = i % ColourRoulette.Count;
                     Color colour = ColourRoulette[colourIndex];
-                    Pen pen = new Pen(colour, 2);
 
                     Zone currentZone = AllZones.Values.ElementAt(i);
-                    if (currentZone.IsMouseOver == true)
-                    {
-                        pen = new Pen(colour, 4);
-                    }
-
-                    pen.Alignment = PenAlignment.Inset;
-
-                    Rectangle bounds = currentZone.GetScaledBounds(scale);
-
-                    graphics.DrawRectangle(pen, bounds);
-
-                    Font font = new Font(FontFamily.GenericSansSerif, 12f);
-
-                    int scaledX = (int)Math.Round(currentZone.Corner.X * scale, 0);
-                    int scaledY = (int)Math.Round(currentZone.Corner.Y * scale, 0);
-                    Point scaledLocation = new Point(scaledX, scaledY);
-                    graphics.DrawString(currentZone.Id.ToString(), font, Brushes.White, scaledLocation);
+                    currentZone.Draw(graphics, scale, colour);
                 }
 
                 // Draw checkpoints
@@ -2034,16 +2141,16 @@ namespace MapMaker
 
                 if (addPadding == true)
                 {
-                    int column = grid.Corner.X / tileLength;
-                    int row = grid.Corner.Y / tileLength;
+                    int column = grid.Location.X / tileLength;
+                    int row = grid.Location.Y / tileLength;
 
-                    x = (int)Math.Round((grid.Corner.X + column) * scale, 0);
-                    y = (int)Math.Round((grid.Corner.Y + row) * scale, 0);
+                    x = (int)Math.Round((grid.Location.X + column) * scale, 0);
+                    y = (int)Math.Round((grid.Location.Y + row) * scale, 0);
                 }
                 else
                 {
-                    x = (int)Math.Round(grid.Corner.X * scale, 0);
-                    y = (int)Math.Round(grid.Corner.Y * scale, 0);
+                    x = (int)Math.Round(grid.Location.X * scale, 0);
+                    y = (int)Math.Round(grid.Location.Y * scale, 0);
                 }
 
                 Tile tile = grid.Tile;
@@ -2057,7 +2164,7 @@ namespace MapMaker
             while (allUpdatedMapGrids.Count > 0)
             {
                 Grid grid = allUpdatedMapGrids.Dequeue();
-                Point corner = grid.Corner;
+                Point corner = grid.Location;
                 int x = (int)(corner.X * scale);
                 int y = (int)(corner.Y * scale);
 
@@ -2118,6 +2225,11 @@ namespace MapMaker
             Grid grid = collection[index];
 
             return grid;
+        }
+
+        public static List<Grid> GetGridsInArea(Point start, Point end)
+        {
+            return GetGridsInArea(start, end, 1);
         }
 
         public static List<Grid> GetGridsInArea(Point start, Point end, double scale)
@@ -2213,7 +2325,7 @@ namespace MapMaker
                 throw new NullReferenceException("No image loaded");
             }
 
-            Point corner = tile.Corner;
+            Point corner = tile.Location;
             int x = corner.X;
             int y = corner.Y;
 
@@ -2626,6 +2738,19 @@ namespace MapMaker
             Program.OverlayHasChanged();
         }
 
+        public static void DeleteSector()
+        {
+            if (SelectedRegion == null)
+            {
+                return;
+            }
+
+            Sector selectedSector = (Sector)SelectedRegion;
+            selectedSector.Delete();
+
+            SelectedRegion = null;
+        }
+
         public static void AddZone(double vScrollPercent, Size displaySize)
         {
             int mapWidth = mapSize.Width;
@@ -2702,6 +2827,19 @@ namespace MapMaker
             Program.OverlayHasChanged();
         }
 
+        public static void DeleteZone()
+        {
+            if (SelectedRegion == null)
+            {
+                return;
+            }
+
+            Zone selectedZone = (Zone)SelectedRegion;
+            selectedZone.Delete();
+
+            SelectedRegion = null;
+        }
+
         public static void AddCheckPoint(double vScrollPercent, Size displaySize)
         {
             Point mapPoint = GetMapPoint(0, vScrollPercent, displaySize);
@@ -2718,6 +2856,28 @@ namespace MapMaker
             AllCheckpoints.Add(y, checkpoint);
 
             Program.OverlayHasChanged();
+        }
+
+        public static void MoveCheckpoint(Checkpoint checkpointToMove)
+        {
+            int oldY = checkpointToMove.Key;
+            AllCheckpoints.Remove(oldY);
+
+            int updatedY = checkpointToMove.Location.Y;
+            AllCheckpoints.Add(updatedY, checkpointToMove);
+        }
+
+        public static void DeleteCheckpoint()
+        {
+            if (SelectedRegion == null)
+            {
+                return;
+            }
+
+            Checkpoint selectedCheckpoint = (Checkpoint)SelectedRegion;
+            selectedCheckpoint.Delete();
+
+            SelectedRegion = null;
         }
 
         public static void AddSpawnpoint(Spawnpoint spawnpoint)
@@ -2757,15 +2917,6 @@ namespace MapMaker
             {
                 MessageBox.Show(string.Format("{0}", exception.Message));
             }
-        }
-
-        public static void MoveCheckpoint(Checkpoint checkpointToMove)
-        {
-            int oldY = checkpointToMove.Key;
-            AllCheckpoints.Remove(oldY);
-
-            int updatedY = checkpointToMove.Corner.Y;
-            AllCheckpoints.Add(updatedY, checkpointToMove);
         }
 
         public static Rectangle[] Difference(Rectangle rect1, Rectangle rect2)

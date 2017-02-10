@@ -139,8 +139,8 @@ namespace MapMaker
                     // Draw tile preview
                     //foreach (Grid grid in selectedGrids)
                     //{
-                    //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
-                    //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
+                    //    int scaledX = (int)Math.Round(grid.Location.X * MapScale, 0);
+                    //    int scaledY = (int)Math.Round(grid.Location.Y * MapScale, 0);
                     //    int scaledLength = (int)Math.Round(TileLength * MapScale, 0);
 
                     //    Rectangle bounds = new Rectangle(scaledX, scaledY, scaledLength, scaledLength);
@@ -164,8 +164,8 @@ namespace MapMaker
                     // Draw tile preview
                     //foreach (Grid grid in selectedGrids)
                     //{
-                    //    int scaledX = (int)Math.Round(grid.Corner.X * MapScale, 0);
-                    //    int scaledY = (int)Math.Round(grid.Corner.Y * MapScale, 0);
+                    //    int scaledX = (int)Math.Round(grid.Location.X * MapScale, 0);
+                    //    int scaledY = (int)Math.Round(grid.Location.Y * MapScale, 0);
                     //    Program.DrawTileOntoImage(ref image, Program.SelectedTile, TileLength, scaledX, scaledY, MapScale);
                     //}
 
@@ -266,6 +266,40 @@ namespace MapMaker
         {
             Grid grid = GetGridAtCursor();
 
+            int clicks = 1;
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            int x = cursor.X;
+            int y = cursor.Y;
+            int delta = 0;
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.Left, clicks, x, y, delta);
+
+            double scale = Program.MapScale;
+
+            switch (selectedOverlay)
+            {
+                case Overlay.Zones:
+                    bool editZones = !LockRegions.Checked;
+                    Program.HandleZoneOverlayMouseClick(mouseEvent, editZones, scale);
+
+                    bool zoneSelected = Program.SelectedRegion != null;
+                    SetSelectedRegionControlsEnabled(zoneSelected);
+                    return;
+
+                case Overlay.Sectors:
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseClick(mouseEvent, editSectors, scale);
+
+                    bool sectorSelected = Program.SelectedRegion != null;
+                    SetSelectedRegionControlsEnabled(sectorSelected);
+
+                    bool spawnpointSelected = sectorSelected && !editSectors;
+                    SetSpawnpointToggleControlsVisible(spawnpointSelected);
+                    return;
+
+                default:
+                    break;
+            }
+
             switch (selectedTool)
             {
                 case Tool.Fill:
@@ -302,7 +336,7 @@ namespace MapMaker
             double scale = Program.MapScale;
 
             bool editSectors = !LockRegions.Checked;
-            Program.HandleSectorOverlayDoubleClick(mouseEvent, editSectors, scale);
+            Program.HandleSectorOverlayMouseDoubleClick(mouseEvent, editSectors, scale);
         }
 
         protected void MapDisplay_MouseDown(object sender, MouseEventArgs e)
@@ -565,6 +599,11 @@ namespace MapMaker
             {
                 Redo();
             }
+
+            if (e.KeyCode == Keys.Delete)
+            {
+                DeleteSelectedRegion();
+            }
         }
 
         private static int GetLetterKeyNumber(Keys keyCode)
@@ -617,6 +656,11 @@ namespace MapMaker
         {
             bool canRedoMore = Program.CheckCanRedo();
             redoToolStripMenuItem.Enabled = canRedoMore;
+        }
+
+        protected void DeleteSelectedRegion()
+        {
+            Program.DeleteSelectedRegion();
         }
 
         protected void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -903,15 +947,18 @@ namespace MapMaker
 
         protected void noOverlayToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.None;
             UpdateMap();
 
             SetZoneControlsEnabled(false);
             SetSectorControlsEnabled(false);
+            SetSpawnpointToggleControlsVisible(false);
         }
 
         protected void sectorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Sectors;
             UpdateMap();
 
@@ -920,6 +967,7 @@ namespace MapMaker
 
         protected void zonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Zones;
             UpdateMap();
 
@@ -928,59 +976,103 @@ namespace MapMaker
 
         protected void constructionToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Construction;
             UpdateMap();
 
             SetZoneControlsEnabled(false);
             SetSectorControlsEnabled(false);
+            SetSpawnpointToggleControlsVisible(false);
         }
 
         protected void drivableToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Drivable;
             UpdateMap();
 
             SetZoneControlsEnabled(false);
             SetSectorControlsEnabled(false);
+            SetSpawnpointToggleControlsVisible(false);
         }
 
         protected void flyableToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Flyable;
             UpdateMap();
 
             SetZoneControlsEnabled(false);
             SetSectorControlsEnabled(false);
+            SetSpawnpointToggleControlsVisible(false);
         }
 
         protected void SetZoneControlsEnabled(bool enabled)
         {
             SetToolsEnabled(!enabled);
 
-            addSectorToolStripMenuItem.Enabled = false;
-            addSpawnpointToolStripMenuItem.Enabled = false;
+            addSectorToolStripMenuItem.Visible = false;
+            addSpawnpointToolStripMenuItem.Visible = false;
+            deleteSectorToolStripMenuItem.Visible = false;
+            SetSpawnpointToggleControlsVisible(false);
 
             LockRegions.Enabled = enabled;
             AddButton.Enabled = enabled;
             addZoneToolStripMenuItem.Visible = enabled;
             addZoneToolStripMenuItem.Enabled = enabled;
+            deleteZoneToolStripMenuItem.Visible = enabled;
+
             addCheckpointToolStripMenuItem.Visible = enabled;
             addCheckpointToolStripMenuItem.Enabled = enabled;
+            deleteCheckpointToolStripMenuItem.Visible = enabled;
         }
 
         protected void SetSectorControlsEnabled(bool enabled)
         {
             SetToolsEnabled(!enabled);
 
-            addZoneToolStripMenuItem.Enabled = false;
-            addCheckpointToolStripMenuItem.Enabled = false;
+            addZoneToolStripMenuItem.Visible = false;
+            addCheckpointToolStripMenuItem.Visible = false;
+            deleteZoneToolStripMenuItem.Visible = false;
+            deleteCheckpointToolStripMenuItem.Visible = false;
 
             LockRegions.Enabled = enabled;
             AddButton.Enabled = enabled;
             addSectorToolStripMenuItem.Visible = enabled;
             addSectorToolStripMenuItem.Enabled = enabled;
+            deleteSectorToolStripMenuItem.Visible = enabled;
+
             addSpawnpointToolStripMenuItem.Visible = enabled;
             addSpawnpointToolStripMenuItem.Enabled = enabled;
+        }
+
+        protected void SetSelectedRegionControlsEnabled(bool enabled)
+        {
+            deleteCheckpointToolStripMenuItem.Enabled = enabled;
+            deleteSectorToolStripMenuItem.Enabled = enabled;
+            deleteZoneToolStripMenuItem.Enabled = enabled;
+        }
+
+        protected void SetSpawnpointToggleControlsVisible(bool visible)
+        {
+            setAsHQSpawnToolStripMenuItem.Visible = visible;
+            setAsSectorSpawnToolStripMenuItem.Visible = visible;
+
+            if (visible == false)
+            {
+                return;
+            }
+
+            UpdateSpawnpointToggleControls();
+        }
+
+        protected void UpdateSpawnpointToggleControls()
+        {
+            Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
+            bool isHQ = selectedSpawn.IsHeadquartersSpawn;
+
+            setAsHQSpawnToolStripMenuItem.Enabled = !isHQ;
+            setAsSectorSpawnToolStripMenuItem.Enabled = isHQ;
         }
 
         protected void SetToolsEnabled(bool enabled)
@@ -1076,17 +1168,39 @@ namespace MapMaker
             Program.MapHasChanged();
         }
 
+        protected void addZoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
+
+            Program.AddZone(vScrollPercent, MapPanel.Size);
+        }
+
+        protected void deleteZoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.DeleteZone();
+        }
+
         protected void addSectorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddSectorOrSpawnpoint();
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
+
+            int hScroll = MapPanel.HorizontalScroll.Value;
+            int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+            double hScrollPercent = hScroll / (double)hScrollMax;
+
+            Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
+        }
+
+        protected void deleteSectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.DeleteSector();
         }
 
         protected void addCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddSectorOrSpawnpoint();
-        }
-
-        protected void addSpawnpointToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int vScroll = MapPanel.VerticalScroll.Value;
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
@@ -1097,6 +1211,68 @@ namespace MapMaker
             double hScrollPercent = hScroll / (double)hScrollMax;
 
             Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
+        }
+
+        protected void deleteCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.DeleteCheckpoint();
+        }
+
+        protected void addSpawnpointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.SelectedRegion != null)
+            {
+                Sector selectedSector = (Sector)Program.SelectedRegion;
+                selectedSector.AddSpawnpointInCenter();
+                return;
+            }
+
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
+
+            int hScroll = MapPanel.HorizontalScroll.Value;
+            int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+            double hScrollPercent = hScroll / (double)hScrollMax;
+
+            Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
+        }
+
+        private void setAsHQSpawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.SelectedRegion == null)
+            {
+                SetSpawnpointToggleControlsVisible(false);
+                return;
+            }
+
+            Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
+            selectedSpawn.IsHeadquartersSpawn = true;
+            foreach (Spawnpoint spawnpoint in Program.AllSpawnpoints)
+            {
+                spawnpoint.UpdateChildGrid();
+            }
+
+            Program.OverlayHasChanged();
+
+            UpdateSpawnpointToggleControls();
+        }
+
+        private void setAsSectorSpawnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Program.SelectedRegion == null)
+            {
+                SetSpawnpointToggleControlsVisible(false);
+                return;
+            }
+
+            Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
+            selectedSpawn.IsHeadquartersSpawn = false;
+            selectedSpawn.UpdateChildGrid();
+
+            Program.OverlayHasChanged();
+
+            UpdateSpawnpointToggleControls();
         }
     }
 }

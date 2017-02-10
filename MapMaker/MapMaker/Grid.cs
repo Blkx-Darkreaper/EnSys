@@ -12,14 +12,14 @@ namespace MapMaker
     {
         public int Id { get; protected set; }
         protected static int nextId = 1;
-        public Point Corner { get; protected set; }
+        public Point Location { get; protected set; }
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
         [JsonIgnore]
         public bool IsSpawnpoint { get { return IsHeadquartersSpawn || IsSectorSpawn; } }
-        public bool IsHeadquartersSpawn { get; protected set; }
-        public bool IsSectorSpawn { get; protected set; }
+        public bool IsHeadquartersSpawn { get; set; }
+        public bool IsSectorSpawn { get; set; }
         public int SectorId { get; set; }
         public static int NextSectorId = 0;
         public int ZoneId { get; set; }
@@ -37,7 +37,7 @@ namespace MapMaker
 
         public Grid(int x, int y)
         {
-            this.Corner = new Point(x, y);
+            this.Location = new Point(x, y);
             this.IsComplete = false;
         }
 
@@ -61,8 +61,8 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn,
-            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sectorId, int zoneId, Tile tile) : this(corner.X, corner.Y, tile) {
+        public Grid(int id, Point location, bool allowsDriving, bool allowsFlying, bool allowsConstruction, bool isHeadquartersSpawn, bool isSectorSpawn,
+            int sectorId, int zoneId, Tile tile) : this(location.X, location.Y, tile) {
             this.Id = id;
             this.IsHeadquartersSpawn = isHeadquartersSpawn;
             this.IsSectorSpawn = isSectorSpawn;
@@ -87,15 +87,15 @@ namespace MapMaker
 
         public bool Equals(Grid other)
         {
-            int x = this.Corner.X;
-            int otherX = other.Corner.X;
+            int x = this.Location.X;
+            int otherX = other.Location.X;
             if (x != otherX)
             {
                 return false;
             }
 
-            int y = this.Corner.Y;
-            int otherY = other.Corner.Y;
+            int y = this.Location.Y;
+            int otherY = other.Location.Y;
             if (y != otherY)
             {
                 return false;
@@ -108,8 +108,8 @@ namespace MapMaker
         {
             int comparison;
 
-            int y = Corner.Y;
-            int otherY = other.Corner.Y;
+            int y = Location.Y;
+            int otherY = other.Location.Y;
 
             comparison = y - otherY;
             if (comparison != 0)
@@ -117,8 +117,8 @@ namespace MapMaker
                 return comparison;
             }
 
-            int x = Corner.X;
-            int otherX = other.Corner.X;
+            int x = Location.X;
+            int otherX = other.Location.X;
 
             comparison = x - otherX;
 
@@ -165,7 +165,7 @@ namespace MapMaker
         {
             Grid copy = new Grid();
             copy.Id = this.Id;
-            copy.Corner = new Point(this.Corner.X, this.Corner.Y);
+            copy.Location = new Point(this.Location.X, this.Location.Y);
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
@@ -181,7 +181,7 @@ namespace MapMaker
         public void MatchCopy(Grid copy)
         {
             //this.Id = copy.Id;
-            this.Corner = copy.Corner;
+            this.Location = copy.Location;
             this.AllowsConstruction = copy.AllowsConstruction;
             this.AllowsDriving = copy.AllowsDriving;
             this.AllowsFlying = copy.AllowsFlying;

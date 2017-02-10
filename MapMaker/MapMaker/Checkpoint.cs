@@ -18,17 +18,17 @@ namespace MapMaker
         public Checkpoint(int key, int width, int height) : base()
         {
             this.Key = key;
-            this.Corner = new Point(0, key);
+            this.Location = new Point(0, key);
             this.Size = new Size(width, height);
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
         }
 
-        [JsonConstructor] public Checkpoint(Point corner, Size size)
+        [JsonConstructor] public Checkpoint(Point location, Size size)
             : base()
         {
-            this.Key = corner.Y;
-            this.Corner = corner;
+            this.Key = location.Y;
+            this.Location = location;
             this.Size = size;
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
@@ -36,28 +36,33 @@ namespace MapMaker
 
         public int CompareTo(Checkpoint other)
         {
-            int y = this.Corner.Y;
-            int otherY = other.Corner.Y;
+            int y = this.Location.Y;
+            int otherY = other.Location.Y;
             return y.CompareTo(otherY);
         }
 
         public bool Equals(Checkpoint other)
         {
-            int y = this.Corner.Y;
-            int otherY = other.Corner.Y;
+            int y = this.Location.Y;
+            int otherY = other.Location.Y;
             return y.Equals(otherY);
         }
 
-        public void Draw(Graphics graphics, double scale)
+        public override void Draw(Graphics graphics, double scale)
         {
             Brush brush = new SolidBrush(Program.SelectionColour);
 
-            int y = (int)Math.Round((this.Corner.Y + this.Height / 2) * scale, 0);
+            int y = (int)Math.Round((this.Location.Y + this.Height / 2) * scale, 0);
             Point start = new Point(2, y);
             int width = this.Width - 2;
             Point end = new Point(width - 2, y);
 
-            Pen pen = new Pen(brush);
+            Pen pen = new Pen(Program.SelectionColour, 1);
+            if (IsSelected == true)
+            {
+                pen = new Pen(Program.SelectionColour, 2);
+            }
+
             graphics.DrawLine(pen, start, end);
 
             Size nodeSize = new Size(8, 8);
@@ -72,6 +77,11 @@ namespace MapMaker
             Point endNode = new Point(x, y);
             Rectangle endBounds = new Rectangle(endNode, nodeSize);
             graphics.FillEllipse(brush, endBounds);
+        }
+
+        public override void Delete()
+        {
+            
         }
 
         public override void SetBorders()
@@ -110,8 +120,8 @@ namespace MapMaker
             Point cursor = e.Location;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            int y = this.Corner.Y + deltaY;
-            this.Corner = new Point(0, y);
+            int y = this.Location.Y + deltaY;
+            this.Location = new Point(0, y);
 
             this.previousCursor = cursor;
         }
@@ -121,13 +131,13 @@ namespace MapMaker
             base.OnMouseUp(e);
 
             Program.MoveCheckpoint(this);
-            this.Key = this.Corner.Y;
+            this.Key = this.Location.Y;
         }
 
         protected override void SnapToGrid()
         {
-            int x = this.Corner.X;
-            int y = this.Corner.Y;
+            int x = this.Location.X;
+            int y = this.Location.Y;
             int height = this.Height;
             int remainder = y % height;
             if (remainder >= (height / 2))
@@ -139,7 +149,7 @@ namespace MapMaker
                 y -= remainder;
             }
 
-            this.Corner = new Point(x, y);
+            this.Location = new Point(x, y);
         }
     }
 }
