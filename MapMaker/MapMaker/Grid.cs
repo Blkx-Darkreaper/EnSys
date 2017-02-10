@@ -61,8 +61,8 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Grid(int id, int x, int y, bool isHeadquartersSpawn, bool isSectorSpawn,
-            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sectorId, int zoneId, Tile tile) : this(x, y, tile) {
+        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn,
+            bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sectorId, int zoneId, Tile tile) : this(corner.X, corner.Y, tile) {
             this.Id = id;
             this.IsHeadquartersSpawn = isHeadquartersSpawn;
             this.IsSectorSpawn = isSectorSpawn;

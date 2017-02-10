@@ -24,11 +24,11 @@ namespace MapMaker
             this.HasMouseFocus = false;
         }
 
-        [JsonConstructor] public Checkpoint(int x, int y, Size size)
+        [JsonConstructor] public Checkpoint(Point corner, Size size)
             : base()
         {
-            this.Key = y;
-            this.Corner = new Point(x, y);
+            this.Key = corner.Y;
+            this.Corner = corner;
             this.Size = size;
             this.IsMouseOver = false;
             this.HasMouseFocus = false;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using Newtonsoft.Json;
 
 namespace MapMaker
 {
@@ -11,6 +12,9 @@ namespace MapMaker
     {
         public Point Corner { get; protected set; }
         public int TilesetIndex { get; set; }
+
+        [JsonConstructor]
+        public Tile(int index, Point corner) : this(index, corner.X, corner.Y) { }
 
         public Tile(int index, int x, int y)
         {
