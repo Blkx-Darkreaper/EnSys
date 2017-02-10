@@ -11,28 +11,13 @@ namespace MapMaker
 {
     public class Spawnpoint : Region
     {
-        [JsonIgnore] public Sector ParentSector { get; protected set; }
-        [JsonIgnore] protected int parentSectorId;
-        public int ParentSectorId { get { if (ParentSector != null) { return ParentSector.Id; } else { return parentSectorId; } } 
-            protected set { parentSectorId = value; } }
-        protected bool isHeadquartersSpawn;
+        [JsonIgnore]
+        public Sector ParentSector { get; protected set; }
         public bool IsHeadquartersSpawn
         {
-            get { return isHeadquartersSpawn; }
+            get { return headquartersSpawn == this; }
             protected set
             {
-                if (value == false)
-                {
-                    this.isHeadquartersSpawn = false;
-                    return;
-                }
-
-                if (headquartersSpawn != null)
-                {
-                    headquartersSpawn.IsHeadquartersSpawn = false;
-                }
-
-                this.isHeadquartersSpawn = value;
                 if (value == false)
                 {
                     return;
@@ -42,76 +27,35 @@ namespace MapMaker
             }
         }
         protected static Spawnpoint headquartersSpawn { get; set; }
-        protected bool isRaiderSpawn;
-        public bool IsRaiderSpawn
+        [JsonIgnore] public string AlreadyHasParentErrorMessage { get; protected set; }
+
+        public Spawnpoint(Point corner, Sector parentSector, bool isHQSpawn) : base(corner, Program.TileLength, Program.TileLength)
         {
-            get { return isRaiderSpawn; }
-            protected set
-            {
-                if (value == false)
-                {
-                    this.isRaiderSpawn = false;
-                    return;
-                }
+            this.IsHeadquartersSpawn = isHQSpawn;
 
-                if (raiderSpawn != null)
-                {
-                    raiderSpawn.IsRaiderSpawn = false;
-                }
-
-                this.isRaiderSpawn = value;
-                if (value == false)
-                {
-                    return;
-                }
-
-                raiderSpawn = this;
-            }
-        }
-        protected static Spawnpoint raiderSpawn { get; set; }
-
-        [JsonConstructor] public Spawnpoint(Point location, Size size, int parentSectorId, bool isHeadquartersLocation)
-            : this(location, size, isHeadquartersLocation)
-        {
-            this.ParentSectorId = parentSectorId;
-        }
-
-        public Spawnpoint(Point location) : this(location, new Size(Program.TileLength, Program.TileLength), false) { }
-
-        public Spawnpoint(Point location, Size size, bool isHeadquartersLocation)
-            : base(location, size.Width, size.Height)
-        {
-            this.IsHeadquartersSpawn = isHeadquartersLocation;
+            SetParentSector(parentSector);
         }
 
         public void SetParentSector(Sector parent)
         {
-            ParentSector = parent;
-            CheckLinkage();
-        }
-
-        protected void CheckLinkage()
-        {
-            if (ParentSector == null)
+            this.ParentSector = parent;
+            if (parent == null)
             {
-                return;
+                throw new InvalidOperationException(string.Format("Parent sector is null"));
             }
 
-            if (ParentSector.Spawn == this)
-            {
-                return;
-            }
+            this.AlreadyHasParentErrorMessage = string.Format("Spawnpoint already has parent sector {0}", parent.Id);
 
-            // If parent already has a toAdd, break linkage
-            this.ParentSector = null;
+            parent.AddSpawnpoint(this);
+            Program.AddSpawnpoint(this);
         }
 
         public void Draw(Graphics graphics, double scale)
         {
             Brush brush = new SolidBrush(Program.SelectionColour);
 
-            int x = (int)Math.Round(this.Location.X * scale, 0);
-            int y = (int)Math.Round(this.Location.Y * scale, 0);
+            int x = (int)Math.Round(this.Corner.X * scale, 0);
+            int y = (int)Math.Round(this.Corner.Y * scale, 0);
 
             int tileLength = Program.TileLength;
 
@@ -170,10 +114,10 @@ namespace MapMaker
             Point cursor = e.Location;
 
             int deltaX = cursor.X - previousCursor.X;
-            int x = this.Location.X + deltaX;
+            int x = this.Corner.X + deltaX;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            int y = this.Location.Y + deltaY;
+            int y = this.Corner.Y + deltaY;
 
             // Keep Spawnpoint within bounds of parent Sector
             KeepInBounds(ParentSector.Area, x, y);

@@ -22,7 +22,7 @@ namespace MapMaker
         public ExpandableRegion(int id, int x, int y, int width, int height)
             : this(id)
         {
-            this.Location = new Point(x, y);
+            this.Corner = new Point(x, y);
             this.Size = new Size(width, height);
             this.isEmpty = false;
         }
@@ -47,28 +47,28 @@ namespace MapMaker
 
             if (isEmpty == true)
             {
-                this.Location = new Point(gridNwX, gridNwY);
+                this.Corner = new Point(gridNwX, gridNwY);
                 this.Width = tileLength;
                 this.Height = tileLength;
                 this.isEmpty = false;
                 return;
             }
 
-            int nwX = this.Location.X;
+            int nwX = this.Corner.X;
             int updatedX = nwX;
             if (nwX > gridNwX)
             {
                 updatedX = gridNwX;
             }
 
-            int nwY = this.Location.Y;
+            int nwY = this.Corner.Y;
             int updatedY = nwY;
             if (nwY > gridNwY)
             {
                 updatedY = gridNwY;
             }
 
-            this.Location = new Point(updatedX, updatedY);
+            this.Corner = new Point(updatedX, updatedY);
 
             int gridSeX = gridNwX + tileLength;
             int gridSeY = gridNwY + tileLength;

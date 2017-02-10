@@ -13,7 +13,7 @@ namespace MapMaker
     {
         [JsonIgnore] public Rectangle Area { get; protected set; }
         protected Rectangle previousArea { get; set; }
-        public Point Location { get { return Area.Location; } protected set { Area = UpdateAreaLocation(value); } }
+        public Point Corner { get { return Area.Location; } protected set { Area = UpdateAreaLocation(value); } }
         public Size Size { get { return Area.Size; } protected set { Area = UpdateAreaSize(value); } }
         [JsonIgnore] public int Width { get { return Area.Width; } protected set { Area = UpdateAreaWidth(value); } }
         [JsonIgnore] public int Height { get { return Area.Height; } protected set { Area = UpdateAreaHeight(value); } }
@@ -40,10 +40,10 @@ namespace MapMaker
             SetBorders();
         }
 
-        public Region(Point location, int width, int height)
+        public Region(Point corner, int width, int height)
             : this()
         {
-            this.Location = location;
+            this.Corner = corner;
             this.Width = width;
             this.Height = height;
 
@@ -118,15 +118,15 @@ namespace MapMaker
 
         public bool Equals(Region other)
         {
-            int x = this.Location.X;
-            int otherX = other.Location.X;
+            int x = this.Corner.X;
+            int otherX = other.Corner.X;
             if (x != otherX)
             {
                 return false;
             }
 
-            int y = this.Location.Y;
-            int otherY = other.Location.Y;
+            int y = this.Corner.Y;
+            int otherY = other.Corner.Y;
             if (y != otherY)
             {
                 return false;
@@ -156,17 +156,17 @@ namespace MapMaker
 
         protected virtual Rectangle UpdateAreaSize(Size size)
         {
-            return UpdateArea(this.Location, size);
+            return UpdateArea(this.Corner, size);
         }
 
         protected virtual Rectangle UpdateAreaWidth(int width)
         {
-            return UpdateArea(this.Location, new Size(width, this.Height));
+            return UpdateArea(this.Corner, new Size(width, this.Height));
         }
 
         protected virtual Rectangle UpdateAreaHeight(int height)
         {
-            return UpdateArea(this.Location, new Size(this.Width, height));
+            return UpdateArea(this.Corner, new Size(this.Width, height));
         }
 
         protected virtual Rectangle UpdateArea(Point location, Size size)
@@ -567,12 +567,12 @@ namespace MapMaker
                 }
             }
 
-            Rectangle oldArea = new Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+            Rectangle oldArea = new Rectangle(Corner.X, Corner.Y, Size.Width, Size.Height);
 
-            int updatedX = Location.X + deltaX;
-            int updatedY = Location.Y + deltaY;
+            int updatedX = Corner.X + deltaX;
+            int updatedY = Corner.Y + deltaY;
 
-            Location = new Point(updatedX, updatedY);
+            Corner = new Point(updatedX, updatedY);
         }
 
         public virtual bool IsInNorthBorder(Point point)
@@ -583,10 +583,10 @@ namespace MapMaker
 
         public virtual void AdjustNorthEdge(int amount)
         {
-            int updatedY = Location.Y + amount;
+            int updatedY = Corner.Y + amount;
             int updatedHeight = Height - amount;
 
-            Area = new Rectangle(Location.X, updatedY, Width, updatedHeight);
+            Area = new Rectangle(Corner.X, updatedY, Width, updatedHeight);
         }
 
         public virtual bool IsInSouthBorder(Point point)
@@ -599,7 +599,7 @@ namespace MapMaker
         {
             int updatedHeight = Height + amount;
 
-            Area = new Rectangle(Location.X, Location.Y, Width, updatedHeight);
+            Area = new Rectangle(Corner.X, Corner.Y, Width, updatedHeight);
         }
 
         public virtual bool IsInWestBorder(Point point)
@@ -610,10 +610,10 @@ namespace MapMaker
 
         public virtual void AdjustWestEdge(int amount)
         {
-            int updatedX = Location.X + amount;
+            int updatedX = Corner.X + amount;
             int updatedWidth = Width - amount;
 
-            Area = new Rectangle(updatedX, Location.Y, updatedWidth, Height);
+            Area = new Rectangle(updatedX, Corner.Y, updatedWidth, Height);
         }
 
         public virtual bool IsInEastBorder(Point point)
@@ -626,7 +626,7 @@ namespace MapMaker
         {
             int updatedWidth = Width + amount;
 
-            Area = new Rectangle(Location.X, Location.Y, updatedWidth, Height);
+            Area = new Rectangle(Corner.X, Corner.Y, updatedWidth, Height);
         }
 
         public virtual void OnMouseEnter(MouseEventArgs e)
@@ -850,15 +850,15 @@ namespace MapMaker
 
         protected virtual void SnapToGrid()
         {
-            int x = this.Location.X;
-            int y = this.Location.Y;
+            int x = this.Corner.X;
+            int y = this.Corner.Y;
             int width = this.Width;
             int height = this.Height;
 
             Point location;
             Size size;
             Program.SnapToGrid(x, y, width, height, out location, out size);
-            this.Location = location;
+            this.Corner = location;
             this.Size = size;
         }
 
@@ -875,7 +875,7 @@ namespace MapMaker
             x = Program.Clamp(x, minX, maxX);
             y = Program.Clamp(y, minY, maxY);
 
-            this.Location = new Point(x, y);
+            this.Corner = new Point(x, y);
         }
     }
 }

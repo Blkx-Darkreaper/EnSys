@@ -130,7 +130,7 @@ namespace MapMaker
 
             Graphics graphics = e.Graphics;
 
-            // Minimap location
+            // Minimap corner
             graphics.DrawRectangle(Pens.DarkGray, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
 
             if (this.miniMap == null)

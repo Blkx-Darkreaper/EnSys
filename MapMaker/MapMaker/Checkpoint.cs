@@ -18,7 +18,7 @@ namespace MapMaker
         public Checkpoint(int key, int width, int height) : base()
         {
             this.Key = key;
-            this.Location = new Point(0, key);
+            this.Corner = new Point(0, key);
             this.Size = new Size(width, height);
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
@@ -28,7 +28,7 @@ namespace MapMaker
             : base()
         {
             this.Key = location.Y;
-            this.Location = location;
+            this.Corner = location;
             this.Size = size;
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
@@ -36,15 +36,15 @@ namespace MapMaker
 
         public int CompareTo(Checkpoint other)
         {
-            int y = this.Location.Y;
-            int otherY = other.Location.Y;
+            int y = this.Corner.Y;
+            int otherY = other.Corner.Y;
             return y.CompareTo(otherY);
         }
 
         public bool Equals(Checkpoint other)
         {
-            int y = this.Location.Y;
-            int otherY = other.Location.Y;
+            int y = this.Corner.Y;
+            int otherY = other.Corner.Y;
             return y.Equals(otherY);
         }
 
@@ -52,7 +52,7 @@ namespace MapMaker
         {
             Brush brush = new SolidBrush(Program.SelectionColour);
 
-            int y = (int)Math.Round((this.Location.Y + this.Height / 2) * scale, 0);
+            int y = (int)Math.Round((this.Corner.Y + this.Height / 2) * scale, 0);
             Point start = new Point(2, y);
             int width = this.Width - 2;
             Point end = new Point(width - 2, y);
@@ -110,8 +110,8 @@ namespace MapMaker
             Point cursor = e.Location;
 
             int deltaY = cursor.Y - previousCursor.Y;
-            int y = this.Location.Y + deltaY;
-            this.Location = new Point(0, y);
+            int y = this.Corner.Y + deltaY;
+            this.Corner = new Point(0, y);
 
             this.previousCursor = cursor;
         }
@@ -121,13 +121,13 @@ namespace MapMaker
             base.OnMouseUp(e);
 
             Program.MoveCheckpoint(this);
-            this.Key = this.Location.Y;
+            this.Key = this.Corner.Y;
         }
 
         protected override void SnapToGrid()
         {
-            int x = this.Location.X;
-            int y = this.Location.Y;
+            int x = this.Corner.X;
+            int y = this.Corner.Y;
             int height = this.Height;
             int remainder = y % height;
             if (remainder >= (height / 2))
@@ -139,7 +139,7 @@ namespace MapMaker
                 y -= remainder;
             }
 
-            this.Location = new Point(x, y);
+            this.Corner = new Point(x, y);
         }
     }
 }

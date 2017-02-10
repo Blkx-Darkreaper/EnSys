@@ -16,9 +16,9 @@ namespace MapMaker
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
+        public bool IsSpawnpoint { get { return IsHeadquartersSpawn || IsSectorSpawn; } }
         public bool IsHeadquartersSpawn { get; protected set; }
         public bool IsSectorSpawn { get; protected set; }
-        public bool IsRaiderSpawn { get; protected set; }
         public int Sector { get; set; }
         public static int NextSector = 0;
         public int Zone { get; set; }
@@ -60,12 +60,11 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn, bool isRaiderSpawn, 
+        public Grid(int id, Point corner, bool isHeadquartersSpawn, bool isSectorSpawn,
             bool allowsDriving, bool allowsFlying, bool allowsConstruction, int sector, int zone, Tile tile) : this(corner, tile) {
             this.Id = id;
             this.IsHeadquartersSpawn = isHeadquartersSpawn;
             this.IsSectorSpawn = isSectorSpawn;
-            this.IsRaiderSpawn = isRaiderSpawn;
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
             this.AllowsConstruction = allowsConstruction;

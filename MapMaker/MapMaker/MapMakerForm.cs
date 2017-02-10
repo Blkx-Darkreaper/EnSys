@@ -18,7 +18,7 @@ namespace MapMaker
         protected Tool selectedTool { get; set; }
         protected Overlay selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.5.10";
+        protected string version = "1.6.0";
 
         public enum Tool
         {
@@ -301,7 +301,8 @@ namespace MapMaker
 
             double scale = Program.MapScale;
 
-            Program.HandleSectorOverlayDoubleClick(mouseEvent, scale);
+            bool editSectors = !LockRegions.Checked;
+            Program.HandleSectorOverlayDoubleClick(mouseEvent, editSectors, scale);
         }
 
         protected void MapDisplay_MouseDown(object sender, MouseEventArgs e)
@@ -332,12 +333,13 @@ namespace MapMaker
                     switch (selectedOverlay)
                     {
                         case Overlay.Zones:
-                            bool editZones = !LockZones.Checked;
+                            bool editZones = !LockRegions.Checked;
                             Program.HandleZoneOverlayMouseDown(e, editZones, scale);
                             break;
 
                         case Overlay.Sectors:
-                            Program.HandleSectorOverlayMouseDown(e, scale);
+                            bool editSectors = !LockRegions.Checked;
+                            Program.HandleSectorOverlayMouseDown(e, editSectors, scale);
                             break;
 
                         case Overlay.Construction:
@@ -368,11 +370,12 @@ namespace MapMaker
             switch (selectedOverlay)
             {
                 case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseUp(e, scale);
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseUp(e, editSectors, scale);
                     break;
 
                 case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
+                    bool editZones = !LockRegions.Checked;
                     Program.HandleZoneOverlayMouseUp(e, editZones, scale);
                     break;
             }
@@ -414,13 +417,14 @@ namespace MapMaker
             switch (selectedOverlay)
             {
                 case Overlay.Zones:
-                bool editZones = !LockZones.Checked;
-                Program.HandleZoneOverlayMouseMove(e, editZones, scale);
-                return;
+                    bool editZones = !LockRegions.Checked;
+                    Program.HandleZoneOverlayMouseMove(e, editZones, scale);
+                    return;
 
                 case Overlay.Sectors:
-                Program.HandleSectorOverlayMouseMove(e, scale);
-                return;
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseMove(e, editSectors, scale);
+                    return;
             }
 
             if (isDrawingOnMap == false)
@@ -446,7 +450,10 @@ namespace MapMaker
         {
             if (selectedOverlay != Overlay.Sectors)
             {
-                return;
+                if (selectedOverlay != Overlay.Zones)
+                {
+                    return;
+                }
             }
 
             int clicks = 0;
@@ -456,18 +463,18 @@ namespace MapMaker
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
-            bool editSectors = selectedOverlay == Overlay.Sectors;
             double scale = Program.MapScale;
 
             switch (selectedOverlay)
             {
                 case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
+                    bool editZones = !LockRegions.Checked;
                     Program.HandleZoneOverlayMouseEnter(mouseEvent, editZones, scale);
                     break;
 
                 case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseEnter(mouseEvent, scale);
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseEnter(mouseEvent, editSectors, scale);
                     break;
             }
         }
@@ -476,7 +483,10 @@ namespace MapMaker
         {
             if (selectedOverlay != Overlay.Sectors)
             {
-                return;
+                if (selectedOverlay != Overlay.Zones)
+                {
+                    return;
+                }
             }
 
             int clicks = 0;
@@ -486,18 +496,18 @@ namespace MapMaker
             int delta = 0;
             MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
 
-            bool editSectors = selectedOverlay == Overlay.Sectors;
             double scale = Program.MapScale;
 
             switch (selectedOverlay)
             {
                 case Overlay.Zones:
-                    bool editZones = !LockZones.Checked;
+                    bool editZones = !LockRegions.Checked;
                     Program.HandleZoneOverlayMouseLeave(mouseEvent, editZones, scale);
                     break;
 
                 case Overlay.Sectors:
-                    Program.HandleSectorOverlayMouseLeave(mouseEvent, scale);
+                    bool editSectors = !LockRegions.Checked;
+                    Program.HandleSectorOverlayMouseLeave(mouseEvent, editSectors, scale);
                     break;
             }
         }
@@ -889,6 +899,7 @@ namespace MapMaker
             UpdateMap();
 
             SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void sectorsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -913,6 +924,7 @@ namespace MapMaker
             UpdateMap();
 
             SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void drivableToolStripMenuItem_Click(object sender, EventArgs e)
@@ -921,6 +933,7 @@ namespace MapMaker
             UpdateMap();
 
             SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void flyableToolStripMenuItem_Click(object sender, EventArgs e)
@@ -929,24 +942,36 @@ namespace MapMaker
             UpdateMap();
 
             SetZoneControlsEnabled(false);
+            SetSectorControlsEnabled(false);
         }
 
         protected void SetZoneControlsEnabled(bool enabled)
         {
             SetToolsEnabled(!enabled);
 
-            AddCheckpointButton.Enabled = enabled;
+            addSectorToolStripMenuItem.Enabled = false;
+            addSpawnpointToolStripMenuItem.Enabled = false;
+
+            LockRegions.Enabled = enabled;
             AddButton.Enabled = enabled;
+            addZoneToolStripMenuItem.Visible = enabled;
+            addZoneToolStripMenuItem.Enabled = enabled;
+            addCheckpointToolStripMenuItem.Visible = enabled;
             addCheckpointToolStripMenuItem.Enabled = enabled;
-            LockZones.Enabled = enabled;
         }
 
         protected void SetSectorControlsEnabled(bool enabled)
         {
             SetToolsEnabled(!enabled);
 
+            addZoneToolStripMenuItem.Enabled = false;
+            addCheckpointToolStripMenuItem.Enabled = false;
+
+            LockRegions.Enabled = enabled;
             AddButton.Enabled = enabled;
+            addSectorToolStripMenuItem.Visible = enabled;
             addSectorToolStripMenuItem.Enabled = enabled;
+            addSpawnpointToolStripMenuItem.Visible = enabled;
             addSpawnpointToolStripMenuItem.Enabled = enabled;
         }
 
@@ -983,43 +1008,54 @@ namespace MapMaker
 
         protected void AddButton_Click(object sender, EventArgs e)
         {
-            AddSectorOrCheckpoint();
-        }
-
-        protected void AddSectorOrCheckpoint()
-        {
-            int vScroll = MapPanel.VerticalScroll.Value;
-            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
-            double vScrollPercent = vScroll / (double)vScrollMax;
-
             switch (selectedOverlay)
             {
-                case Overlay.Sectors:
-                    int hScroll = MapPanel.HorizontalScroll.Value;
-                    int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
-                    double hScrollPercent = hScroll / (double)hScrollMax;
-
-                    Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
-                    break;
-
                 case Overlay.Zones:
-                    Program.AddZone(vScrollPercent, MapPanel.Size);
+                    AddZoneOrCheckpoint();
                     break;
 
-                default:
+                case Overlay.Sectors:
+                    AddSectorOrSpawnpoint();
                     break;
             }
         }
 
-        protected void AddCheckpoint_Click(object sender, EventArgs e)
+        protected void AddZoneOrCheckpoint()
         {
             int vScroll = MapPanel.VerticalScroll.Value;
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
             double vScrollPercent = vScroll / (double)vScrollMax;
 
-            LockZones.Checked = true;
+            bool editZones = !LockRegions.Checked;
+            if (editZones == true)
+            {
+                Program.AddZone(vScrollPercent, MapPanel.Size);
+            }
+            else
+            {
+                Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+            }
+        }
 
-            Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+        protected void AddSectorOrSpawnpoint()
+        {
+            int vScroll = MapPanel.VerticalScroll.Value;
+            int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
+            double vScrollPercent = vScroll / (double)vScrollMax;
+
+            int hScroll = MapPanel.HorizontalScroll.Value;
+            int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
+            double hScrollPercent = hScroll / (double)hScrollMax;
+
+            bool editSectors = !LockRegions.Checked;
+            if (editSectors == true)
+            {
+                Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
+            }
+            else
+            {
+                Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
+            }
         }
 
         protected void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1034,12 +1070,12 @@ namespace MapMaker
 
         protected void addSectorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddSectorOrCheckpoint();
+            AddSectorOrSpawnpoint();
         }
 
         protected void addCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddSectorOrCheckpoint();
+            AddSectorOrSpawnpoint();
         }
 
         protected void addSpawnpointToolStripMenuItem_Click(object sender, EventArgs e)

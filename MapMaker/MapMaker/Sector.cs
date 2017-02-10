@@ -12,19 +12,22 @@ namespace MapMaker
     {
         public Zone Parent { get; set; }
         public Spawnpoint Spawn { get; protected set; }
+        public string AlreadyHasSpawnErrorMessage { get; protected set; }
 
         public Sector(int id)
             : base(id)
         {
+            this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
         }
 
         public Sector(int id, int x, int y, int width, int height) : base(id, x, y, width, height)
         {
-            this.Location = new Point(x, y);
+            this.Corner = new Point(x, y);
             this.Size = new Size(width, height);
             this.isEmpty = false;
+            this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
 
-            AddSpawnpoint();
+            AddSpawnpointInCenter();
         }
 
         public override void SetBorders()
@@ -60,8 +63,8 @@ namespace MapMaker
         {
             base.OnMouseMove(e);
 
-            int x = this.Location.X;
-            int y = this.Location.Y;
+            int x = this.Corner.X;
+            int y = this.Corner.Y;
             KeepInBounds(Area, x, y);
         }
 
@@ -74,18 +77,18 @@ namespace MapMaker
 
             Spawn.Move(deltaX, deltaY);
 
-            Spawn.KeepInBounds(updatedArea, Spawn.Location.X, Spawn.Location.Y);
+            Spawn.KeepInBounds(updatedArea, Spawn.Corner.X, Spawn.Corner.Y);
         }
 
-        public void AddSpawnpoint()
+        public void AddSpawnpointInCenter()
         {
             if (Spawn != null)
             {
-                throw new InvalidOperationException(string.Format("Sector {0} already contains a spawnpoint", Id));
+                throw new InvalidOperationException(AlreadyHasSpawnErrorMessage);
             }
 
-            int x = this.Location.X;
-            int y = this.Location.Y;
+            int x = this.Corner.X;
+            int y = this.Corner.Y;
 
             int width = this.Area.Width;
             int height = this.Area.Height;
@@ -100,15 +103,23 @@ namespace MapMaker
 
             Point centerTileLocation = Program.SnapToGrid(midX, midY);
 
-            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation);
-            AddSpawnpoint(spawnpoint);
+            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation, this, false);
         }
 
         public void AddSpawnpoint(Spawnpoint toAdd)
         {
+            if (this.Spawn != null)
+            {
+                throw new InvalidOperationException(AlreadyHasSpawnErrorMessage);
+            }
+
+            // Check spawnpoint has correct parent
+            if (toAdd.ParentSector != this)
+            {
+                throw new InvalidOperationException(toAdd.AlreadyHasParentErrorMessage);
+            }
+
             this.Spawn = toAdd;
-            toAdd.SetParentSector(this);
-            Program.AddSpawnpoint(toAdd);
         }
     }
 }

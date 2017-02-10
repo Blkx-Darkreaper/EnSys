@@ -1,0 +1,9 @@
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\Test.dll
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\Test.pdb
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\MapMaker.exe
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\Newtonsoft.Json.dll
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\MapMaker.pdb
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Release\Newtonsoft.Json.xml
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Release\Test.csprojResolveAssemblyReference.cache
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Release\Test.dll
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Release\Test.pdb

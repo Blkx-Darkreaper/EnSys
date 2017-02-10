@@ -1,21 +1,4 @@
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.DisplayForm.resources
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.MapMakerForm.resources
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.MapPropertiesForm.resources
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.NewFileForm.resources
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.Properties.Resources.resources
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.csproj.GenerateResource.Cache
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\MapMaker.exe.config
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\MapMaker.exe
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\MapMaker.pdb
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.dll
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.xml
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.exe
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.pdb
-C:\Users\NicB\Documents\Visual Studio 2013\Projects\MapMaker\MapMaker\obj\Debug\MapMaker.csprojResolveAssemblyReference.cache
-<<<<<<< HEAD
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.exe.config
-C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.exe
-C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.pdb
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.exe
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.pdb
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.dll
@@ -27,19 +10,5 @@ C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.MapProper
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.NewFileForm.resources
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.Properties.Resources.resources
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.csproj.GenerateResource.Cache
-=======
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.exe.config
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.exe
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.pdb
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.exe
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\bin\Debug\MapMaker.pdb
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.dll
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\bin\Debug\Newtonsoft.Json.xml
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.csprojResolveAssemblyReference.cache
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.DisplayForm.resources
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.MapMakerForm.resources
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.MapPropertiesForm.resources
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.NewFileForm.resources
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.Properties.Resources.resources
-D:\Users\Darkreaper\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.csproj.GenerateResource.Cache
->>>>>>> 9c43ee29b104469335c1ddeabc813c0d4afc00db
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.exe
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Debug\MapMaker.pdb
