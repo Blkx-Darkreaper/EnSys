@@ -1979,7 +1979,7 @@ namespace MapMaker
                 }
 
                 // Draw Zones around Sectors
-                colour = Color.Gray;
+                colour = Color.Black;
                 for (int i = 0; i < AllZones.Values.Count; i++)
                 {
                     Pen pen = new Pen(colour, 2);

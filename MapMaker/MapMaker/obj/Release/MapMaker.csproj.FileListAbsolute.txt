@@ -11,3 +11,4 @@ C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Release\MapMaker.Propert
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Release\MapMaker.csproj.GenerateResource.Cache
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Release\MapMaker.exe
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Release\MapMaker.pdb
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\MapMaker\obj\Release\MapMaker.csprojResolveAssemblyReference.cache
