@@ -18,7 +18,7 @@ namespace MapMaker
         protected Tool selectedTool { get; set; }
         protected Overlay selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.6.0";
+        protected string version = "1.6.1";
 
         public enum Tool
         {
