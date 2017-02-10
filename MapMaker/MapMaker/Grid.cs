@@ -16,6 +16,7 @@ namespace MapMaker
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
+        [JsonIgnore]
         public bool IsSpawnpoint { get { return IsHeadquartersSpawn || IsSectorSpawn; } }
         public bool IsHeadquartersSpawn { get; protected set; }
         public bool IsSectorSpawn { get; protected set; }
@@ -70,6 +71,18 @@ namespace MapMaker
             this.AllowsConstruction = allowsConstruction;
             this.SectorId = sectorId;
             this.ZoneId = zoneId;
+
+            SetNextId(id);
+        }
+
+        protected void SetNextId(int id)
+        {
+            if (id < nextId)
+            {
+                return;
+            }
+
+            nextId = id;
         }
 
         public bool Equals(Grid other)
