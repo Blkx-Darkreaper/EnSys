@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
 namespace MapMaker
 {
@@ -50,19 +45,6 @@ namespace MapMaker
             graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 
-        public override void SetBorders()
-        {
-            int length = Math.Min(this.Width, this.Height);
-            if (length <= Program.TileLength)
-            {
-                base.SetBordersRelative(this.Area);
-            }
-            else
-            {
-                base.SetBordersAbsolute(this.Area);
-            }
-        }
-
         protected override Rectangle UpdateArea(Point location, Size size)
         {
             Rectangle updatedArea = base.UpdateArea(location, size);
@@ -87,15 +69,6 @@ namespace MapMaker
             Parent.AllSectors.Remove(this);
 
             Program.UpdateGridSectors(this.Area, 0);
-        }
-
-        public override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-
-            int x = this.Location.X;
-            int y = this.Location.Y;
-            KeepInBounds(Area, x, y);
         }
 
         protected virtual void UpdateSpawnPosition(Rectangle updatedArea, int deltaX, int deltaY)

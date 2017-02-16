@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace MapMaker
 {
@@ -38,6 +35,15 @@ namespace MapMaker
             {
                 base.SetBordersAbsolute(this.Area);
             }
+        }
+
+        public override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            int x = this.Location.X;
+            int y = this.Location.Y;
+            KeepInBounds(Area, x, y);
         }
 
         public void AddGrid(Grid grid, int tileLength)

@@ -42,6 +42,22 @@ namespace MapMaker
             graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 
+        protected override Rectangle UpdateArea(Point location, Size size)
+        {
+            Rectangle updatedArea = base.UpdateArea(location, size);
+
+            UpdateSectorPositions(this.Area, 0, 0);
+
+            return updatedArea;
+        }
+
+        public override void Move(int deltaX, int deltaY)
+        {
+            base.Move(deltaX, deltaY);
+
+            UpdateSectorPositions(this.Area, deltaX, deltaY);
+        }
+
         public override void Delete()
         {
             foreach (Sector sector in AllSectors)
@@ -52,6 +68,20 @@ namespace MapMaker
             Program.AllZones.Remove(this.Id);
 
             Program.UpdateGridZones(this.Area, 0);
+        }
+
+        protected virtual void UpdateSectorPositions(Rectangle updatedArea, int deltaX, int deltaY)
+        {
+            if (AllSectors.Count == 0)
+            {
+                return;
+            }
+
+            foreach (Sector sector in AllSectors)
+            {
+                sector.Move(deltaX, deltaY);
+                sector.KeepInBounds(updatedArea, sector.Location.X, sector.Location.Y);
+            }
         }
 
         public void AddSector(Sector sectorToAdd)
