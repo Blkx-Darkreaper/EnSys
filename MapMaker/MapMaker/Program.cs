@@ -36,7 +36,9 @@ namespace MapMaker
         private static Bitmap tilesetImage { get; set; }
         private const string IMAGE_FILTER = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif)|*.jpg; *.jpeg; *.gif; *.bmp; *.png; *.tif";
         private static string currentSaveFilename { get; set; }
-        private const string DEFAULT_FILENAME = "Map{0}.json";
+        private static string currentSaveName { get; set; }
+        private const string DEFAULT_FILENAME = "Map{0}";
+        private const string JSON_EXTENSION = "json";
         private const string MAP_FILTER = "Map Files(*.json)|*.json";
         public static string Author { get; set; }
         private static DateTime dateCreated { get; set; }
@@ -688,7 +690,20 @@ namespace MapMaker
             Program.BuildTileset(TileLength, TilesetDisplayWidth);
 
             Program.currentSaveFilename = filename;
+            Program.currentSaveName = GetMapName(filename);
+
             Program.HasUnsavedChanges = false;
+        }
+
+        private static string GetMapName(string filename)
+        {
+            int index = filename.LastIndexOf('\\');
+            string fullMapName = filename.Substring(index + 1);
+
+            index = fullMapName.LastIndexOf('.');
+
+            string mapName = fullMapName.Substring(0, index);
+            return mapName;
         }
 
         public static string ReadTextFile(string filename)
@@ -715,7 +730,7 @@ namespace MapMaker
 
         public static SaveFileDialog GetMapSaveDialog()
         {
-            string defaultFilename = string.Format(DEFAULT_FILENAME, "001");
+            string defaultFilename = string.Format("{0}.{1}", string.Format(DEFAULT_FILENAME, "001"), JSON_EXTENSION);
             if (currentSaveFilename != null)
             {
                 defaultFilename = currentSaveFilename;
@@ -724,6 +739,18 @@ namespace MapMaker
             //string title = "Save Map file";
 
             return GetSaveDialog(defaultFilename, MAP_FILTER);
+        }
+
+        public static SaveFileDialog GetImageSaveDialog()
+        {
+            string pngExtension = "png";
+            string defaultFilename = string.Format("{0}.{1}", string.Format(DEFAULT_FILENAME, "001"), pngExtension);
+            if (currentSaveName != null)
+            {
+                defaultFilename = string.Format("{0}.{1}", currentSaveName, pngExtension);
+            }
+
+            return GetSaveDialog(defaultFilename, IMAGE_FILTER);
         }
 
         private static SaveFileDialog GetSaveDialog(string defaultFilename, string filter)
@@ -751,10 +778,22 @@ namespace MapMaker
             return dialog;
         }
 
-        public static string GetFilenameToSave()
+        public static string GetMapFilenameToSave()
         {
             // Get the Filename of the selected file
             SaveFileDialog dialog = Program.GetMapSaveDialog();
+            return GetFilenameToSave(dialog);
+        }
+
+        public static string GetImageFilenameToSave()
+        {
+            // Get the Filename of the selected file
+            SaveFileDialog dialog = Program.GetImageSaveDialog();
+            return GetFilenameToSave(dialog);
+        }
+
+        private static string GetFilenameToSave(SaveFileDialog dialog)
+        {
             DialogResult result = dialog.ShowDialog();
             if (result != DialogResult.OK)
             {
@@ -779,7 +818,7 @@ namespace MapMaker
 
         public static void SaveMap()
         {
-            string filename = Program.GetFilenameToSave();
+            string filename = Program.GetMapFilenameToSave();
             if (filename == null)
             {
                 return;
@@ -801,6 +840,18 @@ namespace MapMaker
             WriteTextFile(filename, json);
 
             HasUnsavedChanges = false;
+        }
+
+        public static void SaveImageFile()
+        {
+            string filename = Program.GetImageFilenameToSave();
+            if (filename == null)
+            {
+                return;
+            }
+
+            Bitmap image = Program.GetMapImage(1);
+            image.Save(filename);
         }
 
         private static void WriteTextFile(string filename, string text)

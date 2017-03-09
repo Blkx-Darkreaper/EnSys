@@ -18,7 +18,7 @@ namespace MapMaker
         protected Tool selectedTool { get; set; }
         protected Overlay selectedOverlay { get; set; }
         protected Timer timer { get; set; }
-        protected string version = "1.6.1";
+        protected string version = "1.6.2";
 
         public enum Tool
         {
@@ -764,6 +764,11 @@ namespace MapMaker
             Program.SaveMap();
         }
 
+        protected void exportMapImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.SaveImageFile();
+        }
+
         protected void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -1095,6 +1100,7 @@ namespace MapMaker
             saveToolStripMenuItem.Enabled = enabled;
             saveAsToolStripMenuItem.Enabled = enabled;
             SaveFileButton.Enabled = enabled;
+            exportMapImageToolStripMenuItem.Enabled = enabled;
 
             noOverlayToolStripMenuItem.Enabled = enabled;
             zonesToolStripMenuItem.Enabled = enabled;
