@@ -26,14 +26,14 @@ namespace MapMaker
 
         public override void SetBorders()
         {
-            int length = Math.Min(this.Width, this.Height);
+            int length = Math.Min(this.PixelWidth, this.PixelHeight);
             if (length <= Program.TileLength)
             {
-                base.SetBordersRelative(this.Area);
+                base.SetBordersRelative(this.PixelArea);
             }
             else
             {
-                base.SetBordersAbsolute(this.Area);
+                base.SetBordersAbsolute(this.PixelArea);
             }
         }
 
@@ -43,10 +43,10 @@ namespace MapMaker
 
             int x = this.Location.X;
             int y = this.Location.Y;
-            KeepInBounds(Area, x, y);
+            KeepInBounds(PixelArea, x, y);
         }
 
-        public void AddGrid(Grid grid, int tileLength)
+        public void AddGrid(Grid grid)
         {
             int gridNwX = grid.Location.X;
             int gridNwY = grid.Location.Y;
@@ -54,8 +54,8 @@ namespace MapMaker
             if (isEmpty == true)
             {
                 this.Location = new Point(gridNwX, gridNwY);
-                this.Width = tileLength;
-                this.Height = tileLength;
+                this.PixelWidth = Program.TileLength;
+                this.PixelHeight = Program.TileLength;
                 this.isEmpty = false;
                 return;
             }
@@ -76,17 +76,17 @@ namespace MapMaker
 
             this.Location = new Point(updatedX, updatedY);
 
-            int gridSeX = gridNwX + tileLength;
-            int gridSeY = gridNwY + tileLength;
+            int gridSeX = gridNwX + 1;
+            int gridSeY = gridNwY + 1;
 
-            int seX = updatedX + this.Width;
-            int seY = updatedY + this.Height;
+            int seX = updatedX + this.Size.Width;
+            int seY = updatedY + this.Size.Height;
 
-            int deltaWidth = gridSeX - seX;
-            int deltaHeight = gridSeY - seY;
+            int deltaWidth = (gridSeX - seX) * Program.TileLength; // convert to pixels
+            int deltaHeight = (gridSeY - seY) * Program.TileLength;    // convert to pixels
 
-            this.Width += deltaWidth;
-            this.Height += deltaHeight;
+            this.PixelWidth += deltaWidth;
+            this.PixelHeight += deltaHeight;
         }
     }
 }

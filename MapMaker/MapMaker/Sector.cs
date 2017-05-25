@@ -45,20 +45,28 @@ namespace MapMaker
             graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 
-        protected override Rectangle UpdateArea(Point location, Size size)
+        protected override Rectangle UpdateArea(Point pixelLocation, Size pixelSize)
         {
-            Rectangle updatedArea = base.UpdateArea(location, size);
+            Rectangle updatedArea = base.UpdateArea(pixelLocation, pixelSize);
 
-            UpdateSpawnPosition(this.Area, 0, 0);
+            UpdateSpawnPosition(this.PixelArea, 0, 0);
 
             return updatedArea;
         }
 
-        public override void Move(int deltaX, int deltaY)
+        public override void Move(int deltaPixelX, int deltaPixelY)
         {
-            base.Move(deltaX, deltaY);
+            if (deltaPixelX == 0)
+            {
+                if (deltaPixelY == 0)
+                {
+                    return;
+                }
+            }
 
-            UpdateSpawnPosition(this.Area, deltaX, deltaY);
+            base.Move(deltaPixelX, deltaPixelY);
+
+            UpdateSpawnPosition(this.PixelArea, deltaPixelX, deltaPixelY);
         }
 
         public override void Delete()
@@ -68,18 +76,18 @@ namespace MapMaker
             Program.AllSectors.Remove(this.Id);
             Parent.AllSectors.Remove(this);
 
-            Program.UpdateGridSectors(this.Area, 0);
+            Program.UpdateGridSectors(this.PixelArea, 0);
         }
 
-        protected virtual void UpdateSpawnPosition(Rectangle updatedArea, int deltaX, int deltaY)
+        protected virtual void UpdateSpawnPosition(Rectangle updatedPixelArea, int deltaPixelX, int deltaPixelY)
         {
             if (Spawn == null)
             {
                 return;
             }
 
-            Spawn.Move(deltaX, deltaY);
-            Spawn.KeepInBounds(updatedArea, Spawn.Location.X, Spawn.Location.Y);
+            Spawn.Move(deltaPixelX, deltaPixelY);
+            Spawn.KeepInBounds(updatedPixelArea, Spawn.Location.X, Spawn.Location.Y);
         }
 
         public void AddSpawnpointInCenter()
@@ -92,8 +100,8 @@ namespace MapMaker
             int x = this.Location.X;
             int y = this.Location.Y;
 
-            int width = this.Area.Width;
-            int height = this.Area.Height;
+            int width = this.PixelArea.Width;
+            int height = this.PixelArea.Height;
 
             int tileLength = Program.TileLength;
 

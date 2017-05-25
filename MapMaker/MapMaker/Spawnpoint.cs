@@ -40,7 +40,7 @@ namespace MapMaker
         public bool IsLocked { get; set; }
 
         public Spawnpoint(int x, int y, Sector parentSector, bool isHQSpawn)
-            : base(x, y, Program.TileLength, Program.TileLength)
+            : base(x, y, 1, 1)
         {
             this.IsHeadquartersSpawn = isHQSpawn;
             this.IsLocked = false;
@@ -71,16 +71,17 @@ namespace MapMaker
                 childGrid.IsSectorSpawn = false;
             }
 
-            Point start = Location;
-            int startX = start.X;
-            int startY = start.Y;
-            int width = Area.Width;
-            int height = Area.Height;
+            int startPixelX = Location.X * Program.TileLength;   // convert to pixels
+            int startPixelY = Location.Y * Program.TileLength;    // convert to pixels
+            Point start = new Point(startPixelX, startPixelY);
 
-            int endX = startX + width;
-            int endY = startY + height;
+            int width = PixelArea.Width;
+            int height = PixelArea.Height;
 
-            Point end = new Point(endX, endY);
+            int endPixelX = startPixelX + width;
+            int endPixelY = startPixelY + height;
+
+            Point end = new Point(endPixelX, endPixelY);
 
             List<Grid> gridsToUpdate = Program.GetGridsInArea(start, end);
             if (gridsToUpdate.Count == 0)
@@ -105,10 +106,10 @@ namespace MapMaker
 
         public override void Draw(Graphics graphics, double scale)
         {
-            int x = (int)Math.Round(this.Location.X * scale, 0);
-            int y = (int)Math.Round(this.Location.Y * scale, 0);
-
             int tileLength = Program.TileLength;
+
+            int pixelX = (int)Math.Round(this.Location.X * tileLength * scale, 0);
+            int pixelY = (int)Math.Round(this.Location.Y * tileLength * scale, 0);
 
             Pen lightPen = new Pen(Program.SelectionColour, 1);
             Pen heavyPen = new Pen(Program.SelectionColour, 2);
@@ -118,23 +119,23 @@ namespace MapMaker
                 pen = heavyPen;
             }
 
-            graphics.DrawRectangle(pen, x, y, tileLength, tileLength);
+            graphics.DrawRectangle(pen, pixelX, pixelY, tileLength, tileLength);
 
             pen = lightPen;
 
             if (IsHeadquartersSpawn == true)
             {
-                Point start = new Point(x, y);
-                Point end = new Point(x + tileLength, y + tileLength);
-                graphics.DrawLine(pen, start, end);
+                Point startPixel = new Point(pixelX, pixelY);
+                Point endPixel = new Point(pixelX + tileLength, pixelY + tileLength);
+                graphics.DrawLine(pen, startPixel, endPixel);
 
-                start = new Point(x + tileLength, y);
-                end = new Point(x, y + tileLength);
-                graphics.DrawLine(pen, start, end);
+                startPixel = new Point(pixelX + tileLength, pixelY);
+                endPixel = new Point(pixelX, pixelY + tileLength);
+                graphics.DrawLine(pen, startPixel, endPixel);
             }
             else
             {
-                graphics.DrawEllipse(pen, x, y, tileLength, tileLength);
+                graphics.DrawEllipse(pen, pixelX, pixelY, tileLength, tileLength);
             }
         }
 
@@ -173,38 +174,57 @@ namespace MapMaker
 
             Point cursor = e.Location;
 
-            int deltaX = cursor.X - previousCursor.X;
-            int x = this.Location.X + deltaX;
+            int deltaPixelY = cursor.Y - previousCursor.Y;
+            int deltaPixelX = cursor.X - previousCursor.X;
 
-            int deltaY = cursor.Y - previousCursor.Y;
-            int y = this.Location.Y + deltaY;
+            int tileLength = Program.TileLength;
+            if (Math.Abs(deltaPixelX) < tileLength)
+            {
+                if (Math.Abs(deltaPixelY) < tileLength)
+                {
+                    return;
+                }
+            }
+
+            Move(deltaPixelX, deltaPixelY);
+
+            int x = this.Location.X;
+            int y = this.Location.Y;
 
             // Keep Spawnpoint within bounds of parent Sector
-            KeepInBounds(ParentSector.Area, x, y);
+            KeepInBounds(ParentSector.PixelArea, x, y);
 
             this.previousCursor = cursor;
         }
 
-        public override void Move(int deltaX, int deltaY)
+        public override void Move(int deltaPixelX, int deltaPixelY)
         {
             if (IsLocked == true)
             {
                 return;
             }
 
-            base.Move(deltaX, deltaY);
+            if (deltaPixelX == 0)
+            {
+                if (deltaPixelY == 0)
+                {
+                    return;
+                }
+            }
+
+            base.Move(deltaPixelX, deltaPixelY);
 
             UpdateChildGrid();
         }
 
-        public override void KeepInBounds(Rectangle bounds, int x, int y)
+        public override void KeepInBounds(Rectangle pixelBounds, int x, int y)
         {
             if (IsLocked == true)
             {
                 return;
             }
 
-            base.KeepInBounds(bounds, x, y);
+            base.KeepInBounds(pixelBounds, x, y);
 
             UpdateChildGrid();
         }

@@ -12,7 +12,7 @@ namespace MapMaker
     {
         public int Id { get; protected set; }
         protected static int nextId = 1;
-        public Point Location { get; protected set; }
+        public Point Location { get; protected set; }   // Units
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }

@@ -52,10 +52,10 @@ namespace MapMaker
         {
             Brush brush = new SolidBrush(Program.SelectionColour);
 
-            int y = (int)Math.Round((this.Location.Y + this.Height / 2) * scale, 0);
-            Point start = new Point(2, y);
-            int width = this.Width - 2;
-            Point end = new Point(width - 2, y);
+            int pixelY = (int)Math.Round((this.Location.Y * Program.TileLength + this.PixelHeight / 2) * scale, 0);
+            Point start = new Point(2, pixelY);
+            int width = this.PixelWidth - 2;
+            Point end = new Point(width - 2, pixelY);
 
             Pen pen = new Pen(Program.SelectionColour, 1);
             if (IsSelected == true)
@@ -65,17 +65,17 @@ namespace MapMaker
 
             graphics.DrawLine(pen, start, end);
 
-            Size nodeSize = new Size(8, 8);
+            Size nodePixelSize = new Size(8, 8);
 
-            int x = -nodeSize.Width / 2;
-            y = start.Y - nodeSize.Height / 2;
-            Point startNode = new Point(x, y);
-            Rectangle startBounds = new Rectangle(startNode, nodeSize);
+            int pixelX = -nodePixelSize.Width / 2;
+            pixelY = start.Y - nodePixelSize.Height / 2;
+            Point startNode = new Point(pixelX, pixelY);
+            Rectangle startBounds = new Rectangle(startNode, nodePixelSize);
             graphics.FillEllipse(brush, startBounds);
 
-            x = end.X + 2 - nodeSize.Width / 2;
-            Point endNode = new Point(x, y);
-            Rectangle endBounds = new Rectangle(endNode, nodeSize);
+            pixelX = end.X + 2 - nodePixelSize.Width / 2;
+            Point endNode = new Point(pixelX, pixelY);
+            Rectangle endBounds = new Rectangle(endNode, nodePixelSize);
             graphics.FillEllipse(brush, endBounds);
         }
 
@@ -86,7 +86,7 @@ namespace MapMaker
 
         public override void SetBorders()
         {
-            base.SetBordersRelative(this.Area);
+            base.SetBordersRelative(this.PixelArea);
         }
 
         public override void OnMouseEnter(MouseEventArgs e)
@@ -138,7 +138,7 @@ namespace MapMaker
         {
             int x = this.Location.X;
             int y = this.Location.Y;
-            int height = this.Height;
+            int height = this.PixelHeight;
             int remainder = y % height;
             if (remainder >= (height / 2))
             {

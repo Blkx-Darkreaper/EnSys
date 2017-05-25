@@ -10,7 +10,7 @@ namespace MapMaker
 {
     public class Tile : IEquatable<Tile>
     {
-        public Point Location { get; protected set; }
+        public Point Location { get; protected set; }   // Units
         public int TilesetIndex { get; set; }
 
         [JsonConstructor]

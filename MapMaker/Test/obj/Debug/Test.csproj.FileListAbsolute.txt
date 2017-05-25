@@ -25,3 +25,5 @@ C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Debug\Newtonsoft.Json.xml
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.csprojResolveAssemblyReference.cache
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.dll
 C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\obj\Debug\Test.pdb
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\NicB\Documents\Git\EnSys\MapMaker\Test\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml

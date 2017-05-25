@@ -384,7 +384,7 @@ namespace Test
             //Assert.IsTrue(height == (2 * 32));
 
             Sector sector1 = Program.AllSectors[1];
-            bounds = sector1.Area;
+            bounds = sector1.PixelArea;
             x = bounds.Location.X;
             Assert.IsTrue(x == 0);
 
@@ -398,7 +398,7 @@ namespace Test
             Assert.IsTrue(height == (2 * 32));
 
             Sector sector2 = Program.AllSectors[2];
-            bounds = sector2.Area;
+            bounds = sector2.PixelArea;
             x = bounds.Location.X;
             Assert.IsTrue(x == 64);
 

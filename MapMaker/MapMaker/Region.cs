@@ -11,28 +11,48 @@ namespace MapMaker
 {
     public class Region : IComparable<Region>, IEquatable<Region>
     {
-        [JsonIgnore] public Rectangle Area { get; protected set; }
-        protected Rectangle previousArea { get; set; }
-        public Point Location { get { return Area.Location; } protected set { Area = UpdateAreaLocation(value); } }
-        public Size Size { get { return Area.Size; } protected set { Area = UpdateAreaSize(value); } }
-        [JsonIgnore] public int Width { get { return Area.Width; } protected set { Area = UpdateAreaWidth(value); } }
-        [JsonIgnore] public int Height { get { return Area.Height; } protected set { Area = UpdateAreaHeight(value); } }
+        [JsonIgnore] public Rectangle PixelArea { get; protected set; }  // pixels
+        protected Rectangle previousPixelArea { get; set; }  // pixels
+        public Point Location {
+            get {
+                if(Program.TileLength == 0)
+                {
+                    return new Point();
+                }
+
+                Point location = new Point(PixelArea.Location.X / Program.TileLength, PixelArea.Location.Y / Program.TileLength);
+                return location;
+            }
+            protected set { PixelArea = UpdateAreaLocation(new Point(value.X * Program.TileLength, value.Y * Program.TileLength)); } } // Units
+        public Size Size {
+            get {
+                if(Program.TileLength == 0)
+                {
+                    return new Size();
+                }
+
+                Size size = new Size(PixelArea.Width / Program.TileLength, PixelArea.Height / Program.TileLength);
+                return size;
+            }
+            protected set { PixelArea = UpdateAreaSize(new Size(value.Width * Program.TileLength, value.Height * Program.TileLength)); } }  // Units
+        [JsonIgnore] public int PixelWidth { get { return PixelArea.Width; } protected set { PixelArea = UpdateAreaWidth(value); } }    // pixels
+        [JsonIgnore] public int PixelHeight { get { return PixelArea.Height; } protected set { PixelArea = UpdateAreaHeight(value); } } // pixels
         [JsonIgnore] public Cursor Cursor { get; protected set; }
         [JsonIgnore] public bool IsMouseOver { get; protected set; }
         [JsonIgnore] public bool HasMouseFocus { get; protected set; }
         [JsonIgnore] public bool IsSelected { get { return Program.SelectedRegion == this; } }
-        protected Rectangle northMargin { get; set; }
-        protected Rectangle southMargin { get; set; }
-        protected Rectangle westMargin { get; set; }
-        protected Rectangle eastMargin { get; set; }
+        protected Rectangle northMargin { get; set; }   // pixels
+        protected Rectangle southMargin { get; set; }   // pixels
+        protected Rectangle westMargin { get; set; }    // pixels
+        protected Rectangle eastMargin { get; set; }    // pixels
         protected enum borders { center = 0, north = 1, west = 2, east = 4, south = 8 }
         protected int currentMouseBorder { get; set; }
         protected Point previousCursor { get; set; }
 
         public Region()
         {
-            this.Area = new Rectangle();
-            this.previousArea = new Rectangle();
+            this.PixelArea = new Rectangle();
+            this.previousPixelArea = new Rectangle();
             this.Cursor = Cursors.Default;
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
@@ -45,8 +65,19 @@ namespace MapMaker
             : this()
         {
             this.Location = new Point(x, y);
-            this.Width = width;
-            this.Height = height;
+            this.Size = new Size(width, height);
+
+            int tileLength = Program.TileLength;
+
+            int pixelX = x * tileLength;
+            int pixelY = y * tileLength;
+
+            int pixelWidth = width * tileLength;
+            int pixelHeight = height * tileLength;
+
+            this.PixelArea = new Rectangle(pixelX, pixelY, pixelWidth, pixelHeight);
+            //this.PixelWidth = width * tileLength;
+            //this.PixelHeight = height * tileLength;
 
             SetBorders();
         }
@@ -57,65 +88,69 @@ namespace MapMaker
 
         public virtual void SetBorders()
         {
-            SetBordersAbsolute(this.Area);
+            SetBordersAbsolute(this.PixelArea);
         }
 
-        protected virtual void SetBordersAbsolute(Rectangle area)
+        protected virtual void SetBordersAbsolute(Rectangle pixelArea)
         {
-            int x = area.X;
-            int y = area.Y;
-            int width = area.Width;
-            int height = area.Height;
-
             int tileLength = Program.TileLength;
+            if (tileLength == 0)
+            {
+                throw new InvalidOperationException("Tile length has not been set");
+            }
 
-            northMargin = new Rectangle(x, y, width, tileLength);
+            int pixelX = pixelArea.X;
+            int pixelY = pixelArea.Y;
+            int pixelWidth = pixelArea.Width;
+            int pixelHeight = pixelArea.Height;
 
-            westMargin = new Rectangle(x, y, tileLength, height);
+            northMargin = new Rectangle(pixelX, pixelY, pixelWidth, tileLength);
 
-            int bottomY = y + height - tileLength;
-            southMargin = new Rectangle(x, bottomY, width, tileLength);
+            westMargin = new Rectangle(pixelX, pixelY, tileLength, pixelHeight);
 
-            int rightX = x + width - tileLength;
-            eastMargin = new Rectangle(rightX, y, tileLength, height);
+            int bottomY = pixelY + pixelHeight - tileLength;
+            southMargin = new Rectangle(pixelX, bottomY, pixelWidth, tileLength);
+
+            int rightX = pixelX + pixelWidth - tileLength;
+            eastMargin = new Rectangle(rightX, pixelY, tileLength, pixelHeight);
         }
 
-        protected virtual void SetBordersRelative(Rectangle area)
+        protected virtual void SetBordersRelative(Rectangle pixelArea)
         {
-            int x = area.X;
-            int y = area.Y;
-            int width = area.Width;
-            int height = area.Height;
+            int pixelX = pixelArea.X;
+            int pixelY = pixelArea.Y;
+            int pixelWidth = pixelArea.Width;
+            int pixelHeight = pixelArea.Height;
 
-            int quarterHeight = height / 4;
-            northMargin = new Rectangle(x, y, width, quarterHeight);
+            int quarterPixelHeight = pixelHeight / 4;
+            northMargin = new Rectangle(pixelX, pixelY, pixelWidth, quarterPixelHeight);
 
-            int quarterWidth = width / 4;
-            westMargin = new Rectangle(x, y, quarterWidth, height);
+            int quarterWidth = pixelWidth / 4;
+            westMargin = new Rectangle(pixelX, pixelY, quarterWidth, pixelHeight);
 
-            int bottomY = y + 3 * quarterHeight;
-            southMargin = new Rectangle(x, bottomY, width, quarterHeight);
+            int bottomY = pixelY + 3 * quarterPixelHeight;
+            southMargin = new Rectangle(pixelX, bottomY, pixelWidth, quarterPixelHeight);
 
-            int rightX = x + 3 * quarterWidth;
-            eastMargin = new Rectangle(rightX, y, quarterWidth, height);
+            int rightX = pixelX + 3 * quarterWidth;
+            eastMargin = new Rectangle(rightX, pixelY, quarterWidth, pixelHeight);
         }
 
         public Rectangle GetScaledBounds(double scale)
         {
-            int scaledX = (int)Math.Round(Area.Location.X * scale, 0);
-            int scaledY = (int)Math.Round(Area.Location.Y * scale, 0);
+            int scaledPixelX = (int)Math.Round(PixelArea.Location.X * scale, 0);    // pixels
+            int scaledPixelY = (int)Math.Round(PixelArea.Location.Y * scale, 0); // pixels
 
-            int scaledWidth = (int)Math.Round(Area.Width * scale, 0);
-            int scaledHeight = (int)Math.Round(Area.Height * scale, 0);
+            int scaledPixelWidth = (int)Math.Round(PixelArea.Width * scale, 0); // pixels
+            int scaledPixelHeight = (int)Math.Round(PixelArea.Height * scale, 0);   //pixels
 
-            Rectangle scaledBounds = new Rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
+            Rectangle scaledBounds = new Rectangle(scaledPixelX, scaledPixelY, scaledPixelWidth, scaledPixelHeight);
             return scaledBounds;
         }
 
         public int CompareTo(Region other)
         {
-            int area = this.Width * this.Height;
-            int otherArea = other.Width * other.Height;
+            int area = this.PixelWidth * this.PixelHeight;
+            int otherArea = other.PixelWidth * other.PixelHeight;
 
             int comparison = area.CompareTo(otherArea);
             return comparison;
@@ -137,15 +172,15 @@ namespace MapMaker
                 return false;
             }
 
-            int width = this.Width;
-            int otherWidth = other.Width;
+            int width = this.PixelWidth;
+            int otherWidth = other.PixelWidth;
             if (width != otherWidth)
             {
                 return false;
             }
 
-            int height = this.Height;
-            int otherHeight = other.Height;
+            int height = this.PixelHeight;
+            int otherHeight = other.PixelHeight;
             if (height != otherHeight)
             {
                 return false;
@@ -154,34 +189,42 @@ namespace MapMaker
             return true;
         }
 
-        protected virtual Rectangle UpdateAreaLocation(Point location)
+        protected virtual Rectangle UpdateAreaLocation(Point pixelLocation)
         {
-            return UpdateArea(location, this.Size);
+            Size pixelSize = new Size(Size.Width * Program.TileLength, Size.Height * Program.TileLength);
+
+            return UpdateArea(pixelLocation, pixelSize);
         }
 
-        protected virtual Rectangle UpdateAreaSize(Size size)
+        protected virtual Rectangle UpdateAreaSize(Size pixelSize)
         {
-            return UpdateArea(this.Location, size);
+            Point pixelLocation = new Point(Location.X * Program.TileLength, Location.Y * Program.TileLength);
+
+            return UpdateArea(pixelLocation, pixelSize);
         }
 
-        protected virtual Rectangle UpdateAreaWidth(int width)
+        protected virtual Rectangle UpdateAreaWidth(int pixelWidth)
         {
-            return UpdateArea(this.Location, new Size(width, this.Height));
+            Point pixelLocation = new Point(Location.X * Program.TileLength, Location.Y * Program.TileLength);
+
+            return UpdateArea(pixelLocation, new Size(pixelWidth, this.PixelHeight));
         }
 
-        protected virtual Rectangle UpdateAreaHeight(int height)
+        protected virtual Rectangle UpdateAreaHeight(int pixelHeight)
         {
-            return UpdateArea(this.Location, new Size(this.Width, height));
+            Point pixelLocation = new Point(Location.X * Program.TileLength, Location.Y * Program.TileLength);
+
+            return UpdateArea(pixelLocation, new Size(this.PixelWidth, pixelHeight));
         }
 
-        protected virtual Rectangle UpdateArea(Point location, Size size)
+        protected virtual Rectangle UpdateArea(Point pixelLocation, Size pixelSize)
         {
-            int x = location.X;
-            int y = location.Y;
-            int width = size.Width;
-            int height = size.Height;
+            int pixelX = pixelLocation.X;
+            int pixelY = pixelLocation.Y;
+            int pixelWidth = pixelSize.Width;
+            int pixelHeight = pixelSize.Height;
 
-            Rectangle updatedArea = new Rectangle(location, size);
+            Rectangle updatedArea = new Rectangle(pixelX, pixelY, pixelWidth, pixelHeight);
             SetBordersAbsolute(updatedArea);
 
             return updatedArea;
@@ -189,7 +232,7 @@ namespace MapMaker
 
         public virtual Rectangle[] GetRemoved()
         {
-            return GetRemoved(this.previousArea, this.Area);
+            return GetRemoved(this.previousPixelArea, this.PixelArea);
         }
 
         protected virtual Rectangle[] GetRemoved(Rectangle previous, Rectangle current)
@@ -358,7 +401,7 @@ namespace MapMaker
 
         public virtual Rectangle[] GetAdded()
         {
-            return GetAdded(this.previousArea, this.Area);
+            return GetAdded(this.previousPixelArea, this.PixelArea);
         }
 
         protected virtual Rectangle[] GetAdded(Rectangle previous, Rectangle current)
@@ -527,7 +570,7 @@ namespace MapMaker
 
         public virtual bool IsInCenter(Point point)
         {
-            bool isInBounds = Area.Contains(point);
+            bool isInBounds = PixelArea.Contains(point);
             if (isInBounds == false)
             {
                 return false;
@@ -562,22 +605,31 @@ namespace MapMaker
             return true;
         }
 
-        public virtual void Move(int deltaX, int deltaY)
+        public virtual void Move(int deltaPixelX, int deltaPixelY)
         {
-            if (deltaX == 0)
+            if(Program.TileLength == 0)
             {
-                if (deltaY == 0)
+                throw new InvalidOperationException("Tile length has not been set");
+            }
+
+            if (deltaPixelX == 0)
+            {
+                if (deltaPixelY == 0)
                 {
                     return;
                 }
             }
 
-            Rectangle oldArea = new Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+            //Rectangle oldArea = new Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+
+            // Convert to Units (tiles)
+            int deltaX = deltaPixelX / Program.TileLength;
+            int deltaY = deltaPixelY / Program.TileLength;
 
             int updatedX = Location.X + deltaX;
             int updatedY = Location.Y + deltaY;
 
-            Location = new Point(updatedX, updatedY);
+            this.Location = new Point(updatedX, updatedY);
         }
 
         public virtual bool IsInNorthBorder(Point point)
@@ -586,12 +638,15 @@ namespace MapMaker
             return isInMargin;
         }
 
-        public virtual void AdjustNorthEdge(int amount)
+        public virtual void AdjustNorthEdge(int pixels)
         {
-            int updatedY = Location.Y + amount;
-            int updatedHeight = Height - amount;
+            int tileLength = Program.TileLength;
 
-            Area = new Rectangle(Location.X, updatedY, Width, updatedHeight);
+            int pixelX = Location.X * tileLength;
+            int updatedPixelY = Location.Y * tileLength + pixels;
+            int updatedPixelHeight = PixelHeight - pixels;
+
+            this.PixelArea = new Rectangle(pixelX, updatedPixelY, PixelWidth, updatedPixelHeight);
         }
 
         public virtual bool IsInSouthBorder(Point point)
@@ -600,11 +655,16 @@ namespace MapMaker
             return isInMargin;
         }
 
-        public virtual void AdjustSouthEdge(int amount)
+        public virtual void AdjustSouthEdge(int pixels)
         {
-            int updatedHeight = Height + amount;
+            int tileLength = Program.TileLength;
 
-            Area = new Rectangle(Location.X, Location.Y, Width, updatedHeight);
+            int pixelX = Location.X * tileLength;
+            int pixelY = Location.Y * tileLength;
+
+            int updatedPixelHeight = PixelHeight + pixels;
+
+            this.PixelArea = new Rectangle(pixelX, pixelY, PixelWidth, updatedPixelHeight);
         }
 
         public virtual bool IsInWestBorder(Point point)
@@ -613,12 +673,16 @@ namespace MapMaker
             return isInMargin;
         }
 
-        public virtual void AdjustWestEdge(int amount)
+        public virtual void AdjustWestEdge(int pixels)
         {
-            int updatedX = Location.X + amount;
-            int updatedWidth = Width - amount;
+            int tileLength = Program.TileLength;
 
-            Area = new Rectangle(updatedX, Location.Y, updatedWidth, Height);
+            int updatedPixelX = Location.X * tileLength + pixels;
+            int pixelY = Location.Y * tileLength;
+
+            int updatedPixelWidth = PixelWidth - pixels;
+
+            this.PixelArea = new Rectangle(updatedPixelX, pixelY, updatedPixelWidth, PixelHeight);
         }
 
         public virtual bool IsInEastBorder(Point point)
@@ -627,11 +691,16 @@ namespace MapMaker
             return isInMargin;
         }
 
-        public virtual void AdjustEastEdge(int amount)
+        public virtual void AdjustEastEdge(int pixels)
         {
-            int updatedWidth = Width + amount;
+            int tileLength = Program.TileLength;
 
-            Area = new Rectangle(Location.X, Location.Y, updatedWidth, Height);
+            int pixelX = Location.X * tileLength;
+            int pixelY = Location.Y * tileLength;
+
+            int updatedPixelWidth = PixelWidth + pixels;
+
+            this.PixelArea = new Rectangle(pixelX, pixelY, updatedPixelWidth, PixelHeight);
         }
 
         public virtual void OnMouseEnter(MouseEventArgs e)
@@ -769,13 +838,13 @@ namespace MapMaker
 
         protected virtual void SetPreviousArea()
         {
-            Rectangle area = this.Area;
-            int x = area.Location.X;
-            int y = area.Location.Y;
-            int width = area.Width;
-            int height = area.Height;
+            Rectangle area = this.PixelArea;
+            int pixelX = area.Location.X;
+            int pixelY = area.Location.Y;
+            int pixelWidth = area.Width;
+            int pixelHeight = area.Height;
 
-            this.previousArea = new Rectangle(x, y, width, height);
+            this.previousPixelArea = new Rectangle(pixelX, pixelY, pixelWidth, pixelHeight);
         }
 
         public virtual void OnMouseMove(MouseEventArgs e)
@@ -787,8 +856,16 @@ namespace MapMaker
 
             Point cursor = e.Location;
 
-            int deltaY = cursor.Y - previousCursor.Y;
-            int deltaX = cursor.X - previousCursor.X;
+            int deltaPixelY = cursor.Y - previousCursor.Y;
+            int deltaPixelX = cursor.X - previousCursor.X;
+
+            int tileLength = Program.TileLength;
+            if(Math.Abs(deltaPixelX) < tileLength)
+            {
+                if(Math.Abs(deltaPixelY) < tileLength) {
+                    return;
+                }
+            }
 
             const int nw = (int)borders.north + (int)borders.west;
             const int ne = (int)borders.north + (int)borders.east;
@@ -799,43 +876,43 @@ namespace MapMaker
             switch (currentMouseBorder)
             {
                 case 0:
-                    Move(deltaX, deltaY);
+                    Move(deltaPixelX, deltaPixelY);
                     break;
 
                 case nw:
-                    AdjustNorthEdge(deltaY);
-                    AdjustWestEdge(deltaX);
+                    AdjustNorthEdge(deltaPixelY);
+                    AdjustWestEdge(deltaPixelX);
                     break;
 
                 case ne:
-                    AdjustNorthEdge(deltaY);
-                    AdjustEastEdge(deltaX);
+                    AdjustNorthEdge(deltaPixelY);
+                    AdjustEastEdge(deltaPixelX);
                     break;
 
                 case sw:
-                    AdjustSouthEdge(deltaY);
-                    AdjustWestEdge(deltaX);
+                    AdjustSouthEdge(deltaPixelY);
+                    AdjustWestEdge(deltaPixelX);
                     break;
 
                 case se:
-                    AdjustSouthEdge(deltaY);
-                    AdjustEastEdge(deltaX);
+                    AdjustSouthEdge(deltaPixelY);
+                    AdjustEastEdge(deltaPixelX);
                     break;
 
                 case (int)borders.north:
-                    AdjustNorthEdge(deltaY);
+                    AdjustNorthEdge(deltaPixelY);
                     break;
 
                 case (int)borders.south:
-                    AdjustSouthEdge(deltaY);
+                    AdjustSouthEdge(deltaPixelY);
                     break;
 
                 case (int)borders.west:
-                    AdjustWestEdge(deltaX);
+                    AdjustWestEdge(deltaPixelX);
                     break;
 
                 case (int)borders.east:
-                    AdjustEastEdge(deltaX);
+                    AdjustEastEdge(deltaPixelX);
                     break;
 
                 default:
@@ -862,30 +939,43 @@ namespace MapMaker
 
         protected virtual void SnapToGrid()
         {
-            int x = this.Location.X;
-            int y = this.Location.Y;
-            int width = this.Width;
-            int height = this.Height;
+            if(Program.TileLength == 0)
+            {
+                throw new InvalidOperationException("Tile length has not been set");
+            }
+
+            int pixelX = this.Location.X * Program.TileLength;
+            int pixelY = this.Location.Y * Program.TileLength;
+            int pixelWidth = this.PixelWidth;
+            int pixelHeight = this.PixelHeight;
 
             Point location;
             Size size;
-            Program.SnapToGrid(x, y, width, height, out location, out size);
+            Program.SnapToGrid(pixelX, pixelY, pixelWidth, pixelHeight, out location, out size);
             this.Location = location;
             this.Size = size;
         }
 
-        public virtual void KeepInBounds(Rectangle bounds, int x, int y)
+        public virtual void KeepInBounds(Rectangle pixelBounds, int x, int y)
         {
             int tileLength = Program.TileLength;
 
-            int minX = bounds.X;
-            int maxX = minX + bounds.Width - tileLength;
+            int minX = pixelBounds.X / tileLength;
+            int maxX = minX + (pixelBounds.Width - tileLength) / tileLength;
 
-            int minY = bounds.Y;
-            int maxY = minY + bounds.Height - tileLength;
+            int minY = pixelBounds.Y / tileLength;
+            int maxY = minY + (pixelBounds.Height - tileLength) / tileLength;
 
             x = Program.Clamp(x, minX, maxX);
             y = Program.Clamp(y, minY, maxY);
+
+            if(this.Location.X == x)
+            {
+                if(this.Location.Y == y)
+                {
+                    return;
+                }
+            }
 
             this.Location = new Point(x, y);
         }

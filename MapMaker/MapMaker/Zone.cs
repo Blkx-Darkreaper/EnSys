@@ -36,26 +36,34 @@ namespace MapMaker
 
             Font font = new Font(FontFamily.GenericSansSerif, 12f);
 
-            int scaledX = (int)Math.Round(Location.X * scale, 0);
-            int scaledY = (int)Math.Round(Location.Y * scale, 0);
-            Point scaledLocation = new Point(scaledX, scaledY);
+            int scaledPixelX = (int)Math.Round(Location.X * Program.TileLength * scale, 0); // pixels
+            int scaledPixelY = (int)Math.Round(Location.Y * Program.TileLength * scale, 0); // pixels
+            Point scaledLocation = new Point(scaledPixelX, scaledPixelY);
             graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 
-        protected override Rectangle UpdateArea(Point location, Size size)
+        protected override Rectangle UpdateArea(Point pixelLocation, Size pixelSize)
         {
-            Rectangle updatedArea = base.UpdateArea(location, size);
+            Rectangle updatedArea = base.UpdateArea(pixelLocation, pixelSize);
 
-            UpdateSectorPositions(this.Area, 0, 0);
+            UpdateSectorPositions(this.PixelArea, 0, 0);
 
             return updatedArea;
         }
 
-        public override void Move(int deltaX, int deltaY)
+        public override void Move(int deltaPixelX, int deltaPixelY)
         {
-            base.Move(deltaX, deltaY);
+            if (deltaPixelX == 0)
+            {
+                if (deltaPixelY == 0)
+                {
+                    return;
+                }
+            }
 
-            UpdateSectorPositions(this.Area, deltaX, deltaY);
+            base.Move(deltaPixelX, deltaPixelY);
+
+            UpdateSectorPositions(this.PixelArea, deltaPixelX, deltaPixelY);
         }
 
         public override void Delete()
@@ -67,11 +75,16 @@ namespace MapMaker
 
             Program.AllZones.Remove(this.Id);
 
-            Program.UpdateGridZones(this.Area, 0);
+            Program.UpdateGridZones(this.PixelArea, 0);
         }
 
         protected virtual void UpdateSectorPositions(Rectangle updatedArea, int deltaX, int deltaY)
         {
+            if(AllSectors == null)
+            {
+                return;
+            }
+
             if (AllSectors.Count == 0)
             {
                 return;

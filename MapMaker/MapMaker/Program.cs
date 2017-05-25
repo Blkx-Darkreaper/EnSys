@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace MapMaker
@@ -30,6 +31,7 @@ namespace MapMaker
         }
 
         public static int TileLength { get; set; }
+        public const int DefaultTileLength = 32;
         public static double MapScale { get; set; }
         public static int TilesetDisplayWidth { get; set; }
         private static string tilesetFilename { get; set; }
@@ -137,7 +139,7 @@ namespace MapMaker
                 sector = AllSectors[sectorId];
 
                 // Resize zone to accomodate grid
-                sector.AddGrid(grid, TileLength);
+                sector.AddGrid(grid);
             }
 
             int sectors = AllSectors.Count;
@@ -168,7 +170,7 @@ namespace MapMaker
                 Zone zone = AllZones[zoneId];
 
                 // Resize zone to accomodate grid
-                zone.AddGrid(grid, TileLength);
+                zone.AddGrid(grid);
 
                 int sectorId = grid.SectorId;
                 if (sectorId == 0)
@@ -190,7 +192,7 @@ namespace MapMaker
                 sector = AllSectors[sectorId];
 
                 // Resize zone to accomodate grid
-                sector.AddGrid(grid, TileLength);
+                sector.AddGrid(grid);
 
                 bool isSpawnpoint = grid.IsSpawnpoint;
                 if (isSpawnpoint == false)
@@ -464,14 +466,19 @@ namespace MapMaker
             int imageWidth = tilesetImage.Width;
             int imageHeight = tilesetImage.Height;
 
-            int tilesWide = imageWidth / (tileLength * 2);
-            int tilesHigh = imageHeight / (tileLength * 3);
+            //int tilesWide = imageWidth / (tileLength * 2);    // RPG tileset tiles are 2x3 to allow for tiling
+            //int tilesHigh = imageHeight / (tileLength * 3);
+            int tilesWide = imageWidth / tileLength;
+            int tilesHigh = imageHeight / tileLength;
+
             int totalTiles = tilesWide * tilesHigh;
 
             for (int i = 0; i < totalTiles; i++)
             {
-                int x = (i % tilesWide) * (2 * tileLength);
-                int y = (i / tilesWide) * (3 * tileLength);
+                //int x = (i % tilesWide) * (2 * tileLength);
+                //int y = (i / tilesWide) * (3 * tileLength);
+                int x = (i % tilesWide);
+                int y = (i / tilesWide);
 
                 Tile tileToAdd = new Tile(i, x, y);
                 tileset.Add(tileToAdd);
@@ -670,7 +677,7 @@ namespace MapMaker
             Program.Author = map.Author;
             Program.dateCreated = map.DateCreated;
             Program.tilesetFilename = map.TilesetFilename;
-            Program.TileLength = map.TileLength;
+            //Program.TileLength = map.TileLength;
             Grid.NextSectorId = map.NextSector;
             Program.mapSize = map.MapSize;
 
@@ -870,8 +877,43 @@ namespace MapMaker
 
         public static StrikeforceMap DeserializeMap(string json)
         {
+            // Get tile length first
+            int tileLength = DeserializeTileLength(json);
+            Program.TileLength = tileLength;
+
             StrikeforceMap map = JsonConvert.DeserializeObject<StrikeforceMap>(json);
             return map;
+        }
+
+        public static int DeserializeTileLength(string json)
+        {
+            string pattern = "\"TileLength\"" + @": (\d+),";
+            Regex regex = new Regex(pattern);
+            Match firstMatch = regex.Match(json);
+            if(firstMatch == null)
+            {
+                return DefaultTileLength;
+            }
+
+            for (int groupIndex = 1; groupIndex < firstMatch.Groups.Count; groupIndex++)
+            {
+                Group group = firstMatch.Groups[groupIndex];
+
+                for (int captureIndex = 0; captureIndex < group.Captures.Count; captureIndex++)
+                {
+                    string tileLengthString = group.Captures[captureIndex].Value;
+
+                    int tileLength;
+                    if (Int32.TryParse(tileLengthString, out tileLength) == false)
+                    {
+                        continue;
+                    }
+
+                    return tileLength;
+                }
+            }
+
+            return DefaultTileLength;
         }
 
         //public static Size GetTilesetSize()
@@ -1234,7 +1276,7 @@ namespace MapMaker
                 // Checkpoints
                 foreach (Checkpoint checkpoint in AllCheckpoints.Values)
                 {
-                    bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = checkpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1287,7 +1329,7 @@ namespace MapMaker
                 // Spawnpoints
                 foreach (Spawnpoint spawnpoint in AllSpawnpoints)
                 {
-                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = spawnpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1315,7 +1357,7 @@ namespace MapMaker
 
             foreach (Spawnpoint spawnpoint in AllSpawnpoints)
             {
-                bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                bool mouseWithinBounds = spawnpoint.PixelArea.Contains(scaledCursor);
                 if (mouseWithinBounds == false)
                 {
                     continue;
@@ -1338,7 +1380,7 @@ namespace MapMaker
                 // Zones
                 foreach (Zone zone in AllZones.Values)
                 {
-                    bool mouseWithinBounds = zone.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = zone.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1354,7 +1396,7 @@ namespace MapMaker
                 // Checkpoints
                 foreach (Checkpoint checkpoint in AllCheckpoints.Values)
                 {
-                    bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = checkpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1380,7 +1422,7 @@ namespace MapMaker
                 // Sectors
                 foreach (Sector sector in AllSectors.Values)
                 {
-                    bool mouseWithinBounds = sector.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = sector.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1396,7 +1438,7 @@ namespace MapMaker
                 // Spawnpoints
                 foreach (Spawnpoint spawnpoint in AllSpawnpoints)
                 {
-                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = spawnpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1484,7 +1526,7 @@ namespace MapMaker
                 {
                     zone.OnMouseMove(e);
 
-                    bool mouseWithinBounds = zone.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = zone.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == true)
                     {
                         zone.OnMouseEnter(e);
@@ -1504,7 +1546,7 @@ namespace MapMaker
                 {
                     checkpoint.OnMouseMove(e);
 
-                    bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = checkpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == true)
                     {
                         checkpoint.OnMouseEnter(e);
@@ -1534,7 +1576,7 @@ namespace MapMaker
                 {
                     sector.OnMouseMove(e);
 
-                    bool mouseWithinBounds = sector.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = sector.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == true)
                     {
                         sector.OnMouseEnter(e);
@@ -1554,7 +1596,7 @@ namespace MapMaker
                 {
                     spawnpoint.OnMouseMove(e);
 
-                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = spawnpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == true)
                     {
                         spawnpoint.OnMouseEnter(e);
@@ -1582,7 +1624,7 @@ namespace MapMaker
                 // Zones
                 foreach (Zone zone in AllZones.Values)
                 {
-                    bool mouseWithinBounds = zone.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = zone.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1597,7 +1639,7 @@ namespace MapMaker
                 // Checkpoints
                 foreach (Checkpoint checkpoint in AllCheckpoints.Values)
                 {
-                    bool mouseWithinBounds = checkpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = checkpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1622,7 +1664,7 @@ namespace MapMaker
                 // Sectors
                 foreach (Sector sector in AllSectors.Values)
                 {
-                    bool mouseWithinBounds = sector.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = sector.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1637,7 +1679,7 @@ namespace MapMaker
                 // Spawnpoints
                 foreach (Spawnpoint spawnpoint in AllSpawnpoints)
                 {
-                    bool mouseWithinBounds = spawnpoint.Area.Contains(scaledCursor);
+                    bool mouseWithinBounds = spawnpoint.PixelArea.Contains(scaledCursor);
                     if (mouseWithinBounds == false)
                     {
                         continue;
@@ -1792,20 +1834,20 @@ namespace MapMaker
             }
         }
 
-        public static void UpdateGridZones(Rectangle updatedArea, int updatedZoneId)
+        public static void UpdateGridZones(Rectangle updatedPixelArea, int updatedZoneId)
         {
-            Point start = updatedArea.Location;
-            int startX = start.X;
-            int startY = start.Y;
-            int width = updatedArea.Width;
-            int height = updatedArea.Height;
+            Point startPixel = updatedPixelArea.Location;
+            int startPixelX = startPixel.X;
+            int startPixelY = startPixel.Y;
+            int pixelWidth = updatedPixelArea.Width;
+            int pixelHeight = updatedPixelArea.Height;
 
-            int endX = startX + width;
-            int endY = startY + height;
+            int endPixelX = startPixelX + pixelWidth;
+            int endPixelY = startPixelY + pixelHeight;
 
-            Point end = new Point(endX, endY);
+            Point endPixel = new Point(endPixelX, endPixelY);
 
-            List<Grid> gridsToUpdate = GetGridsInArea(start, end);
+            List<Grid> gridsToUpdate = GetGridsInArea(startPixel, endPixel);
             foreach (Grid grid in gridsToUpdate)
             {
                 grid.ZoneId = updatedZoneId;
@@ -1863,7 +1905,7 @@ namespace MapMaker
             int totalTiles = Program.GetTilesetCount();
 
             int tilesWide = TilesetDisplayWidth / TileLength;
-            int width = tilesWide * TileLength;
+            int width = tilesWide * TileLength; // this is to ensure no tiles are cut off
 
             int tilesHigh = (int)Math.Ceiling(totalTiles / (double)tilesWide);
             int height = tilesHigh * TileLength;
@@ -1913,11 +1955,11 @@ namespace MapMaker
 
         public static Bitmap GetMapImage(double scale)
         {
-            int width = mapSize.Width;
-            int height = mapSize.Height;
+            int tilesWide = mapSize.Width;
+            int tilesHigh = mapSize.Height;
 
-            int tilesWide = width / TileLength;
-            int tilesHigh = height / TileLength;
+            int width = tilesWide * TileLength;
+            int height = tilesHigh * TileLength;
 
             width = (int)(width * scale);
             height = (int)(height * scale);
@@ -1933,15 +1975,15 @@ namespace MapMaker
 
         public static Bitmap DrawMap(ref Bitmap displayImage, double scale)
         {
-            int width = mapSize.Width;
-            int scaledWidth = (int)(width * scale);
-            if (scaledWidth != displayImage.Width)
+            int pixelWidth = mapSize.Width * TileLength; // Convert to pixels
+            int scaledPixelWidth = (int)(pixelWidth * scale);
+            if (scaledPixelWidth != displayImage.Width)
             {
-                int scaledHeight = (int)(mapSize.Height * scale);
-                displayImage = new Bitmap(scaledWidth, scaledHeight);
+                int scaledPixelHeight = (int)(mapSize.Height * scale * TileLength);  // Convert to pixels
+                displayImage = new Bitmap(scaledPixelWidth, scaledPixelHeight);
             }
 
-            int tilesWide = width / TileLength;
+            int tilesWide = mapSize.Width;
 
             Program.DrawUpdatedGridsOntoImage(ref displayImage, tilesWide, TileLength, scale);
 
@@ -2139,20 +2181,20 @@ namespace MapMaker
             for (int i = 0; i < collection.Count; i++)
             {
                 Tile tile = collection[i];
-                int x, y;
+                int pixelX, pixelY;   // pixels
 
                 if (addPadding == true)
                 {
-                    x = i % tilesWide * (int)(tileLength * scale + 1);
-                    y = i / tilesWide * (int)(tileLength * scale + 1);
+                    pixelX = i % tilesWide * (int)(tileLength * scale + 1);
+                    pixelY = i / tilesWide * (int)(tileLength * scale + 1);
                 }
                 else
                 {
-                    x = i % tilesWide * (int)(tileLength * scale);
-                    y = i / tilesWide * (int)(tileLength * scale);
+                    pixelX = i % tilesWide * (int)(tileLength * scale);
+                    pixelY = i / tilesWide * (int)(tileLength * scale);
                 }
 
-                Program.DrawTileOntoImage(ref image, tile, tileLength, x, y, scale);
+                Program.DrawTileOntoImage(ref image, tile, tileLength, pixelX, pixelY, scale);
             }
         }
 
@@ -2177,7 +2219,8 @@ namespace MapMaker
             {
                 Grid grid = collection[i];
 
-                int x, y;
+                int pixelX = grid.Location.X * TileLength;
+                int pixelY = grid.Location.Y * TileLength;
 
                 //if (addPadding == true)
                 //{
@@ -2190,23 +2233,24 @@ namespace MapMaker
                 //    deltaY = i / tilesWide * (int)(TileLength * miniMapScale);
                 //}
 
+                int scaledPixelX, scaledPixelY;
                 if (addPadding == true)
                 {
-                    int column = grid.Location.X / tileLength;
-                    int row = grid.Location.Y / tileLength;
+                    int column = grid.Location.X;
+                    int row = grid.Location.Y;
 
-                    x = (int)Math.Round((grid.Location.X + column) * scale, 0);
-                    y = (int)Math.Round((grid.Location.Y + row) * scale, 0);
+                    scaledPixelX = (int)Math.Round((pixelX + column) * scale, 0);   // convert to pixels
+                    scaledPixelY = (int)Math.Round((pixelY + row) * scale, 0);   // convert to pixels
                 }
                 else
                 {
-                    x = (int)Math.Round(grid.Location.X * scale, 0);
-                    y = (int)Math.Round(grid.Location.Y * scale, 0);
+                    scaledPixelX = (int)Math.Round(pixelX * scale, 0);   // convert to pixels
+                    scaledPixelY = (int)Math.Round(pixelY * scale, 0);   // convert to pixels
                 }
 
                 Tile tile = grid.Tile;
 
-                Program.DrawTileOntoImage(ref image, tile, tileLength, x, y, scale);
+                Program.DrawTileOntoImage(ref image, tile, tileLength, pixelX, pixelY, scale);
             }
         }
 
@@ -2216,12 +2260,12 @@ namespace MapMaker
             {
                 Grid grid = allUpdatedMapGrids.Dequeue();
                 Point corner = grid.Location;
-                int x = (int)(corner.X * scale);
-                int y = (int)(corner.Y * scale);
+                int scaledPixelX = (int)(corner.X * scale * tileLength);    // convert to pixels
+                int scaledPixelY = (int)(corner.Y * scale * tileLength);    // convert to pixels
 
                 Tile tile = grid.Tile;
 
-                Program.DrawTileOntoImage(ref image, tile, tileLength, x, y, scale);
+                Program.DrawTileOntoImage(ref image, tile, tileLength, scaledPixelX, scaledPixelY, scale);
             }
         }
 
@@ -2278,43 +2322,43 @@ namespace MapMaker
             return grid;
         }
 
-        public static List<Grid> GetGridsInArea(Point start, Point end)
+        public static List<Grid> GetGridsInArea(Point startPixel, Point endPixel)
         {
-            return GetGridsInArea(start, end, 1);
+            return GetGridsInArea(startPixel, endPixel, 1);
         }
 
-        public static List<Grid> GetGridsInArea(Point start, Point end, double scale)
+        public static List<Grid> GetGridsInArea(Point startPixel, Point endPixel, double scale)
         {
             // Get the rectangular area
-            int cornerX = Math.Min(start.X, end.X);
-            int cornerY = Math.Min(start.Y, end.Y);
+            int cornerPixelX = Math.Min(startPixel.X, endPixel.X);
+            int cornerPixelY = Math.Min(startPixel.Y, endPixel.Y);
 
-            int width = Math.Abs(end.X - start.X);
-            int height = Math.Abs(end.Y - start.Y);
+            int pixelWidth = Math.Abs(endPixel.X - startPixel.X);
+            int pixelHeight = Math.Abs(endPixel.Y - startPixel.Y);
 
-            if (cornerX < 0)
+            if (cornerPixelX < 0)
             {
-                width += cornerX;
-                cornerX = 0;
+                pixelWidth += cornerPixelX;
+                cornerPixelX = 0;
             }
-            if (cornerY < 0)
+            if (cornerPixelY < 0)
             {
-                height += cornerY;
-                cornerY = 0;
+                pixelHeight += cornerPixelY;
+                cornerPixelY = 0;
             }
 
-            int normalCornerX = cornerX;
-            int normalCornerY = cornerY;
-            int normalWidth = width;
-            int normalHeight = height;
+            int normalCornerX = cornerPixelX;
+            int normalCornerY = cornerPixelY;
+            int normalWidth = pixelWidth;
+            int normalHeight = pixelHeight;
 
             // Adjust rectangle to full miniMapScale
             if (scale != 1)
             {
-                normalCornerX = (int)Math.Round(cornerX / scale, 0);
-                normalCornerY = (int)Math.Round(cornerY / scale, 0);
-                normalWidth = (int)Math.Round(width / scale, 0);
-                normalHeight = (int)Math.Round(height / scale, 0);
+                normalCornerX = (int)Math.Round(cornerPixelX / scale, 0);
+                normalCornerY = (int)Math.Round(cornerPixelY / scale, 0);
+                normalWidth = (int)Math.Round(pixelWidth / scale, 0);
+                normalHeight = (int)Math.Round(pixelHeight / scale, 0);
             }
 
             // Snap to grid
@@ -2340,9 +2384,15 @@ namespace MapMaker
             normalWidth += normalCornerX;
             normalHeight += normalCornerY;
 
-            for (int y = normalCornerY; y < normalHeight; y += TileLength)
+            // Convert pixels to units (tiles)
+            normalCornerX /= TileLength;
+            normalCornerY /= TileLength;
+            normalWidth /= TileLength;
+            normalHeight /= TileLength;
+
+            for (int y = normalCornerY; y < normalHeight; y++)
             {
-                for (int x = normalCornerX; x < normalWidth; x += TileLength)
+                for (int x = normalCornerX; x < normalWidth; x++)
                 {
                     Grid dummy = new Grid(x, y);
                     Grid grid = AllMapGrids.Find(g => g.Equals(dummy));
@@ -2377,10 +2427,10 @@ namespace MapMaker
             }
 
             Point corner = tile.Location;
-            int x = corner.X;
-            int y = corner.Y;
+            int pixelX = corner.X * TileLength;   // Convert to pixels
+            int pixelY = corner.Y * TileLength;   // Convert to pixels
 
-            Rectangle bounds = new Rectangle(x, y, TileLength, TileLength);
+            Rectangle bounds = new Rectangle(pixelX, pixelY, TileLength, TileLength);
             Bitmap tileImage = tilesetImage.Clone(bounds, PixelFormat.Format24bppRgb);
             return tileImage;
         }
@@ -2663,98 +2713,107 @@ namespace MapMaker
             return letter;
         }
 
-        private static Point GetMapPoint(double hScrollPercent, double vScrollPercent, Size displaySize)
+        private static Point GetMapPoint(double hScrollPercent, double vScrollPercent, Size displayPixelSize)
         {
-            int mapWidth = mapSize.Width;
-            int mapHeight = mapSize.Height;
+            int mapPixelWidth = mapSize.Width * TileLength;
+            int mapPixelHeight = mapSize.Height * TileLength;
 
             int scrollBarLength = 25;
-            int displayWidth = displaySize.Width;
-            int displayHeight = displaySize.Height;
+            int displayPixelWidth = displayPixelSize.Width;
+            int displayPixelHeight = displayPixelSize.Height;
 
-            int viewWidth = displayWidth - scrollBarLength;
-            int viewHeight = displayHeight - scrollBarLength;
+            int viewPixelWidth = displayPixelWidth - scrollBarLength;
+            int viewPixelHeight = displayPixelHeight - scrollBarLength;
 
-            int maxX = mapWidth - viewWidth;
-            int maxY = mapHeight - viewHeight;
+            int maxPixelX = mapPixelWidth - viewPixelWidth;
+            int maxPixelY = mapPixelHeight - viewPixelHeight;
 
-            int x = (int)Math.Round(hScrollPercent * maxX + viewWidth / 2, 0);
-            int y = (int)Math.Round(vScrollPercent * maxY + viewHeight / 2, 0);
+            int pixelX = (int)Math.Round(hScrollPercent * maxPixelX + viewPixelWidth / 2, 0);
+            int pixelY = (int)Math.Round(vScrollPercent * maxPixelY + viewPixelHeight / 2, 0);
 
             // Snap to grid
-            Point mapPoint = SnapToGrid(x, y);
+            Point mapPoint = SnapToGrid(pixelX, pixelY);
             return mapPoint;
         }
 
-        public static Point SnapToGrid(int x, int y)
+        public static Point SnapToGrid(int pixelX, int pixelY)
         {
             int remainder;
-            remainder = x % TileLength;
+            remainder = pixelX % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                x += TileLength - remainder;
+                pixelX += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                x -= remainder;
+                pixelX -= remainder;
             }
 
-            remainder = y % TileLength;
+            remainder = pixelY % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                y += TileLength - remainder;
+                pixelY += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                y -= remainder;
+                pixelY -= remainder;
             }
 
-            int nextSectorId = AllSectors.Count + 1;
+            // convert to Units (tiles)
+            int x = pixelX / TileLength;
+            int y = pixelY / TileLength;
+
             return new Point(x, y);
         }
 
-        public static void SnapToGrid(int x, int y, int width, int height, out Point location, out Size size)
+        public static void SnapToGrid(int pixelX, int pixelY, int pixelWidth, int pixelHeight, out Point location, out Size size)
         {
             int remainder;
-            remainder = x % TileLength;
+            remainder = pixelX % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                x += TileLength - remainder;
+                pixelX += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                x -= remainder;
+                pixelX -= remainder;
             }
 
-            remainder = width % TileLength;
+            remainder = pixelWidth % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                width += TileLength - remainder;
+                pixelWidth += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                width -= remainder;
+                pixelWidth -= remainder;
             }
 
-            remainder = y % TileLength;
+            remainder = pixelY % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                y += TileLength - remainder;
+                pixelY += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                y -= remainder;
+                pixelY -= remainder;
             }
 
-            remainder = height % TileLength;
+            remainder = pixelHeight % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                height += TileLength - remainder;
+                pixelHeight += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                height -= remainder;
+                pixelHeight -= remainder;
             }
+
+            // convert to Units (tiles)
+            int x = pixelX / TileLength;
+            int y = pixelY / TileLength;
+            int width = pixelWidth / TileLength;
+            int height = pixelHeight / TileLength;
 
             location = new Point(x, y);
             size = new Size(width, height);
@@ -2767,14 +2826,14 @@ namespace MapMaker
             int y = mapPoint.Y;
 
             int nextSectorId = AllSectors.Count + 1;
-            int width = TileLength * 3;
-            int height = TileLength * 3;
+            int width = 3;
+            int height = 3;
             Sector toAdd = new Sector(nextSectorId, x, y, width, height);
-            Rectangle areaToAdd = toAdd.Area;
+            Rectangle areaToAdd = toAdd.PixelArea;
 
             foreach (Sector sector in AllSectors.Values)
             {
-                bool intersects = sector.Area.IntersectsWith(areaToAdd);
+                bool intersects = sector.PixelArea.IntersectsWith(areaToAdd);
                 if (intersects == false)
                 {
                     continue;
@@ -2802,44 +2861,47 @@ namespace MapMaker
             SelectedRegion = null;
         }
 
-        public static void AddZone(double vScrollPercent, Size displaySize)
+        public static void AddZone(double vScrollPercent, Size displayPixelSize)
         {
-            int mapWidth = mapSize.Width;
-            int mapHeight = mapSize.Height;
+            int mapPixelWidth = mapSize.Width * TileLength;
+            int mapPixelHeight = mapSize.Height * TileLength;
 
             int scrollBarLength = 25;
-            int displayHeight = displaySize.Height;
+            int displayPixelHeight = displayPixelSize.Height;
 
-            int viewHeight = displayHeight - scrollBarLength;
+            int viewPixelHeight = displayPixelHeight - scrollBarLength;
 
-            int maxY = mapHeight - viewHeight;
+            int maxPixelY = mapPixelHeight - viewPixelHeight;
 
-            int x = 0;
-            int y = (int)Math.Round(vScrollPercent * maxY + viewHeight / 2, 0);
+            int pixelX = 0;
+            int pixelY = (int)Math.Round(vScrollPercent * maxPixelY + viewPixelHeight / 2, 0);
 
             // Snap to grid
             int remainder;
 
-            remainder = y % TileLength;
+            remainder = pixelY % TileLength;
             if (remainder >= (TileLength / 2))
             {
-                y += TileLength - remainder;
+                pixelY += TileLength - remainder;
             }
             if (remainder < (TileLength / 2))
             {
-                y -= remainder;
+                pixelY -= remainder;
             }
 
             int nextZoneId = AllZones.Count + 1;
             Grid.NextZoneId = nextZoneId + 1;
-            int width = mapWidth;
-            int height = TileLength * 3;
+
+            int x = pixelX / TileLength;
+            int y = pixelY / TileLength;
+            int width = mapSize.Width;
+            int height = 3;
             Zone zoneToAdd = new Zone(nextZoneId, x, y, width, height);
-            Rectangle areaToAdd = zoneToAdd.Area;
+            Rectangle areaToAdd = zoneToAdd.PixelArea;
 
             foreach (Zone zone in AllZones.Values)
             {
-                bool intersects = zone.Area.IntersectsWith(areaToAdd);
+                bool intersects = zone.PixelArea.IntersectsWith(areaToAdd);
                 if (intersects == false)
                 {
                     continue;
@@ -2858,11 +2920,11 @@ namespace MapMaker
             }
 
             Sector sectorToAdd = new Sector(nextSectorId, x, y, width, height);
-            areaToAdd = sectorToAdd.Area;
+            areaToAdd = sectorToAdd.PixelArea;
 
             foreach (Sector sector in AllSectors.Values)
             {
-                bool intersects = sector.Area.IntersectsWith(areaToAdd);
+                bool intersects = sector.PixelArea.IntersectsWith(areaToAdd);
                 if (intersects == false)
                 {
                     continue;
@@ -2944,7 +3006,7 @@ namespace MapMaker
             Sector selectedSector = null;
             foreach (Sector sector in AllSectors.Values)
             {
-                bool contains = sector.Area.Contains(mapPoint);
+                bool contains = sector.PixelArea.Contains(mapPoint);
                 if (contains == false)
                 {
                     continue;
