@@ -2058,14 +2058,14 @@ namespace MapMaker
             Point gridCorner = grid.Location;
             int length = (int)(TileLength * scale);
             int radius = (int)(TileLength * 0.2);
-            int cornerX = (int)(gridCorner.X * scale);
-            int cornerY = (int)(gridCorner.Y * scale);
+            int cornerPixelX = (int)(gridCorner.X * TileLength * scale);
+            int cornerPixelY = (int)(gridCorner.Y * TileLength * scale);
 
-            cornerX += length / 2 - radius;
-            cornerY += length / 2 - radius;
+            cornerPixelX += length / 2 - radius;
+            cornerPixelY += length / 2 - radius;
 
             int diameter = radius * 2;
-            Rectangle bounds = new Rectangle(cornerX, cornerY, diameter, diameter);
+            Rectangle bounds = new Rectangle(cornerPixelX, cornerPixelY, diameter, diameter);
 
             Brush brush = new SolidBrush(colour);
 
