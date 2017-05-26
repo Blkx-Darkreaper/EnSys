@@ -39,9 +39,9 @@ namespace MapMaker
 
             Font font = new Font(FontFamily.GenericSansSerif, 12f);
 
-            int scaledX = (int)Math.Round(Location.X * scale, 0);
-            int scaledY = (int)Math.Round(Location.Y * scale, 0);
-            Point scaledLocation = new Point(scaledX, scaledY);
+            int scaledPixelX = (int)Math.Round(Location.X * Program.TileLength * scale, 0);
+            int scaledPixelY = (int)Math.Round(Location.Y * Program.TileLength * scale, 0);
+            Point scaledLocation = new Point(scaledPixelX, scaledPixelY);
             graphics.DrawString(Id.ToString(), font, Brushes.White, scaledLocation);
         }
 

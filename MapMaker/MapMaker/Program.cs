@@ -681,8 +681,35 @@ namespace MapMaker
             Grid.NextSectorId = map.NextSector;
             Program.mapSize = map.MapSize;
 
-            AllMapGrids = map.AllMapGrids;
-            AllMapGrids.Sort();
+            Program.AllMapGrids = map.AllMapGrids;
+
+            // // Testing
+            //int previousGridId = -1;
+            //foreach(Grid currentGrid in AllMapGrids)
+            //{
+            //    if(currentGrid != null)
+            //    {
+            //        previousGridId = currentGrid.Id;
+            //        continue;
+            //    }
+
+            //    int currentGridId = previousGridId + 1;
+            //    Console.Write(string.Format("Grid {0} is null", currentGridId));
+
+            //    previousGridId = currentGridId;
+            //}
+            // // End Testing
+
+            // Sort by x, y
+            //AllMapGrids.Sort();
+
+            // Sort by Id
+            AllMapGrids.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+            // Testing
+            Grid grid652 = AllMapGrids.Find(g => g.Id.Equals(652));
+
+            // End Testing
 
             // Set the initial draw margin
             Program.InitDrawState();
@@ -2396,6 +2423,22 @@ namespace MapMaker
                 {
                     Grid dummy = new Grid(x, y);
                     Grid grid = AllMapGrids.Find(g => g.Equals(dummy));
+                    if(grid == null)
+                    {
+                        // Map file is corrupted, attempting to repair
+                        Grid previousGrid = selectedGrids[selectedGrids.Count - 1];
+                        int previousGridId = previousGrid.Id;
+
+                        int nextGridId = previousGridId + 1;
+                        Point location = new Point(x, y);
+
+                        Console.Write(string.Format("Map file is corrupted. Attempting to repair. Replacing grid {0}", nextGridId));
+
+                        grid = new Grid(nextGridId, location, previousGrid.AllowsDriving, previousGrid.AllowsFlying, previousGrid.AllowsConstruction, false, false, previousGrid.SectorId, previousGrid.ZoneId, previousGrid.Tile);
+                        AllMapGrids.Add(grid);
+                        AllMapGrids.Sort((a, b) => a.Id.CompareTo(b.Id));
+                    }
+
                     selectedGrids.Add(grid);
                 }
             }
