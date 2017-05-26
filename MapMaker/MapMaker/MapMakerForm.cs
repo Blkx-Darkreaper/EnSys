@@ -264,14 +264,14 @@ namespace MapMaker
 
         protected void MapDisplay_Click(object sender, EventArgs e)
         {
-            Grid grid = GetGridAtCursor();
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+            Grid grid = GetGridAtMapPixel(cursor);
 
             int clicks = 1;
-            Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            int pixelX = cursor.X;
+            int pixelY = cursor.Y;
             int delta = 0;
-            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.Left, clicks, x, y, delta);
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.Left, clicks, pixelX, pixelY, delta);
 
             double scale = Program.MapScale;
 
@@ -557,11 +557,16 @@ namespace MapMaker
         protected Grid GetGridAtCursor()
         {
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            return GetGridAtMapPixel(cursor);
+        }
+
+        protected Grid GetGridAtMapPixel(Point mapPoint)
+        {
+            int pixelX = mapPoint.X;
+            int pixelY = mapPoint.Y;
 
             double scale = Program.MapScale;
-            Grid grid = Program.GetMapGrid(x, y, scale);
+            Grid grid = Program.GetMapGrid(pixelX, pixelY, scale);
             return grid;
         }
 

@@ -2328,25 +2328,22 @@ namespace MapMaker
             return GetTile(x, y, tilesetDisplaySize, tileset);
         }
 
-        public static Grid GetMapGrid(int x, int y, double scale)
+        public static Grid GetMapGrid(int pixelX, int pixelY, double scale)
         {
-            return Program.GetGrid(x, y, scale, mapSize, AllMapGrids);
+            return Program.GetGrid(pixelX, pixelY, scale, mapSize, AllMapGrids);
         }
 
-        public static Grid GetGrid(int x, int y, double scale, Size size, List<Grid> collection)
+        public static Grid GetGrid(int pixelX, int pixelY, double scale, Size size, List<Grid> collection)
         {
-            int width = size.Width;
-            int height = size.Height;
+            int tilesWide = size.Width;
 
-            int tilesWide = width / TileLength;
+            int x = pixelX / (int)(TileLength * scale);
+            int y = pixelY / (int)(TileLength * scale);
 
-            int column = x / (int)(TileLength * scale);
-            int row = y / (int)(TileLength * scale);
+            Grid dummy = new Grid(x, y);
+            Grid gridToFind = collection.Find(g => g.Equals(dummy));
 
-            int index = row * tilesWide + column;
-            Grid grid = collection[index];
-
-            return grid;
+            return gridToFind;
         }
 
         public static List<Grid> GetGridsInArea(Point startPixel, Point endPixel)
