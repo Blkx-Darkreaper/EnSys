@@ -21,21 +21,21 @@ namespace MapMaker
         public int NextZone { get; set; }
         public Size MapSize { get; set; }
         public List<Grid> AllMapGrids { get; set; }
+        public List<Zone> AllZones { get; set; }
         public List<Checkpoint> AllCheckpoints { get; set; }
 
         [JsonConstructor] public StrikeforceMap(string author, DateTime dateCreated, string tilesetFilename, int tileLength, int nextSector, int nextZone,
-            Size mapSize, List<Grid> allMapGrids, List<Checkpoint> allCheckpoints)
+            Size mapSize, List<Grid> allMapGrids, List<Zone> allZones, List<Checkpoint> allCheckpoints)
         {
             this.Author = author;
             this.DateCreated = dateCreated;
             this.TilesetFilename = tilesetFilename;
             this.TileLength = tileLength;
             this.NextSector = nextSector;
-            Grid.NextSectorId = nextSector;
             this.NextZone = nextZone;
-            Grid.NextZoneId = nextZone;
             this.MapSize = mapSize;
             this.AllMapGrids = allMapGrids;
+            this.AllZones = allZones;
             this.AllCheckpoints = allCheckpoints;
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Newtonsoft.Json;
 
 namespace MapMaker
 {
@@ -18,6 +19,12 @@ namespace MapMaker
         public Zone(int id, int x, int y, int width, int height) : base(id, x, y, width, height)
         {
             this.AllSectors = new List<Sector>();
+        }
+
+        [JsonConstructor]
+        public Zone(int id, Point location, Size size, List<Sector> allSectors) : base(id, location.X, location.Y, size.Width, size.Height)
+        {
+            this.AllSectors = allSectors;
         }
 
         public override void Draw(Graphics graphics, double scale, Color colour)
@@ -74,8 +81,6 @@ namespace MapMaker
             }
 
             Program.AllZones.Remove(this.Id);
-
-            Program.UpdateGridZones(this.PixelArea, 0);
         }
 
         protected virtual void UpdateSectorPositions(Rectangle updatedArea, int deltaX, int deltaY)
@@ -100,7 +105,7 @@ namespace MapMaker
         public void AddSector(Sector sectorToAdd)
         {
             this.AllSectors.Add(sectorToAdd);
-            sectorToAdd.Parent = this;
+            sectorToAdd.SetParentZone(this);
         }
     }
 }

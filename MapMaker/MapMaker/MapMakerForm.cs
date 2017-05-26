@@ -195,11 +195,11 @@ namespace MapMaker
             {
                 // Sectors/Zones
                 case Overlay.Sectors:
-                    Program.DrawSectors(ref image, scale);
+                    Program.DrawSectorView(ref image, scale);
                     break;
 
                 case Overlay.Zones:
-                    Program.DrawZones(ref image, scale);
+                    Program.DrawZoneView(ref image, scale);
                     break;
 
                 // Construction
@@ -693,9 +693,9 @@ namespace MapMaker
 
             Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
-            Size mapSize = newFileForm.MapSize;
-            MapDisplay.Size = mapSize;
-            Program.BuildMap(mapSize);
+            Size mapPixelSize = newFileForm.MapPixelSize;
+            MapDisplay.Size = mapPixelSize;
+            Program.BuildMap(mapPixelSize);
 
             SetToolsEnabled(true);
             SetMapOptionsEnabled(true);
@@ -884,11 +884,13 @@ namespace MapMaker
 
             Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
-            Size mapSize = mapPropertiesForm.MapSize;
-            MapDisplay.Size = mapSize;
-            MapDisplay.Image = new Bitmap(MapDisplay.Image, mapSize);
+            Size mapPixelSize = mapPropertiesForm.MapPixelSize;
+            MapDisplay.Size = mapPixelSize;
+            MapDisplay.Image = new Bitmap(MapDisplay.Image, mapPixelSize);
 
-            Program.ResizeMap(mapSize.Width, mapSize.Height);
+            int width = mapPixelSize.Width / tileLength;
+            int height = mapPixelSize.Height / tileLength;
+            Program.ResizeMap(width, height);
             Program.InvalidateMap();
 
             UpdateDisplay();
@@ -1078,6 +1080,11 @@ namespace MapMaker
 
         protected void UpdateSpawnpointToggleControls()
         {
+            if(Program.SelectedRegion == null)
+            {
+                return;
+            }
+
             Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
             bool isHQ = selectedSpawn.IsHeadquartersSpawn;
 
@@ -1259,10 +1266,6 @@ namespace MapMaker
 
             Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
             selectedSpawn.IsHeadquartersSpawn = true;
-            foreach (Spawnpoint spawnpoint in Program.AllSpawnpoints)
-            {
-                spawnpoint.UpdateChildGrid();
-            }
 
             Program.OverlayHasChanged();
 
@@ -1279,7 +1282,6 @@ namespace MapMaker
 
             Spawnpoint selectedSpawn = (Spawnpoint)Program.SelectedRegion;
             selectedSpawn.IsHeadquartersSpawn = false;
-            selectedSpawn.UpdateChildGrid();
 
             Program.OverlayHasChanged();
 

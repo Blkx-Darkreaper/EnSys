@@ -12,9 +12,7 @@ namespace MapMaker
     public class Spawnpoint : Region
     {
         [JsonIgnore]
-        public Sector ParentSector { get; protected set; }
-        [JsonIgnore]
-        protected Grid childGrid { get; set; }
+        public Sector Parent { get; protected set; }
         public bool IsHeadquartersSpawn
         {
             get { return headquartersSpawn == this; }
@@ -37,21 +35,24 @@ namespace MapMaker
         protected static Spawnpoint headquartersSpawn { get; set; }
         [JsonIgnore]
         public string AlreadyHasParentErrorMessage { get; protected set; }
-        public bool IsLocked { get; set; }
 
         public Spawnpoint(int x, int y, Sector parentSector, bool isHQSpawn)
             : base(x, y, 1, 1)
         {
             this.IsHeadquartersSpawn = isHQSpawn;
-            this.IsLocked = false;
 
             SetParentSector(parentSector);
-            UpdateChildGrid();
+        }
+
+        [JsonConstructor]
+        public Spawnpoint(int x, int y, bool isHQSpawn) : base(x, y, 1, 1)
+        {
+            this.IsHeadquartersSpawn = isHQSpawn;
         }
 
         public void SetParentSector(Sector parent)
         {
-            this.ParentSector = parent;
+            this.Parent = parent;
             if (parent == null)
             {
                 throw new InvalidOperationException(string.Format("Parent sector is null"));
@@ -63,43 +64,9 @@ namespace MapMaker
             Program.AddSpawnpoint(this);
         }
 
-        public void UpdateChildGrid()
-        {
-            if (childGrid != null)
-            {
-                childGrid.IsHeadquartersSpawn = false;
-                childGrid.IsSectorSpawn = false;
-            }
-
-            int startPixelX = Location.X * Program.TileLength;   // convert to pixels
-            int startPixelY = Location.Y * Program.TileLength;    // convert to pixels
-            Point start = new Point(startPixelX, startPixelY);
-
-            int width = PixelArea.Width;
-            int height = PixelArea.Height;
-
-            int endPixelX = startPixelX + width;
-            int endPixelY = startPixelY + height;
-
-            Point end = new Point(endPixelX, endPixelY);
-
-            List<Grid> gridsToUpdate = Program.GetGridsInArea(start, end);
-            if (gridsToUpdate.Count == 0)
-            {
-                throw new InvalidOperationException(string.Format("No grids found at spawnpoint location {0}, {1}", Location.X, Location.Y));
-            }
-
-            childGrid = gridsToUpdate[0];
-
-            childGrid.IsSectorSpawn = !IsHeadquartersSpawn;
-            childGrid.IsHeadquartersSpawn = IsHeadquartersSpawn;
-        }
-
         public override void Delete()
         {
-            childGrid.IsSectorSpawn = false;
-            childGrid.IsHeadquartersSpawn = false;
-            childGrid = null;
+            Parent.RemoveSpawnpoint();
 
             Program.AllSpawnpoints.Remove(this);
         }
@@ -192,41 +159,9 @@ namespace MapMaker
             int y = this.Location.Y;
 
             // Keep Spawnpoint within bounds of parent Sector
-            KeepInBounds(ParentSector.PixelArea, x, y);
+            KeepInBounds(Parent.PixelArea, x, y);
 
             this.previousCursor = cursor;
-        }
-
-        public override void Move(int deltaPixelX, int deltaPixelY)
-        {
-            if (IsLocked == true)
-            {
-                return;
-            }
-
-            if (deltaPixelX == 0)
-            {
-                if (deltaPixelY == 0)
-                {
-                    return;
-                }
-            }
-
-            base.Move(deltaPixelX, deltaPixelY);
-
-            UpdateChildGrid();
-        }
-
-        public override void KeepInBounds(Rectangle pixelBounds, int x, int y)
-        {
-            if (IsLocked == true)
-            {
-                return;
-            }
-
-            base.KeepInBounds(pixelBounds, x, y);
-
-            UpdateChildGrid();
         }
     }
 }

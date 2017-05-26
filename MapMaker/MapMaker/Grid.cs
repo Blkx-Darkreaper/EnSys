@@ -16,14 +16,6 @@ namespace MapMaker
         public bool AllowsDriving { get; protected set; }
         public bool AllowsFlying { get; protected set; }
         public bool AllowsConstruction { get; protected set; }
-        [JsonIgnore]
-        public bool IsSpawnpoint { get { return IsHeadquartersSpawn || IsSectorSpawn; } }
-        public bool IsHeadquartersSpawn { get; set; }
-        public bool IsSectorSpawn { get; set; }
-        public int SectorId { get; set; }
-        public static int NextSectorId = 0;
-        public int ZoneId { get; set; }
-        public static int NextZoneId = 0;
         public Tile Tile { get; set; }
         protected bool isCopy { get; set; }
         [JsonIgnore] public bool IsComplete { get; protected set; }
@@ -41,36 +33,23 @@ namespace MapMaker
             this.IsComplete = false;
         }
 
-        public Grid(int x, int y, Tile tile) : this(x, y, NextSectorId, NextZoneId, tile) { }
-
-        public Grid(int x, int y, int sectorId, Tile tile) : this(x, y)
+        public Grid(int x, int y, Tile tile) : this(x, y)
         {
+            this.Id = nextId++;
+            this.isCopy = false;
+            this.IsComplete = true;
             this.AllowsDriving = true;
             this.AllowsFlying = true;
             this.AllowsConstruction = true;
-            this.SectorId = sectorId;
             this.Tile = tile;
         }
 
-        public Grid(int x, int y, int sectorId, int zoneId, Tile tile) : this(x, y, sectorId, tile)
-        {
-            this.Id = nextId++;
-            this.ZoneId = zoneId;
-            this.isCopy = false;
-            this.IsComplete = true;
-        }
-
         [JsonConstructor]
-        public Grid(int id, Point location, bool allowsDriving, bool allowsFlying, bool allowsConstruction, bool isHeadquartersSpawn, bool isSectorSpawn,
-            int sectorId, int zoneId, Tile tile) : this(location.X, location.Y, tile) {
+        public Grid(int id, Point location, bool allowsDriving, bool allowsFlying, bool allowsConstruction, Tile tile) : this(location.X, location.Y, tile) {
             this.Id = id;
-            this.IsHeadquartersSpawn = isHeadquartersSpawn;
-            this.IsSectorSpawn = isSectorSpawn;
             this.AllowsDriving = allowsDriving;
             this.AllowsFlying = allowsFlying;
             this.AllowsConstruction = allowsConstruction;
-            this.SectorId = sectorId;
-            this.ZoneId = zoneId;
 
             SetNextId(id);
         }
@@ -155,12 +134,6 @@ namespace MapMaker
             this.AllowsConstruction = value;
         }
 
-        public virtual void CycleSector()
-        {
-            this.SectorId++;
-            this.SectorId %= (Program.AllSectors.Count + 1);
-        }
-
         public Grid GetCopy()
         {
             Grid copy = new Grid();
@@ -169,9 +142,7 @@ namespace MapMaker
             copy.AllowsConstruction = this.AllowsConstruction;
             copy.AllowsDriving = this.AllowsDriving;
             copy.AllowsFlying = this.AllowsFlying;
-            copy.SectorId = this.SectorId;
             copy.Tile = this.Tile;
-            copy.ZoneId = this.ZoneId;
             copy.isCopy = true;
             copy.IsComplete = true;
 
@@ -185,9 +156,7 @@ namespace MapMaker
             this.AllowsConstruction = copy.AllowsConstruction;
             this.AllowsDriving = copy.AllowsDriving;
             this.AllowsFlying = copy.AllowsFlying;
-            this.SectorId = copy.SectorId;
             this.Tile = copy.Tile;
-            this.ZoneId = copy.ZoneId;
         }
     }
 }

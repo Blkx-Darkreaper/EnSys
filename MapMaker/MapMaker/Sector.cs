@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Newtonsoft.Json;
 
 namespace MapMaker
 {
     public class Sector : ExpandableRegion
     {
-        public Zone Parent { get; set; }
+        [JsonIgnore]
+        public Zone Parent { get; protected set; }
         public Spawnpoint Spawn { get; protected set; }
+        [JsonIgnore]
         public string AlreadyHasSpawnErrorMessage { get; protected set; }
 
         public Sector(int id)
@@ -21,6 +24,13 @@ namespace MapMaker
             this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
 
             AddSpawnpointInCenter();
+        }
+
+        [JsonConstructor]
+        public Sector(int id, Point location, Size size, Spawnpoint spawn) : base(id, location.X, location.Y, size.Width, size.Height)
+        {
+            this.AlreadyHasSpawnErrorMessage = string.Format("Sector {0} already contains a spawnpoint", id);
+            this.Spawn = spawn;
         }
 
         public override void Draw(Graphics graphics, double scale, Color colour)
@@ -69,14 +79,22 @@ namespace MapMaker
             UpdateSpawnPosition(this.PixelArea, deltaPixelX, deltaPixelY);
         }
 
+        public void SetParentZone(Zone parent)
+        {
+            if (parent == null)
+            {
+                throw new InvalidOperationException(string.Format("Parent zone is null"));
+            }
+
+            this.Parent = parent;
+        }
+
         public override void Delete()
         {
             this.Spawn.Delete();
 
             Program.AllSectors.Remove(this.Id);
             Parent.AllSectors.Remove(this);
-
-            Program.UpdateGridSectors(this.PixelArea, 0);
         }
 
         protected virtual void UpdateSpawnPosition(Rectangle updatedPixelArea, int deltaPixelX, int deltaPixelY)
@@ -118,18 +136,28 @@ namespace MapMaker
 
         public void AddSpawnpoint(Spawnpoint toAdd)
         {
+            if(this.Spawn == toAdd)
+            {
+                return;
+            }
+            
             if (this.Spawn != null)
             {
                 throw new InvalidOperationException(AlreadyHasSpawnErrorMessage);
             }
 
             // Check spawnpoint has correct parent
-            if (toAdd.ParentSector != this)
+            if (toAdd.Parent != this)
             {
                 throw new InvalidOperationException(toAdd.AlreadyHasParentErrorMessage);
             }
 
             this.Spawn = toAdd;
+        }
+
+        public void RemoveSpawnpoint()
+        {
+            this.Spawn = null;
         }
     }
 }
