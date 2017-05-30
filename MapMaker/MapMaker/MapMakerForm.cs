@@ -1224,11 +1224,7 @@ namespace MapMaker
             int vScrollMax = 1 + MapPanel.VerticalScroll.Maximum - MapPanel.VerticalScroll.LargeChange;
             double vScrollPercent = vScroll / (double)vScrollMax;
 
-            int hScroll = MapPanel.HorizontalScroll.Value;
-            int hScrollMax = 1 + MapPanel.HorizontalScroll.Maximum - MapPanel.HorizontalScroll.LargeChange;
-            double hScrollPercent = hScroll / (double)hScrollMax;
-
-            Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
+            Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
         }
 
         protected void deleteCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
