@@ -15,11 +15,11 @@ namespace MapMaker
     {
         [JsonIgnore] public int Key { get; protected set; }
 
-        public Checkpoint(int key, int width, int height) : base()
+        public Checkpoint(int key, int width) : base()
         {
             this.Key = key;
             this.Location = new Point(0, key);
-            this.Size = new Size(width, height);
+            this.Size = new Size(width, 1);
             this.IsMouseOver = false;
             this.HasMouseFocus = false;
         }
