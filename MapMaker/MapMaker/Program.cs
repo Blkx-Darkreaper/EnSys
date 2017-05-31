@@ -60,8 +60,8 @@ namespace MapMaker
         public static bool HasUnsavedChanges { get; private set; }
         public static Dictionary<int, Checkpoint> AllCheckpoints { get; set; }
         public static List<Spawnpoint> AllSpawnpoints { get; set; }
-        public static Dictionary<int, Zone> AllZones { get; set; }
-        public static Dictionary<int, Sector> AllSectors { get; set; }
+        public static Dictionary<int, Zone> AllZones { get; set; }  // 1 based
+        public static Dictionary<int, Sector> AllSectors { get; set; }  // 1 based
         private static List<DrawState> allDrawStates { get; set; }
         private static int currentDrawState { get; set; }
         public static List<Color> ColourRoulette { get; private set; }
@@ -2824,19 +2824,6 @@ namespace MapMaker
             int nextSectorId = AllSectors.Count + 1;
 
             Sector sectorToAdd = new Sector(nextSectorId, x, y, width, height);
-            areaToAdd = sectorToAdd.PixelArea;
-
-            foreach (Sector sector in AllSectors.Values)
-            {
-                bool intersects = sector.PixelArea.IntersectsWith(areaToAdd);
-                if (intersects == false)
-                {
-                    continue;
-                }
-
-                return;
-            }
-
             zoneToAdd.AddSector(sectorToAdd);
             AllSectors.Add(nextSectorId, sectorToAdd);
 
@@ -2858,8 +2845,8 @@ namespace MapMaker
 
         public static void AddCheckPoint(double vScrollPercent, Size displaySize)
         {
-            Point mapPoint = GetMapPoint(0, vScrollPercent, displaySize);
-            int y = mapPoint.Y;
+            Point mapPixelPoint = GetMapPoint(0, vScrollPercent, displaySize);
+            int y = mapPixelPoint.Y;
 
             bool alreadyExists = AllCheckpoints.ContainsKey(y);
             if (alreadyExists == true)
@@ -2868,7 +2855,7 @@ namespace MapMaker
             }
 
             int mapWidth = mapSize.Width;
-            Checkpoint checkpoint = new Checkpoint(y, mapWidth, TileLength);
+            Checkpoint checkpoint = new Checkpoint(y, mapWidth);
             AllCheckpoints.Add(y, checkpoint);
 
             Program.OverlayHasChanged();

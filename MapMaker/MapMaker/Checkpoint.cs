@@ -119,9 +119,16 @@ namespace MapMaker
 
             Point cursor = e.Location;
 
-            int deltaY = cursor.Y - previousCursor.Y;
-            int y = this.Location.Y + deltaY;
-            this.Location = new Point(0, y);
+            int tileLength = Program.TileLength;
+
+            int deltaPixelsY = cursor.Y - previousCursor.Y;
+            if(deltaPixelsY < tileLength)
+            {
+                return;
+            }
+
+            int updatedY = this.Location.Y + deltaPixelsY / tileLength;
+            this.Location = new Point(0, updatedY);
 
             this.previousCursor = cursor;
         }
@@ -136,18 +143,8 @@ namespace MapMaker
 
         protected override void SnapToGrid()
         {
-            int x = this.Location.X;
+            int x = 0;
             int y = this.Location.Y;
-            int height = this.PixelHeight;
-            int remainder = y % height;
-            if (remainder >= (height / 2))
-            {
-                y += height - remainder;
-            }
-            if (remainder < (height / 2))
-            {
-                y -= remainder;
-            }
 
             this.Location = new Point(x, y);
         }

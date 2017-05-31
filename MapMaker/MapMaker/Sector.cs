@@ -118,20 +118,18 @@ namespace MapMaker
             int x = this.Location.X;
             int y = this.Location.Y;
 
-            int width = this.PixelArea.Width;
-            int height = this.PixelArea.Height;
+            int pixelWidth = this.PixelArea.Width;
+            int pixelHeight = this.PixelArea.Height;
 
             int tileLength = Program.TileLength;
 
-            int tilesWide = width / tileLength;
-            int tilesHigh = height / tileLength;
+            int tilesWide = pixelWidth / tileLength;
+            int tilesHigh = pixelHeight / tileLength;
 
-            int midX = x + tileLength * (tilesWide / 2);
-            int midY = y + tileLength * (tilesHigh / 2);
+            int midX = x + (tilesWide / 2);
+            int midY = y + (tilesHigh / 2);
 
-            Point centerTileLocation = Program.SnapToGrid(midX, midY);
-
-            Spawnpoint spawnpoint = new Spawnpoint(centerTileLocation.X, centerTileLocation.Y, this, false);
+            Spawnpoint spawnpoint = new Spawnpoint(midX, midY, this, false);
         }
 
         public void AddSpawnpoint(Spawnpoint toAdd)
