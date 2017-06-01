@@ -1021,23 +1021,23 @@ namespace MapMaker
             SetGridProperties(grid, selectedOverlay);
         }
 
-        public static void LineTool(Point start, Point end, Overlay selectedOverlay, double scale)
+        public static void LineTool(Point startPixel, Point endPixel, Overlay selectedOverlay, double scale)
         {
             if (selectedOverlay == Overlay.Sectors)
             {
                 return;
             }
 
-            List<Grid> selectedGrids = GetGridsInArea(start, end, scale);
+            List<Grid> selectedGrids = GetGridsInArea(startPixel, endPixel, scale);
 
             foreach (Grid grid in selectedGrids)
             {
-                int scaledX = (int)Math.Round(grid.Location.X * scale, 0);
-                int scaledY = (int)Math.Round(grid.Location.Y * scale, 0);
-                int scaledLength = (int)Math.Round(TileLength * scale, 0);
+                int scaledPixelX = (int)Math.Round(grid.Location.X * TileLength * scale, 0);
+                int scaledPixelY = (int)Math.Round(grid.Location.Y * TileLength * scale, 0);
+                int scaledPixelLength = (int)Math.Round(TileLength * scale, 0);
 
-                Rectangle bounds = new Rectangle(scaledX, scaledY, scaledLength, scaledLength);
-                bool intersects = LineIntersectsRect(start, end, bounds);
+                Rectangle bounds = new Rectangle(scaledPixelX, scaledPixelY, scaledPixelLength, scaledPixelLength);
+                bool intersects = LineIntersectsRect(startPixel, endPixel, bounds);
                 if (intersects == false)
                 {
                     continue;
@@ -2248,48 +2248,52 @@ namespace MapMaker
                 cornerPixelY = 0;
             }
 
-            int normalCornerX = cornerPixelX;
-            int normalCornerY = cornerPixelY;
-            int normalWidth = pixelWidth;
-            int normalHeight = pixelHeight;
+            int normalCornerPixelX = cornerPixelX;
+            int normalCornerPixelY = cornerPixelY;
+            int normalPixelWidth = pixelWidth;
+            int normalPixelHeight = pixelHeight;
 
             // Adjust rectangle to full miniMapScale
             if (scale != 1)
             {
-                normalCornerX = (int)Math.Round(cornerPixelX / scale, 0);
-                normalCornerY = (int)Math.Round(cornerPixelY / scale, 0);
-                normalWidth = (int)Math.Round(pixelWidth / scale, 0);
-                normalHeight = (int)Math.Round(pixelHeight / scale, 0);
+                normalCornerPixelX = (int)Math.Round(cornerPixelX / scale, 0);
+                normalCornerPixelY = (int)Math.Round(cornerPixelY / scale, 0);
+                normalPixelWidth = (int)Math.Round(pixelWidth / scale, 0);
+                normalPixelHeight = (int)Math.Round(pixelHeight / scale, 0);
             }
 
             // Snap to grid
-            int remainder = normalCornerX % TileLength;
-            normalCornerX -= remainder;
-            normalWidth += remainder;
+            int remainder = normalCornerPixelX % TileLength;
+            normalCornerPixelX -= remainder;
+            normalPixelWidth += remainder;
 
-            remainder = normalCornerY % TileLength;
-            normalCornerY -= remainder;
-            normalHeight += remainder;
+            remainder = normalCornerPixelY % TileLength;
+            normalCornerPixelY -= remainder;
+            normalPixelHeight += remainder;
 
-            remainder = normalWidth % TileLength;
+            remainder = normalPixelWidth % TileLength;
             int difference = (TileLength - remainder) % TileLength;
-            normalWidth += difference;
+            normalPixelWidth += difference;
 
-            remainder = normalHeight % TileLength;
+            remainder = normalPixelHeight % TileLength;
             difference = (TileLength - remainder) % TileLength;
-            normalHeight += difference;
+            normalPixelHeight += difference;
 
             // Get all affected Grids
             List<Grid> selectedGrids = new List<Grid>();
 
-            normalWidth += normalCornerX;
-            normalHeight += normalCornerY;
+            normalPixelWidth += normalCornerPixelX;   // Don't remember why this is here
+            normalPixelHeight += normalCornerPixelY;
 
             // Convert pixels to units (tiles)
-            normalCornerX /= TileLength;
-            normalCornerY /= TileLength;
-            normalWidth /= TileLength;
-            normalHeight /= TileLength;
+            int normalCornerX = normalCornerPixelX / TileLength;
+            int normalCornerY = normalCornerPixelY / TileLength;
+            int normalWidth = normalPixelWidth / TileLength;
+            int normalHeight = normalPixelHeight / TileLength;
+
+            // Keep selection within the bounds of the map
+            normalWidth = Math.Min(normalWidth, MapSize.Width - normalCornerX);
+            normalHeight = Math.Min(normalHeight, MapSize.Height - normalCornerY);
 
             for (int y = normalCornerY; y < normalHeight; y++)
             {
