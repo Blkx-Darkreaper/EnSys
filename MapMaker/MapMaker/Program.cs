@@ -2282,22 +2282,27 @@ namespace MapMaker
             // Get all affected Grids
             List<Grid> selectedGrids = new List<Grid>();
 
-            normalPixelWidth += normalCornerPixelX;   // Don't remember why this is here
-            normalPixelHeight += normalCornerPixelY;
+            //normalPixelWidth += normalCornerPixelX;
+            //normalPixelHeight += normalCornerPixelY;
 
             // Convert pixels to units (tiles)
-            int normalCornerX = normalCornerPixelX / TileLength;
-            int normalCornerY = normalCornerPixelY / TileLength;
+            int startGridX = normalCornerPixelX / TileLength;
+            int startGridY = normalCornerPixelY / TileLength;
             int normalWidth = normalPixelWidth / TileLength;
             int normalHeight = normalPixelHeight / TileLength;
 
             // Keep selection within the bounds of the map
-            normalWidth = Math.Min(normalWidth, MapSize.Width - normalCornerX);
-            normalHeight = Math.Min(normalHeight, MapSize.Height - normalCornerY);
+            startGridX = Math.Max(startGridX, 0);
+            startGridY = Math.Max(startGridY, 0);
+            normalWidth = Math.Min(normalWidth, MapSize.Width - startGridX);
+            normalHeight = Math.Min(normalHeight, MapSize.Height - startGridY);
 
-            for (int y = normalCornerY; y < normalHeight; y++)
+            int endGridX = startGridX + normalWidth;
+            int endGridY = startGridY + normalHeight;
+
+            for (int y = startGridY; y < endGridY; y++)
             {
-                for (int x = normalCornerX; x < normalWidth; x++)
+                for (int x = startGridX; x < endGridX; x++)
                 {
                     Grid dummy = new Grid(x, y);
                     Grid grid = AllMapGrids.Find(g => g.Equals(dummy));
