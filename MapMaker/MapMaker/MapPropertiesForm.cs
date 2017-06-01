@@ -12,7 +12,7 @@ namespace MapMaker
 {
     public partial class MapPropertiesForm : Form
     {
-        public Size MapPixelSize { get; protected set; }
+        public Size MapSize { get; protected set; }
         public string TilesetFilename { get; protected set; }
         public string Author { get; protected set; }
         public int TileLength { get; protected set; }
@@ -20,7 +20,7 @@ namespace MapMaker
         public MapPropertiesForm(Size mapSize, string tilesetFilename, int tileLength, string author, string dateCreated)
         {
             InitializeComponent();
-            this.MapPixelSize = new Size(mapSize.Width * tileLength, mapSize.Height * tileLength);
+            this.MapSize = new Size(mapSize.Width, mapSize.Height);
             this.TilesetFilename = tilesetFilename;
             this.Author = author;
             this.TileLength = tileLength;
@@ -44,7 +44,7 @@ namespace MapMaker
             int width = (int)MapWidth.Value;
             int height = (int)MapHeight.Value;
 
-            this.MapPixelSize = new Size(width, height);
+            this.MapSize = new Size(width, height);
 
             this.TileLength = (int)TileLengthControl.Value;
 
@@ -61,71 +61,32 @@ namespace MapMaker
         protected void MapWidth_ValueChanged(object sender, EventArgs e)
         {
             int width = (int)MapWidth.Value;
-            int height = MapPixelSize.Height;
-            int oldWidth = MapPixelSize.Width;
+            int height = MapSize.Height;
 
-            // Width cannot exceed imageHeight
+            // Width cannot exceed height
             if (width > height)
             {
                 width = height;
-            }
-
-            int remainder = width % TileLength;
-            if (remainder == 0)
-            {
                 MapWidth.Value = width;
-                this.MapPixelSize = new Size(width, height);
-                return;
             }
 
-            if (width > oldWidth)
-            {
-                width += (TileLength - remainder);
-            }
-            else
-            {
-                width -= remainder;
-            }
-
-            MapWidth.Value = width;
-            this.MapPixelSize = new Size(width, height);
+            this.MapSize = new Size(width, height);
         }
 
         protected void MapHeight_ValueChanged(object sender, EventArgs e)
         {
             int height = (int)MapHeight.Value;
-            int width = MapPixelSize.Width;
-            int oldHeight = MapPixelSize.Height;
+            int width = MapSize.Width;
+            int oldHeight = MapSize.Height;
 
-            // Height cannot deceed imageWidth
+            // Height cannot deceed width
             if (height < width)
             {
                 height = width;
-            }
-
-            // Height can't be less than scaledWidth
-            int heightMin = (int)MapWidth.Value;
-            height = Program.ClampToMin(height, heightMin);
-
-            int remainder = height % TileLength;
-            if (remainder == 0)
-            {
                 MapHeight.Value = height;
-                this.MapPixelSize = new Size(width, height);
-                return;
             }
 
-            if (height > oldHeight)
-            {
-                height += (TileLength - remainder);
-            }
-            else
-            {
-                height -= remainder;
-            }
-
-            MapHeight.Value = height;
-            this.MapPixelSize = new Size(width, height);
+            this.MapSize = new Size(width, height);
         }
 
         protected void LoadTilesetButton_Click(object sender, EventArgs e)

@@ -693,9 +693,14 @@ namespace MapMaker
 
             Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
-            Size mapPixelSize = newFileForm.MapPixelSize;
+            Size mapSize = newFileForm.MapSize;
+
+            int pixelWidth = mapSize.Width * tileLength;
+            int pixelHeight = mapSize.Height * tileLength;
+            Size mapPixelSize = new Size(pixelWidth, pixelHeight);
+
             MapDisplay.Size = mapPixelSize;
-            Program.BuildMap(mapPixelSize);
+            Program.BuildMap(mapSize);
 
             SetToolsEnabled(true);
             SetMapOptionsEnabled(true);
@@ -884,12 +889,23 @@ namespace MapMaker
 
             Program.LoadTileset(filename, tileLength, tilesetDisplayWidth);
 
-            Size mapPixelSize = mapPropertiesForm.MapPixelSize;
-            MapDisplay.Size = mapPixelSize;
-            MapDisplay.Image = new Bitmap(MapDisplay.Image, mapPixelSize);
+            Size mapSize = mapPropertiesForm.MapSize;
+            int width = mapSize.Width;
+            int height = mapSize.Height;
 
-            int width = mapPixelSize.Width / tileLength;
-            int height = mapPixelSize.Height / tileLength;
+            int pixelWidth = mapSize.Width * tileLength;
+            int pixelHeight = mapSize.Height * tileLength;
+            Size mapPixelSize = new Size(pixelWidth, pixelHeight);
+
+            if (pixelWidth != MapDisplay.Size.Width)
+            {
+                if (pixelHeight != MapDisplay.Size.Height)
+                {
+                    MapDisplay.Size = mapPixelSize;
+                    MapDisplay.Image = new Bitmap(MapDisplay.Image, mapPixelSize);
+                }
+            }
+
             Program.ResizeMap(width, height);
             Program.InvalidateMap();
 

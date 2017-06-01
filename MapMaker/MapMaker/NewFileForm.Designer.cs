@@ -67,11 +67,6 @@
             // MapWidth
             // 
             this.MapWidth.Location = new System.Drawing.Point(6, 32);
-            this.MapWidth.Maximum = new decimal(new int[] {
-            3200,
-            0,
-            0,
-            0});
             this.MapWidth.Minimum = new decimal(new int[] {
             8,
             0,
@@ -81,7 +76,7 @@
             this.MapWidth.Size = new System.Drawing.Size(120, 20);
             this.MapWidth.TabIndex = 3;
             this.MapWidth.Value = new decimal(new int[] {
-            640,
+            20,
             0,
             0,
             0});
@@ -91,12 +86,12 @@
             // 
             this.MapHeight.Location = new System.Drawing.Point(132, 32);
             this.MapHeight.Maximum = new decimal(new int[] {
-            32000,
+            500,
             0,
             0,
             0});
             this.MapHeight.Minimum = new decimal(new int[] {
-            8,
+            1,
             0,
             0,
             0});
@@ -104,7 +99,7 @@
             this.MapHeight.Size = new System.Drawing.Size(120, 20);
             this.MapHeight.TabIndex = 5;
             this.MapHeight.Value = new decimal(new int[] {
-            800,
+            25,
             0,
             0,
             0});

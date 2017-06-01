@@ -41,14 +41,14 @@
             this.MapWidth = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.TileLengthControl = new System.Windows.Forms.NumericUpDown();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.MapHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MapWidth)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -128,12 +128,12 @@
             // 
             this.MapHeight.Location = new System.Drawing.Point(132, 32);
             this.MapHeight.Maximum = new decimal(new int[] {
-            32000,
+            500,
             0,
             0,
             0});
             this.MapHeight.Minimum = new decimal(new int[] {
-            8,
+            1,
             0,
             0,
             0});
@@ -141,7 +141,7 @@
             this.MapHeight.Size = new System.Drawing.Size(120, 20);
             this.MapHeight.TabIndex = 12;
             this.MapHeight.Value = new decimal(new int[] {
-            800,
+            25,
             0,
             0,
             0});
@@ -159,13 +159,8 @@
             // MapWidth
             // 
             this.MapWidth.Location = new System.Drawing.Point(6, 32);
-            this.MapWidth.Maximum = new decimal(new int[] {
-            3200,
-            0,
-            0,
-            0});
             this.MapWidth.Minimum = new decimal(new int[] {
-            8,
+            1,
             0,
             0,
             0});
@@ -173,7 +168,7 @@
             this.MapWidth.Size = new System.Drawing.Size(120, 20);
             this.MapWidth.TabIndex = 10;
             this.MapWidth.Value = new decimal(new int[] {
-            640,
+            20,
             0,
             0,
             0});
@@ -204,19 +199,6 @@
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Map";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.AuthorInput);
-            this.groupBox2.Controls.Add(this.DateDisplay);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 150);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(260, 72);
-            this.groupBox2.TabIndex = 16;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Misc";
             // 
             // label5
             // 
@@ -250,6 +232,19 @@
             0});
             this.TileLengthControl.ValueChanged += new System.EventHandler(this.TileLengthControl_ValueChanged);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.AuthorInput);
+            this.groupBox2.Controls.Add(this.DateDisplay);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Location = new System.Drawing.Point(12, 150);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(260, 72);
+            this.groupBox2.TabIndex = 16;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Misc";
+            // 
             // MapPropertiesForm
             // 
             this.AcceptButton = this.SaveButton;
@@ -267,9 +262,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapWidth)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TileLengthControl)).EndInit();
             this.ResumeLayout(false);
 
         }

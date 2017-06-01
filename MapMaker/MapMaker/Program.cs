@@ -53,7 +53,7 @@ namespace MapMaker
         private static int selectedNumber { get; set; }
         public static List<Grid> AllMapGrids;
         private static Queue<Grid> allUpdatedMapGrids;
-        private static Size mapSize { get; set; }
+        public static Size MapSize { get; private set; }
         public static bool HasDisplayChanged { get; private set; }
         public static bool HasOverlayChanged { get; private set; }
         public static bool HasTerrainChanged { get; private set; }
@@ -382,7 +382,7 @@ namespace MapMaker
 
         public static MapPropertiesForm GetMapProperties()
         {
-            MapPropertiesForm mapPropertiesForm = new MapPropertiesForm(mapSize, tilesetFilename, TileLength, Author, dateCreated.ToString());
+            MapPropertiesForm mapPropertiesForm = new MapPropertiesForm(MapSize, tilesetFilename, TileLength, Author, dateCreated.ToString());
             mapPropertiesForm.ShowDialog();
             if (mapPropertiesForm.DialogResult != System.Windows.Forms.DialogResult.OK)
             {
@@ -447,12 +447,12 @@ namespace MapMaker
             Size tilesetDisplaySize = new Size(displayWidth, displayHeight);
         }
 
-        public static void BuildMap(Size pixelSize)
+        public static void BuildMap(Size mapSize)
         {
-            BuildMap(pixelSize.Width, pixelSize.Height);
+            BuildMap(mapSize.Width, mapSize.Height);
         }
 
-        public static void BuildMap(int pixelWidth, int pixelHeight)
+        public static void BuildMap(int width, int height)
         {
             if (tileset.Count == 0)
             {
@@ -461,9 +461,7 @@ namespace MapMaker
 
             Tile defaultTile = tileset[0];
 
-            int width = pixelWidth / TileLength;
-            int height = pixelHeight / TileLength;
-            Program.mapSize = new Size(width, height);
+            Program.MapSize = new Size(width, height);
             AllMapGrids = new List<Grid>();
 
             // Set the inital nextState
@@ -491,13 +489,21 @@ namespace MapMaker
         {
             Tile defaultTile = tileset[0];
 
-            int oldWidth = mapSize.Width;
-            int oldHeight = mapSize.Height;
+            int oldWidth = MapSize.Width;
+            int oldHeight = MapSize.Height;
 
             int deltaWidth = width - oldWidth;
             int deltaHeight = height - oldHeight;
 
-            Program.mapSize = new Size(width, height);
+            if(deltaWidth == 0)
+            {
+                if(deltaHeight == 0)
+                {
+                    return;
+                }
+            }
+
+            Program.MapSize = new Size(width, height);
 
             // Set the inital nextState
             Program.InitDrawState();
@@ -638,7 +644,7 @@ namespace MapMaker
             Program.dateCreated = map.DateCreated;
             Program.tilesetFilename = map.TilesetFilename;
             //Program.TileLength = map.TileLength;  // Tilelength has to be set before loading map
-            Program.mapSize = map.MapSize;
+            Program.MapSize = map.MapSize;
 
             Program.AllMapGrids = map.AllMapGrids;
 
@@ -808,7 +814,7 @@ namespace MapMaker
             int nextZoneId = AllZones.Count;
 
             StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, nextSectorId, nextZoneId,
-                mapSize, AllMapGrids, AllZones.Values.ToList(), AllCheckpoints.Values.ToList());
+                MapSize, AllMapGrids, AllZones.Values.ToList(), AllCheckpoints.Values.ToList());
             string json = Program.SerializeMap(map);
 
             WriteTextFile(filename, json);
@@ -1756,7 +1762,7 @@ namespace MapMaker
 
         public static int[] GetAdjacentGridIndexes(Grid center)
         {
-            int tilesWide = mapSize.Width / TileLength;
+            int tilesWide = MapSize.Width / TileLength;
 
             int totalTiles = AllMapGrids.Count;
 
@@ -1855,8 +1861,8 @@ namespace MapMaker
 
         public static Bitmap GetMapImage(double scale)
         {
-            int tilesWide = mapSize.Width;
-            int tilesHigh = mapSize.Height;
+            int tilesWide = MapSize.Width;
+            int tilesHigh = MapSize.Height;
 
             int pixelWidth = tilesWide * TileLength;
             int pixelHeight = tilesHigh * TileLength;
@@ -1875,15 +1881,15 @@ namespace MapMaker
 
         public static Bitmap DrawMap(ref Bitmap displayImage, double scale)
         {
-            int pixelWidth = mapSize.Width * TileLength; // Convert to pixels
+            int pixelWidth = MapSize.Width * TileLength; // Convert to pixels
             int scaledPixelWidth = (int)(pixelWidth * scale);
             if (scaledPixelWidth != displayImage.Width)
             {
-                int scaledPixelHeight = (int)(mapSize.Height * scale * TileLength);  // Convert to pixels
+                int scaledPixelHeight = (int)(MapSize.Height * scale * TileLength);  // Convert to pixels
                 displayImage = new Bitmap(scaledPixelWidth, scaledPixelHeight);
             }
 
-            int tilesWide = mapSize.Width;
+            int tilesWide = MapSize.Width;
 
             Program.DrawUpdatedGridsOntoImage(ref displayImage, tilesWide, TileLength, scale);
 
@@ -2201,7 +2207,7 @@ namespace MapMaker
 
         public static Grid GetMapGrid(int pixelX, int pixelY, double scale)
         {
-            return Program.GetGrid(pixelX, pixelY, scale, mapSize, AllMapGrids);
+            return Program.GetGrid(pixelX, pixelY, scale, MapSize, AllMapGrids);
         }
 
         public static Grid GetGrid(int pixelX, int pixelY, double scale, Size size, List<Grid> collection)
@@ -2626,8 +2632,8 @@ namespace MapMaker
 
         private static Point GetMapPoint(double hScrollPercent, double vScrollPercent, Size displayPixelSize)
         {
-            int mapPixelWidth = mapSize.Width * TileLength;
-            int mapPixelHeight = mapSize.Height * TileLength;
+            int mapPixelWidth = MapSize.Width * TileLength;
+            int mapPixelHeight = MapSize.Height * TileLength;
 
             int scrollBarLength = 25;
             int displayPixelWidth = displayPixelSize.Width;
@@ -2773,8 +2779,8 @@ namespace MapMaker
 
         public static void AddZone(double vScrollPercent, Size displayPixelSize)
         {
-            int mapPixelWidth = mapSize.Width * TileLength;
-            int mapPixelHeight = mapSize.Height * TileLength;
+            int mapPixelWidth = MapSize.Width * TileLength;
+            int mapPixelHeight = MapSize.Height * TileLength;
 
             int scrollBarLength = 25;
             int displayPixelHeight = displayPixelSize.Height;
@@ -2803,7 +2809,7 @@ namespace MapMaker
 
             int x = pixelX / TileLength;
             int y = pixelY / TileLength;
-            int width = mapSize.Width;
+            int width = MapSize.Width;
             int height = 3;
             Zone zoneToAdd = new Zone(nextZoneId, x, y, width, height);
             Rectangle areaToAdd = zoneToAdd.PixelArea;
@@ -2854,7 +2860,7 @@ namespace MapMaker
                 return;
             }
 
-            int mapWidth = mapSize.Width;
+            int mapWidth = MapSize.Width;
             Checkpoint checkpoint = new Checkpoint(y, mapWidth);
             AllCheckpoints.Add(y, checkpoint);
 
