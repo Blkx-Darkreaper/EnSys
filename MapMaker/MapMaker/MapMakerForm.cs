@@ -1124,6 +1124,35 @@ namespace MapMaker
             mapPropertiesToolStripMenuItem.Enabled = enabled;
         }
 
+        protected void LockRegions_CheckedChanged(object sender, EventArgs e)
+        {
+            if(Program.SelectedRegion == null)
+            {
+                return;
+            }
+
+            bool editRegion = !LockRegions.Checked;
+            Type validType = typeof(Region);
+
+            switch (selectedOverlay)
+            {
+                case Overlay.Zones:
+                    validType = (editRegion == true ? typeof(Zone) : typeof(Checkpoint));
+                    break;
+
+                case Overlay.Sectors:
+                    validType = (editRegion == true ? typeof(Sector) : typeof(Spawnpoint));
+                    break;
+            }
+
+            if (Program.SelectedRegion.GetType() == validType)
+            {
+                return;
+            }
+
+            Program.SelectedRegion = null;
+        }
+
         protected void AddButton_Click(object sender, EventArgs e)
         {
             switch (selectedOverlay)

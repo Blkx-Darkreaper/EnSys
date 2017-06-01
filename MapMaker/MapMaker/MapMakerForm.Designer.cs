@@ -34,6 +34,7 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportMapImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +78,6 @@
             this.MapDisplay = new System.Windows.Forms.PictureBox();
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
-            this.exportMapImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MiniMapDisplay = new MapMaker.MiniMap();
             this.MainMenu.SuspendLayout();
             this.MenuPanel.SuspendLayout();
@@ -144,6 +144,14 @@
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // exportMapImageToolStripMenuItem
+            // 
+            this.exportMapImageToolStripMenuItem.Enabled = false;
+            this.exportMapImageToolStripMenuItem.Name = "exportMapImageToolStripMenuItem";
+            this.exportMapImageToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exportMapImageToolStripMenuItem.Text = "Export Map Image";
+            this.exportMapImageToolStripMenuItem.Click += new System.EventHandler(this.exportMapImageToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
@@ -397,6 +405,7 @@
             this.LockRegions.TabIndex = 15;
             this.LockRegions.Text = "Lock";
             this.LockRegions.UseVisualStyleBackColor = true;
+            this.LockRegions.CheckedChanged += new System.EventHandler(this.LockRegions_CheckedChanged);
             // 
             // GridToggle
             // 
@@ -572,14 +581,6 @@
             this.TilesetDisplay.TabIndex = 7;
             this.TilesetDisplay.TabStop = false;
             this.TilesetDisplay.Click += new System.EventHandler(this.TilesetDisplay_Click);
-            // 
-            // exportMapImageToolStripMenuItem
-            // 
-            this.exportMapImageToolStripMenuItem.Enabled = false;
-            this.exportMapImageToolStripMenuItem.Name = "exportMapImageToolStripMenuItem";
-            this.exportMapImageToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.exportMapImageToolStripMenuItem.Text = "Export Map Image";
-            this.exportMapImageToolStripMenuItem.Click += new System.EventHandler(this.exportMapImageToolStripMenuItem_Click);
             // 
             // MiniMapDisplay
             // 

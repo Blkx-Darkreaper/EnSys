@@ -45,7 +45,7 @@ namespace MapMaker
         }
 
         [JsonConstructor]
-        public Spawnpoint(int x, int y, bool isHQSpawn) : base(x, y, 1, 1)
+        public Spawnpoint(bool isHQSpawn, Point location, Size size) : base(location.X, location.Y, size.Width, size.Height)
         {
             this.IsHeadquartersSpawn = isHQSpawn;
         }
