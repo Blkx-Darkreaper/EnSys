@@ -2759,6 +2759,19 @@ namespace MapMaker
                 return;
             }
 
+            // Get parent Zone
+            foreach(Zone zone in AllZones.Values)
+            {
+                bool intersects = zone.PixelArea.IntersectsWith(areaToAdd);
+                if(intersects == false)
+                {
+                    continue;
+                }
+
+                zone.AddSector(toAdd);
+                break;
+            }
+
             AllSectors.Add(nextSectorId, toAdd);
 
             Program.OverlayHasChanged();
