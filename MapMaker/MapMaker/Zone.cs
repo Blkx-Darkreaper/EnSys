@@ -98,7 +98,7 @@ namespace MapMaker
             foreach (Sector sector in AllSectors)
             {
                 sector.Move(deltaX, deltaY);
-                sector.KeepInBounds(updatedArea, sector.Location.X, sector.Location.Y);
+                sector.KeepInBounds(updatedArea, sector.Location.X, sector.Location.Y, sector.Size.Width, sector.Size.Height);
             }
         }
 

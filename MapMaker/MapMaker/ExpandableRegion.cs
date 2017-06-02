@@ -39,11 +39,18 @@ namespace MapMaker
 
         public override void OnMouseMove(MouseEventArgs e)
         {
+            if(IsSelected == false)
+            {
+                return;
+            }
+
             base.OnMouseMove(e);
 
             int x = this.Location.X;
             int y = this.Location.Y;
-            KeepInBounds(PixelArea, x, y);
+            int width = this.Size.Width;
+            int height = this.Size.Height;
+            KeepInBounds(PixelArea, x, y, width, height);
         }
 
         public void AddGrid(Grid grid)

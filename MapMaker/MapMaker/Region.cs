@@ -849,15 +849,11 @@ namespace MapMaker
 
         public virtual void OnMouseMove(MouseEventArgs e)
         {
-            if (HasMouseFocus == false)
-            {
-                return;
-            }
-
             Point cursor = e.Location;
 
-            int deltaPixelY = cursor.Y - previousCursor.Y;
-            int deltaPixelX = cursor.X - previousCursor.X;
+            // Double movement
+            int deltaPixelY = (cursor.Y - previousCursor.Y) * 2;
+            int deltaPixelX = (cursor.X - previousCursor.X) * 2;
 
             int tileLength = Program.TileLength;
             if(Math.Abs(deltaPixelX) < tileLength)
@@ -956,15 +952,17 @@ namespace MapMaker
             this.Size = size;
         }
 
-        public virtual void KeepInBounds(Rectangle pixelBounds, int x, int y)
+        public virtual void KeepInBounds(Rectangle pixelBounds, int x, int y, int width, int height)
         {
             int tileLength = Program.TileLength;
 
             int minX = pixelBounds.X / tileLength;
-            int maxX = minX + (pixelBounds.Width - tileLength) / tileLength;
+            int maxWidth = pixelBounds.Width / tileLength;
+            int maxX = minX + maxWidth - width;
 
             int minY = pixelBounds.Y / tileLength;
-            int maxY = minY + (pixelBounds.Height - tileLength) / tileLength;
+            int maxHeight = pixelBounds.Height / tileLength;
+            int maxY = minY + maxHeight - height;
 
             x = Program.Clamp(x, minX, maxX);
             y = Program.Clamp(y, minY, maxY);

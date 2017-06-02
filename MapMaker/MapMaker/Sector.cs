@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace MapMaker
@@ -74,7 +75,20 @@ namespace MapMaker
                 }
             }
 
+            Point initialLocation = new Point(Location.X, Location.Y);
+
             base.Move(deltaPixelX, deltaPixelY);
+
+            // Keep Sector within bounds of parent Zone
+            int x = this.Location.X;
+            int y = this.Location.Y;
+            int width = this.Size.Width;
+            int height = this.Size.Height;
+            KeepInBounds(Parent.PixelArea, x, y, width, height);
+
+            int tileLength = Program.TileLength;
+            deltaPixelX = (Location.X - initialLocation.X) * tileLength;
+            deltaPixelY = (Location.Y - initialLocation.Y) * tileLength;
 
             UpdateSpawnPosition(this.PixelArea, deltaPixelX, deltaPixelY);
         }
@@ -105,7 +119,7 @@ namespace MapMaker
             }
 
             Spawn.Move(deltaPixelX, deltaPixelY);
-            Spawn.KeepInBounds(updatedPixelArea, Spawn.Location.X, Spawn.Location.Y);
+            Spawn.KeepInBounds(updatedPixelArea, Spawn.Location.X, Spawn.Location.Y, Spawn.Size.Width, Spawn.Size.Height);
         }
 
         public void AddSpawnpointInCenter()

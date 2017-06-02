@@ -155,11 +155,12 @@ namespace MapMaker
 
             Move(deltaPixelX, deltaPixelY);
 
+            // Keep Spawnpoint within bounds of parent Sector
             int x = this.Location.X;
             int y = this.Location.Y;
-
-            // Keep Spawnpoint within bounds of parent Sector
-            KeepInBounds(Parent.PixelArea, x, y);
+            int width = this.Size.Width;
+            int height = this.Size.Height;
+            KeepInBounds(Parent.PixelArea, x, y, width, height);
 
             this.previousCursor = cursor;
         }
