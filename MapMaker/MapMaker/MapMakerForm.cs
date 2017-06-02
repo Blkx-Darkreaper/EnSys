@@ -18,7 +18,7 @@ namespace MapMaker
 
         public enum Tool
         {
-            Pen, Line, Rectangle, Fill
+            None, Pen, Line, Rectangle, Fill
         }
 
         public MapMakerForm()
@@ -477,7 +477,7 @@ namespace MapMaker
                     Program.MapHasChanged();
                     break;
 
-                case (int)Tool.Pen:
+                case Tool.Pen:
                     Grid grid = GetGridAtCursor();
                     Program.PenTool(grid, selectedOverlay);
                     break;
@@ -971,6 +971,7 @@ namespace MapMaker
 
         protected void noOverlayToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.Pen;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.None;
             UpdateMap();
@@ -982,6 +983,7 @@ namespace MapMaker
 
         protected void sectorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.None;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Sectors;
             UpdateMap();
@@ -991,6 +993,7 @@ namespace MapMaker
 
         protected void zonesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.None;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Zones;
             UpdateMap();
@@ -1000,6 +1003,7 @@ namespace MapMaker
 
         protected void constructionToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.Pen;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Construction;
             UpdateMap();
@@ -1011,6 +1015,7 @@ namespace MapMaker
 
         protected void drivableToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.Pen;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Drivable;
             UpdateMap();
@@ -1022,6 +1027,7 @@ namespace MapMaker
 
         protected void flyableToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            selectedTool = Tool.Pen;
             Program.SelectedRegion = null;
             this.selectedOverlay = Overlay.Flyable;
             UpdateMap();
@@ -1138,30 +1144,6 @@ namespace MapMaker
 
         protected void LockRegions_CheckedChanged(object sender, EventArgs e)
         {
-            if(Program.SelectedRegion == null)
-            {
-                return;
-            }
-
-            bool editRegion = !LockRegions.Checked;
-            Type validType = typeof(Region);
-
-            switch (selectedOverlay)
-            {
-                case Overlay.Zones:
-                    validType = (editRegion == true ? typeof(Zone) : typeof(Checkpoint));
-                    break;
-
-                case Overlay.Sectors:
-                    validType = (editRegion == true ? typeof(Sector) : typeof(Spawnpoint));
-                    break;
-            }
-
-            if (Program.SelectedRegion.GetType() == validType)
-            {
-                return;
-            }
-
             Program.SelectedRegion = null;
         }
 

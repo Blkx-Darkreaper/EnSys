@@ -146,6 +146,8 @@ namespace MapMaker
 
         public static void LoadZonesAndSectors(List<Zone> allZonesToLoad)
         {
+            int maxWidth = MapSize.Width;
+
             foreach (Zone zoneToLoad in allZonesToLoad)
             {
                 int zoneId = zoneToLoad.Id;
@@ -155,6 +157,8 @@ namespace MapMaker
                 {
                     AllZones.Add(zoneId, zoneToLoad);
                 }
+
+                zoneToLoad.UpdateWidth(maxWidth);   // Ensure each zone is same width as level
 
                 foreach(Sector sector in zoneToLoad.AllSectors)
                 {
@@ -2281,9 +2285,6 @@ namespace MapMaker
 
             // Get all affected Grids
             List<Grid> selectedGrids = new List<Grid>();
-
-            //normalPixelWidth += normalCornerPixelX;
-            //normalPixelHeight += normalCornerPixelY;
 
             // Convert pixels to units (tiles)
             int startGridX = normalCornerPixelX / TileLength;

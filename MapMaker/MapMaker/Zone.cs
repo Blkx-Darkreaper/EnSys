@@ -27,6 +27,12 @@ namespace MapMaker
             this.AllSectors = allSectors;
         }
 
+        public void UpdateWidth(int width)
+        {
+            int height = this.Size.Height;
+            this.Size = new Size(width, height);
+        }
+
         public override void Draw(Graphics graphics, double scale, Color colour)
         {
             Pen pen = new Pen(colour, 2);
@@ -51,6 +57,14 @@ namespace MapMaker
 
         protected override Rectangle UpdateArea(Point pixelLocation, Size pixelSize)
         {
+            int pixelX = 0;
+            int pixelY = pixelLocation.Y;
+            pixelLocation = new Point(pixelX, pixelY);
+
+            int pixelWidth = Program.MapSize.Width * Program.TileLength;
+            int pixelHeight = pixelSize.Height;
+            pixelSize = new Size(pixelWidth, pixelHeight);
+
             Rectangle updatedArea = base.UpdateArea(pixelLocation, pixelSize);
 
             UpdateSectorPositions(this.PixelArea, 0, 0);
@@ -60,12 +74,10 @@ namespace MapMaker
 
         public override void Move(int deltaPixelX, int deltaPixelY)
         {
-            if (deltaPixelX == 0)
+            deltaPixelX = 0;
+            if (deltaPixelY == 0)
             {
-                if (deltaPixelY == 0)
-                {
-                    return;
-                }
+                return;
             }
 
             base.Move(deltaPixelX, deltaPixelY);
@@ -83,9 +95,9 @@ namespace MapMaker
             Program.AllZones.Remove(this.Id);
         }
 
-        protected virtual void UpdateSectorPositions(Rectangle updatedArea, int deltaX, int deltaY)
+        protected virtual void UpdateSectorPositions(Rectangle updatedArea, int deltaPixelX, int deltaPixelY)
         {
-            if(AllSectors == null)
+            if (AllSectors == null)
             {
                 return;
             }
@@ -97,7 +109,7 @@ namespace MapMaker
 
             foreach (Sector sector in AllSectors)
             {
-                sector.Move(deltaX, deltaY);
+                sector.Move(deltaPixelX, deltaPixelY);
                 sector.KeepInBounds(updatedArea, sector.Location.X, sector.Location.Y, sector.Size.Width, sector.Size.Height);
             }
         }
