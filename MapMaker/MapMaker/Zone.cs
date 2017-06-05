@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 
 namespace MapMaker
@@ -68,7 +69,7 @@ namespace MapMaker
 
         public override void Move(int deltaPixelX, int deltaPixelY)
         {
-            deltaPixelX = 0;
+            deltaPixelX = 0;    // Cannot move horizontally
             if (deltaPixelY == 0)
             {
                 return;
@@ -77,6 +78,56 @@ namespace MapMaker
             base.Move(deltaPixelX, deltaPixelY);
 
             UpdateSectorPositions(this.PixelArea, deltaPixelX, deltaPixelY);
+        }
+
+        public override void OnMouseEnter(MouseEventArgs e)
+        {
+            Point cursor = e.Location;
+
+            this.IsMouseOver = true;
+
+            int state = GetCursorLocation(cursor);
+
+            const int nw = (int)borders.north + (int)borders.west;
+            const int ne = (int)borders.north + (int)borders.east;
+
+            const int sw = (int)borders.south + (int)borders.west;
+            const int se = (int)borders.south + (int)borders.east;
+
+            switch (state)
+            {
+                // Resize vertically
+                case (int)borders.north:
+                case (int)borders.south:
+                case nw:
+                case se:
+                case ne:
+                case sw:
+                    this.Cursor = Cursors.SizeNS;
+                    break;
+
+                // Cannot resize horizontally
+                case (int)borders.west:
+                case (int)borders.east:
+                    this.Cursor = Cursors.Default;
+                    break;
+
+                // Move
+                case (int)borders.center:
+                default:
+                    this.Cursor = Cursors.NoMove2D;
+                    break;
+            }
+        }
+
+        public override void AdjustEastEdge(int pixels)
+        {
+            
+        }
+
+        public override void AdjustWestEdge(int pixels)
+        {
+            
         }
 
         public override void Delete()

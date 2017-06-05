@@ -13,7 +13,8 @@ namespace MapMaker
 {
     public class Checkpoint : Region, IComparable<Checkpoint>, IEquatable<Checkpoint>
     {
-        [JsonIgnore] public int Key { get; protected set; }
+        [JsonIgnore]
+        public int Key { get; protected set; }
 
         public Checkpoint(int key, int width) : base()
         {
@@ -24,7 +25,8 @@ namespace MapMaker
             this.HasMouseFocus = false;
         }
 
-        [JsonConstructor] public Checkpoint(Point location, Size size)
+        [JsonConstructor]
+        public Checkpoint(Point location, Size size)
             : base()
         {
             this.Key = location.Y;
@@ -81,7 +83,7 @@ namespace MapMaker
 
         public override void Delete()
         {
-            
+
         }
 
         public override void SetBorders()
@@ -122,7 +124,7 @@ namespace MapMaker
             int tileLength = Program.TileLength;
 
             int deltaPixelsY = cursor.Y - previousCursor.Y;
-            if(deltaPixelsY < tileLength)
+            if (deltaPixelsY < tileLength)
             {
                 return;
             }
@@ -139,6 +141,27 @@ namespace MapMaker
 
             Program.MoveCheckpoint(this);
             this.Key = this.Location.Y;
+        }
+
+        public override void AdjustEastEdge(int pixels)
+        {
+
+        }
+
+        public override void AdjustWestEdge(int pixels)
+        {
+
+        }
+
+        public override void Move(int deltaPixelX, int deltaPixelY)
+        {
+            deltaPixelX = 0;    // Cannot move horizontally
+            if (deltaPixelY == 0)
+            {
+                return;
+            }
+
+            base.Move(deltaPixelX, deltaPixelY);
         }
 
         protected override void SnapToGrid()
