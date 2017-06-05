@@ -27,12 +27,6 @@ namespace MapMaker
             this.AllSectors = allSectors;
         }
 
-        public void UpdateWidth(int width)
-        {
-            int height = this.Size.Height;
-            this.Size = new Size(width, height);
-        }
-
         public override void Draw(Graphics graphics, double scale, Color colour)
         {
             Pen pen = new Pen(colour, 2);

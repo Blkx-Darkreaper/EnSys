@@ -554,6 +554,20 @@ namespace MapMaker
                 }
             }
 
+            // If map is wider, expand zones and checkpoints
+            if(maxWidth > oldWidth)
+            {
+                foreach(Zone zone in AllZones.Values)
+                {
+                    zone.UpdateWidth(maxWidth);
+                }
+
+                foreach(Checkpoint checkpoint in AllCheckpoints.Values)
+                {
+                    checkpoint.UpdateWidth(maxWidth);
+                }
+            }
+
             // Sort by x, y
             //AllMapGrids.Sort();
 
@@ -814,8 +828,8 @@ namespace MapMaker
 
         private static void SaveMapFile(string filename)
         {
-            int nextSectorId = AllSectors.Count;
-            int nextZoneId = AllZones.Count;
+            int nextSectorId = AllSectors.Count + 1;
+            int nextZoneId = AllZones.Count + 1;
 
             StrikeforceMap map = new StrikeforceMap(Author, dateCreated, tilesetFilename, TileLength, nextSectorId, nextZoneId,
                 MapSize, AllMapGrids, AllZones.Values.ToList(), AllCheckpoints.Values.ToList());

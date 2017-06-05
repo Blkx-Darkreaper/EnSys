@@ -86,6 +86,12 @@ namespace MapMaker
 
         public virtual void Draw(Graphics graphics, double scale, Color colour) { }
 
+        public virtual void UpdateWidth(int width)
+        {
+            int height = this.Size.Height;
+            this.Size = new Size(width, height);
+        }
+
         public virtual void SetBorders()
         {
             SetBordersAbsolute(this.PixelArea);
