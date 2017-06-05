@@ -2421,6 +2421,22 @@ namespace MapMaker
             state.AddMemento(grid);
         }
 
+        public static void AddToInitialDrawState(Region region)
+        {
+            if(currentDrawState == -1)
+            {
+                return;
+            }
+
+            DrawState state = allDrawStates.ElementAtOrDefault(currentDrawState);
+            if(state == null)
+            {
+                state = new DrawState();
+            }
+
+            state.AddMemento(region);
+        }
+
         public static void AddToFinalDrawState(Grid grid)
         {
             if (currentDrawState == -1)
@@ -2435,6 +2451,22 @@ namespace MapMaker
             }
 
             state.AddOmen(grid);
+        }
+
+        public static void AddToFinalDrawState(Region region)
+        {
+            if (currentDrawState == -1)
+            {
+                return;
+            }
+
+            DrawState state = allDrawStates.ElementAtOrDefault(currentDrawState);
+            if (state == null)
+            {
+                state = new DrawState();
+            }
+
+            state.AddOmen(region);
         }
 
         public static bool CheckCanUndo()
@@ -2479,7 +2511,7 @@ namespace MapMaker
                 return;
             }
 
-            List<Grid> mementos = currentState.AllMementos;
+            List<Grid> mementos = currentState.AllGridMementos;
             foreach (Grid previousState in mementos)
             {
                 Grid grid = AllMapGrids.Find(g => g.Equals(previousState));
@@ -2520,7 +2552,7 @@ namespace MapMaker
             {
                 return false;
             }
-            if (drawEvent.AllOmens.Count == 0)
+            if (drawEvent.AllGridOmens.Count == 0)
             {
                 return false;
             }
@@ -2544,7 +2576,7 @@ namespace MapMaker
             }
 
             DrawState currentState = allDrawStates[currentDrawState];
-            List<Grid> omens = currentState.AllOmens;
+            List<Grid> omens = currentState.AllGridOmens;
             foreach (Grid nextState in omens)
             {
                 Grid grid = AllMapGrids.Find(g => g.Equals(nextState));

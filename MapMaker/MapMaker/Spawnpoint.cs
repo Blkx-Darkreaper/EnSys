@@ -130,6 +130,9 @@ namespace MapMaker
             this.previousCursor = cursor;
 
             SetPreviousArea();
+
+            // Save the initial state
+            Program.AddToInitialDrawState(this);
         }
 
         public override void OnMouseMove(MouseEventArgs e)
@@ -141,8 +144,9 @@ namespace MapMaker
 
             Point cursor = e.Location;
 
-            int deltaPixelY = cursor.Y - previousCursor.Y;
-            int deltaPixelX = cursor.X - previousCursor.X;
+            // Double movement
+            int deltaPixelX = (cursor.X - previousCursor.X) * 2;
+            int deltaPixelY = (cursor.Y - previousCursor.Y) * 2;
 
             int tileLength = Program.TileLength;
             if (Math.Abs(deltaPixelX) < tileLength)
@@ -163,6 +167,27 @@ namespace MapMaker
             KeepInBounds(Parent.PixelArea, x, y, width, height);
 
             this.previousCursor = cursor;
+        }
+
+        public new Spawnpoint GetCopy()
+        {
+            Region regionCopy = base.GetCopy();
+            Spawnpoint copy = (Spawnpoint)regionCopy;
+
+            copy.Parent = this.Parent.GetCopy();
+            copy.IsHeadquartersSpawn = this.IsHeadquartersSpawn;
+            copy.AlreadyHasParentErrorMessage = this.AlreadyHasParentErrorMessage;
+
+            return copy;
+        }
+
+        public void MatchCopy(Spawnpoint copy)
+        {
+            this.Parent = Program.AllSectors[copy.Parent.Id];
+            this.IsHeadquartersSpawn = copy.IsHeadquartersSpawn;
+            this.AlreadyHasParentErrorMessage = copy.AlreadyHasParentErrorMessage;
+
+            base.MatchCopy(copy);
         }
     }
 }

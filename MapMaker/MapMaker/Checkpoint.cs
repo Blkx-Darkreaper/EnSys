@@ -21,8 +21,8 @@ namespace MapMaker
             this.Key = key;
             this.Location = new Point(0, key);
             this.Size = new Size(width, 1);
-            this.IsMouseOver = false;
-            this.HasMouseFocus = false;
+            //this.IsMouseOver = false;
+            //this.HasMouseFocus = false;
         }
 
         [JsonConstructor]
@@ -32,8 +32,8 @@ namespace MapMaker
             this.Key = location.Y;
             this.Location = location;
             this.Size = size;
-            this.IsMouseOver = false;
-            this.HasMouseFocus = false;
+            //this.IsMouseOver = false;
+            //this.HasMouseFocus = false;
         }
 
         public int CompareTo(Checkpoint other)
@@ -110,6 +110,9 @@ namespace MapMaker
             this.previousCursor = cursor;
 
             SetPreviousArea();
+
+            // Save the initial state
+            Program.AddToInitialDrawState(this);
         }
 
         public override void OnMouseMove(MouseEventArgs e)
@@ -123,7 +126,8 @@ namespace MapMaker
 
             int tileLength = Program.TileLength;
 
-            int deltaPixelsY = cursor.Y - previousCursor.Y;
+            // Double movement
+            int deltaPixelsY = (cursor.Y - previousCursor.Y) * 2;
             if (deltaPixelsY < tileLength)
             {
                 return;
@@ -141,6 +145,9 @@ namespace MapMaker
 
             Program.MoveCheckpoint(this);
             this.Key = this.Location.Y;
+
+            // Save the final state
+            Program.AddToFinalDrawState(this);
         }
 
         public override void AdjustEastEdge(int pixels)
@@ -170,6 +177,23 @@ namespace MapMaker
             int y = this.Location.Y;
 
             this.Location = new Point(x, y);
+        }
+
+        public new Checkpoint GetCopy()
+        {
+            Region regionCopy = base.GetCopy();
+            Checkpoint copy = (Checkpoint)regionCopy;
+
+            copy.Key = this.Key;
+
+            return copy;
+        }
+
+        public void MatchCopy(Checkpoint copy)
+        {
+            this.Key = copy.Key;
+
+            base.MatchCopy(copy);
         }
     }
 }

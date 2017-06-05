@@ -118,6 +118,8 @@ namespace MapMaker
                     this.Cursor = Cursors.NoMove2D;
                     break;
             }
+
+            this.previousCursor = cursor;
         }
 
         public override void AdjustEastEdge(int pixels)
@@ -163,6 +165,25 @@ namespace MapMaker
         {
             this.AllSectors.Add(sectorToAdd);
             sectorToAdd.SetParentZone(this);
+        }
+
+        public new Zone GetCopy()
+        {
+            Region regionCopy = base.GetCopy();
+            Zone copy = (Zone)regionCopy;
+
+            copy.Id = this.Id;
+            copy.AllSectors = new List<Sector>(this.AllSectors);
+
+            return copy;
+        }
+
+        public void MatchCopy(Zone copy)
+        {
+            this.Id = copy.Id;
+            this.AllSectors = copy.AllSectors;
+
+            base.MatchCopy(copy);
         }
     }
 }

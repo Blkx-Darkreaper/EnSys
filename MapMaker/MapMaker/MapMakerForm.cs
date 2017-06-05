@@ -455,9 +455,12 @@ namespace MapMaker
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
 
             int tileLength = Program.TileLength;
-            int gridX = cursor.X / tileLength;
-            int gridY = cursor.Y / tileLength;
-            GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+            if (tileLength != 0)
+            {
+                int gridX = cursor.X / tileLength;
+                int gridY = cursor.Y / tileLength;
+                GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+            }
 
             double scale = Program.MapScale;
             switch (selectedOverlay)
@@ -497,9 +500,12 @@ namespace MapMaker
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
 
             int tileLength = Program.TileLength;
-            int gridX = cursor.X / tileLength;
-            int gridY = cursor.Y / tileLength;
-            GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+            if (tileLength != 0)
+            {
+                int gridX = cursor.X / tileLength;
+                int gridY = cursor.Y / tileLength;
+                GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+            }
 
             if (selectedOverlay != Overlay.Sectors)
             {

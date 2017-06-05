@@ -171,5 +171,24 @@ namespace MapMaker
         {
             this.Spawn = null;
         }
+
+        public new Sector GetCopy()
+        {
+            Region regionCopy = base.GetCopy();
+            Sector copy = (Sector)regionCopy;
+
+            copy.Id = this.Id;
+            copy.Spawn = this.Spawn.GetCopy();
+
+            return copy;
+        }
+
+        public void MatchCopy(Sector copy)
+        {
+            this.Id = copy.Id;
+            this.Spawn = copy.Spawn;
+
+            base.MatchCopy(copy);
+        }
     }
 }

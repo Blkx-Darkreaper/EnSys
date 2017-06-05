@@ -840,6 +840,9 @@ namespace MapMaker
 
             // Save the curent Area
             SetPreviousArea();
+
+            // Save the initial state
+            Program.AddToInitialDrawState(this);
         }
 
         protected virtual void SetPreviousArea()
@@ -858,8 +861,8 @@ namespace MapMaker
             Point cursor = e.Location;
 
             // Double movement
-            int deltaPixelY = (cursor.Y - previousCursor.Y) * 2;
             int deltaPixelX = (cursor.X - previousCursor.X) * 2;
+            int deltaPixelY = (cursor.Y - previousCursor.Y) * 2;
 
             int tileLength = Program.TileLength;
             if(Math.Abs(deltaPixelX) < tileLength)
@@ -930,6 +933,9 @@ namespace MapMaker
             SetBorders();
             this.currentMouseBorder = -1;
             this.HasMouseFocus = false;
+
+            // Save the final state
+            Program.AddToFinalDrawState(this);
         }
 
         public virtual void OnMouseClick(MouseEventArgs e)
@@ -982,6 +988,31 @@ namespace MapMaker
             }
 
             this.Location = new Point(x, y);
+        }
+
+        public virtual Region GetCopy()
+        {
+            Region copy = new Region();
+            copy.Location = new Point(this.Location.X, this.Location.Y);
+            copy.PixelArea = new Rectangle(this.PixelArea.X, this.PixelArea.Y, this.PixelArea.Width, this.PixelArea.Height);
+            copy.Cursor = Cursors.Default;
+            copy.IsMouseOver = false;
+            copy.HasMouseFocus = false;
+            copy.currentMouseBorder = -1;
+
+            return copy;
+        }
+
+        public virtual void MatchCopy(Region copy)
+        {
+            this.Location = copy.Location;
+            this.PixelArea = copy.PixelArea;
+            this.Cursor = copy.Cursor;
+            this.IsMouseOver = copy.IsMouseOver;
+            this.HasMouseFocus = copy.HasMouseFocus;
+            this.currentMouseBorder = copy.currentMouseBorder;
+
+            SetBorders();
         }
     }
 }
