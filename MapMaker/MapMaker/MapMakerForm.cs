@@ -15,6 +15,7 @@ namespace MapMaker
         protected Overlay selectedOverlay { get; set; }
         protected Timer timer { get; set; }
         protected string version = "1.6.2";
+        protected string gridPostionMessage = "({0}, {1})";
 
         public enum Tool
         {
@@ -324,10 +325,10 @@ namespace MapMaker
 
             int clicks = 2;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            int pixelX = cursor.X;
+            int pixelY = cursor.Y;
             int delta = 0;
-            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, pixelX, pixelY, delta);
 
             double scale = Program.MapScale;
 
@@ -451,6 +452,13 @@ namespace MapMaker
 
         protected void MapDisplay_MouseMove(object sender, MouseEventArgs e)
         {
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+
+            int tileLength = Program.TileLength;
+            int gridX = cursor.X / tileLength;
+            int gridY = cursor.Y / tileLength;
+            GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+
             double scale = Program.MapScale;
             switch (selectedOverlay)
             {
@@ -486,6 +494,13 @@ namespace MapMaker
 
         protected void MapDisplay_MouseEnter(object sender, EventArgs e)
         {
+            Point cursor = MapDisplay.PointToClient(Cursor.Position);
+
+            int tileLength = Program.TileLength;
+            int gridX = cursor.X / tileLength;
+            int gridY = cursor.Y / tileLength;
+            GridPosition.Text = String.Format(gridPostionMessage, gridX, gridY);
+
             if (selectedOverlay != Overlay.Sectors)
             {
                 if (selectedOverlay != Overlay.Zones)
@@ -495,11 +510,10 @@ namespace MapMaker
             }
 
             int clicks = 0;
-            Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            int pixelX = cursor.X;
+            int pixelY = cursor.Y;
             int delta = 0;
-            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, pixelX, pixelY, delta);
 
             double scale = Program.MapScale;
 
@@ -529,10 +543,10 @@ namespace MapMaker
 
             int clicks = 0;
             Point cursor = MapDisplay.PointToClient(Cursor.Position);
-            int x = cursor.X;
-            int y = cursor.Y;
+            int pixelX = cursor.X;
+            int pixelY = cursor.Y;
             int delta = 0;
-            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, x, y, delta);
+            MouseEventArgs mouseEvent = new MouseEventArgs(MouseButtons.None, clicks, pixelX, pixelY, delta);
 
             double scale = Program.MapScale;
 

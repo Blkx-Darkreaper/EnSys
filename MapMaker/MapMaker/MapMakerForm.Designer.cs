@@ -78,6 +78,7 @@
             this.MapDisplay = new System.Windows.Forms.PictureBox();
             this.TilesetPanel = new System.Windows.Forms.Panel();
             this.TilesetDisplay = new System.Windows.Forms.PictureBox();
+            this.GridPosition = new System.Windows.Forms.Label();
             this.MiniMapDisplay = new MapMaker.MiniMap();
             this.MainMenu.SuspendLayout();
             this.MenuPanel.SuspendLayout();
@@ -543,7 +544,7 @@
             this.MapPanel.Controls.Add(this.MapDisplay);
             this.MapPanel.Location = new System.Drawing.Point(178, 68);
             this.MapPanel.Name = "MapPanel";
-            this.MapPanel.Size = new System.Drawing.Size(434, 361);
+            this.MapPanel.Size = new System.Drawing.Size(434, 344);
             this.MapPanel.TabIndex = 5;
             this.MapPanel.Scroll += new System.Windows.Forms.ScrollEventHandler(this.MapPanel_Scroll);
             // 
@@ -582,6 +583,15 @@
             this.TilesetDisplay.TabStop = false;
             this.TilesetDisplay.Click += new System.EventHandler(this.TilesetDisplay_Click);
             // 
+            // GridPosition
+            // 
+            this.GridPosition.AutoSize = true;
+            this.GridPosition.Location = new System.Drawing.Point(178, 419);
+            this.GridPosition.Name = "GridPosition";
+            this.GridPosition.Size = new System.Drawing.Size(66, 13);
+            this.GridPosition.TabIndex = 7;
+            this.GridPosition.Text = "Grid Position";
+            // 
             // MiniMapDisplay
             // 
             this.MiniMapDisplay.Location = new System.Drawing.Point(12, 68);
@@ -596,6 +606,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 441);
+            this.Controls.Add(this.GridPosition);
             this.Controls.Add(this.TilesetPanel);
             this.Controls.Add(this.MapPanel);
             this.Controls.Add(this.MenuPanel);
@@ -677,6 +688,7 @@
         private System.Windows.Forms.ToolStripMenuItem setAsHQSpawnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setAsSectorSpawnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportMapImageToolStripMenuItem;
+        private System.Windows.Forms.Label GridPosition;
     }
 }
 
