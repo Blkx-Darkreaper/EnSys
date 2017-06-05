@@ -445,7 +445,9 @@ namespace MapMaker
 
             //Program.EndDrawState();
 
-            undoToolStripMenuItem.Enabled = true;
+            //undoToolStripMenuItem.Enabled = true;
+            SetUndoEnabled();
+
 
             //UpdateMap();
         }
@@ -1179,6 +1181,8 @@ namespace MapMaker
                     AddSectorOrSpawnpoint();
                     break;
             }
+
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void AddZoneOrCheckpoint()
@@ -1236,11 +1240,13 @@ namespace MapMaker
             double vScrollPercent = vScroll / (double)vScrollMax;
 
             Program.AddZone(vScrollPercent, MapPanel.Size);
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void deleteZoneToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.DeleteZone();
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void addSectorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1254,11 +1260,13 @@ namespace MapMaker
             double hScrollPercent = hScroll / (double)hScrollMax;
 
             Program.AddSector(hScrollPercent, vScrollPercent, MapPanel.Size);
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void deleteSectorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.DeleteSector();
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void addCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1268,11 +1276,13 @@ namespace MapMaker
             double vScrollPercent = vScroll / (double)vScrollMax;
 
             Program.AddCheckPoint(vScrollPercent, MapPanel.Size);
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void deleteCheckpointToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.DeleteCheckpoint();
+            undoToolStripMenuItem.Enabled = true;
         }
 
         protected void addSpawnpointToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1293,6 +1303,7 @@ namespace MapMaker
             double hScrollPercent = hScroll / (double)hScrollMax;
 
             Program.AddSpawnpoint(hScrollPercent, vScrollPercent, MapPanel.Size);
+            undoToolStripMenuItem.Enabled = true;
         }
 
         private void setAsHQSpawnToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1309,6 +1320,8 @@ namespace MapMaker
             Program.OverlayHasChanged();
 
             UpdateSpawnpointToggleControls();
+
+            undoToolStripMenuItem.Enabled = true;
         }
 
         private void setAsSectorSpawnToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1325,6 +1338,8 @@ namespace MapMaker
             Program.OverlayHasChanged();
 
             UpdateSpawnpointToggleControls();
+
+            undoToolStripMenuItem.Enabled = true;
         }
     }
 }

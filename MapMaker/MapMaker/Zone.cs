@@ -134,7 +134,7 @@ namespace MapMaker
 
         public override void Delete()
         {
-            foreach (Sector sector in AllSectors)
+            foreach (Sector sector in AllSectors.ToArray())
             {
                 sector.Delete();
             }
@@ -165,6 +165,7 @@ namespace MapMaker
         {
             this.AllSectors.Add(sectorToAdd);
             sectorToAdd.SetParentZone(this);
+            Program.AllSectors.Add(sectorToAdd.Id, sectorToAdd);
         }
 
         public new Zone GetCopy()
@@ -173,7 +174,12 @@ namespace MapMaker
             Zone copy = (Zone)regionCopy;
 
             copy.Id = this.Id;
-            copy.AllSectors = new List<Sector>(this.AllSectors);
+            copy.AllSectors = new List<Sector>();
+            foreach(Sector sector in AllSectors)
+            {
+                Sector sectorCopy = sector.GetCopy();
+                copy.AllSectors.Add(sectorCopy);
+            }
 
             return copy;
         }
@@ -181,7 +187,11 @@ namespace MapMaker
         public void MatchCopy(Zone copy)
         {
             this.Id = copy.Id;
-            this.AllSectors = copy.AllSectors;
+            this.AllSectors = new List<Sector>();
+            foreach(Sector sectorToAdd in copy.AllSectors)
+            {
+                AddSector(sectorToAdd);
+            }
 
             base.MatchCopy(copy);
         }

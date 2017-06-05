@@ -2400,6 +2400,7 @@ namespace MapMaker
                 return;
             }
 
+            // Remove excess undo history
             int nextDrawState = currentDrawState + 1;
             int totalToRemove = allDrawStates.Count - nextDrawState;
             allDrawStates.RemoveRange(nextDrawState, totalToRemove);
@@ -2421,7 +2422,7 @@ namespace MapMaker
             state.AddMemento(grid);
         }
 
-        public static void AddToInitialDrawState(Region region)
+        public static void AddToInitialDrawState(Zone zone)
         {
             if(currentDrawState == -1)
             {
@@ -2434,7 +2435,7 @@ namespace MapMaker
                 state = new DrawState();
             }
 
-            state.AddMemento(region);
+            state.AddMemento(zone);
         }
 
         public static void AddToFinalDrawState(Grid grid)
@@ -2453,7 +2454,7 @@ namespace MapMaker
             state.AddOmen(grid);
         }
 
-        public static void AddToFinalDrawState(Region region)
+        public static void AddToFinalDrawState(Zone zone)
         {
             if (currentDrawState == -1)
             {
@@ -2466,7 +2467,7 @@ namespace MapMaker
                 state = new DrawState();
             }
 
-            state.AddOmen(region);
+            state.AddOmen(zone);
         }
 
         public static bool CheckCanUndo()
@@ -2511,14 +2512,22 @@ namespace MapMaker
                 return;
             }
 
-            List<Grid> mementos = currentState.AllGridMementos;
-            foreach (Grid previousState in mementos)
+            List<Grid> gridMementos = currentState.AllGridMementos;
+            foreach (Grid previousState in gridMementos)
             {
                 Grid grid = AllMapGrids.Find(g => g.Equals(previousState));
 
                 grid.MatchCopy(previousState);
 
                 allUpdatedMapGrids.Enqueue(grid);
+            }
+
+            List<Zone> zoneMementos = currentState.AllZoneMementos;
+            foreach(Zone previousState in zoneMementos)
+            {
+                Zone zone = AllZones[previousState.Id];
+
+                zone.MatchCopy(previousState);
             }
         }
 
@@ -2828,8 +2837,6 @@ namespace MapMaker
                 break;
             }
 
-            AllSectors.Add(nextSectorId, toAdd);
-
             Program.OverlayHasChanged();
         }
 
@@ -2900,7 +2907,6 @@ namespace MapMaker
 
             Sector sectorToAdd = new Sector(nextSectorId, x, y, width, height);
             zoneToAdd.AddSector(sectorToAdd);
-            AllSectors.Add(nextSectorId, sectorToAdd);
 
             Program.OverlayHasChanged();
         }
@@ -2916,6 +2922,8 @@ namespace MapMaker
             selectedZone.Delete();
 
             SelectedRegion = null;
+
+            Program.OverlayHasChanged();
         }
 
         public static void AddCheckPoint(double vScrollPercent, Size displaySize)

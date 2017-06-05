@@ -10,10 +10,10 @@ namespace MapMaker
     {
         // previous states
         public List<Grid> AllGridMementos { get; protected set; }
-        public List<Region> AllRegionMementos { get; protected set; }
+        public List<Zone> AllZoneMementos { get; protected set; }
         // future states
         public List<Grid> AllGridOmens { get; protected set; }
-        public List<Region> AllRegionOmens { get; protected set; }
+        public List<Zone> AllZoneOmens { get; protected set; }
         public bool IsEmpty { get; protected set; }
 
         public DrawState(Grid grid)
@@ -25,9 +25,9 @@ namespace MapMaker
         public DrawState()
         {
             AllGridMementos = new List<Grid>();
-            AllRegionMementos = new List<Region>();
+            AllZoneMementos = new List<Zone>();
             AllGridOmens = new List<Grid>();
-            AllRegionOmens = new List<Region>();
+            AllZoneOmens = new List<Zone>();
             IsEmpty = true;
         }
 
@@ -51,23 +51,23 @@ namespace MapMaker
             IsEmpty = false;
         }
 
-        public void AddMemento(Region region)
+        public void AddMemento(Zone zone)
         {
-            if (region == null)
+            if (zone == null)
             {
                 return;
             }
 
-            Region memento = region.GetCopy();
+            Zone memento = zone.GetCopy();
 
-            int index = AllRegionMementos.FindIndex(g => g.Equals(region));
+            int index = AllZoneMementos.FindIndex(g => g.Equals(zone));
             if (index != -1)
             {
                 //AllMementos[index] = memento;
                 return;
             }
 
-            AllRegionMementos.Add(memento);
+            AllZoneMementos.Add(memento);
             IsEmpty = false;
         }
 
@@ -90,22 +90,22 @@ namespace MapMaker
             IsEmpty = false;
         }
 
-        public void AddOmen(Region region)
+        public void AddOmen(Zone zone)
         {
-            if (region == null)
+            if (zone == null)
             {
                 return;
             }
 
-            Region omen = region.GetCopy();
+            Zone omen = zone.GetCopy();
 
-            int index = AllRegionOmens.FindIndex(g => g.Equals(region));
+            int index = AllZoneOmens.FindIndex(g => g.Equals(zone));
             if (index != -1)
             {
                 return;
             }
 
-            AllRegionOmens.Add(omen);
+            AllZoneOmens.Add(omen);
             IsEmpty = false;
         }
     }
