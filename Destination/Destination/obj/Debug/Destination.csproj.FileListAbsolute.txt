@@ -1,0 +1,10 @@
+C:\Users\Janai\source\repos\Destination\Destination\bin\Debug\Destination.exe.config
+C:\Users\Janai\source\repos\Destination\Destination\bin\Debug\Destination.exe
+C:\Users\Janai\source\repos\Destination\Destination\bin\Debug\Destination.pdb
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.MainForm.resources
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.Properties.Resources.resources
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.csproj.GenerateResource.Cache
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.csproj.CoreCompileInputs.cache
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.exe
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.pdb
+C:\Users\Janai\source\repos\Destination\Destination\obj\Debug\Destination.csprojResolveAssemblyReference.cache

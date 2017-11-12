@@ -1,0 +1,9 @@
+C:\Users\Janai\source\repos\Destination\Destination\bin\Release\Destination.exe.config
+C:\Users\Janai\source\repos\Destination\Destination\bin\Release\Destination.exe
+C:\Users\Janai\source\repos\Destination\Destination\bin\Release\Destination.pdb
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.MainForm.resources
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.Properties.Resources.resources
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.csproj.GenerateResource.Cache
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.csproj.CoreCompileInputs.cache
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.exe
+C:\Users\Janai\source\repos\Destination\Destination\obj\Release\Destination.pdb
